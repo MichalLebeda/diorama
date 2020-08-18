@@ -1,12 +1,12 @@
 
 auto.png
-size: 512,512
+size: 2048,512
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 baobab
   rotate: false
-  xy: 262, 394
+  xy: 1290, 394
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -41,7 +41,7 @@ floor
   index: -1
 hut
   rotate: false
-  xy: 262, 374
+  xy: 1290, 374
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -53,16 +53,23 @@ shadow
   orig: 128, 128
   offset: 0, 0
   index: -1
-test
+sky
   rotate: false
   xy: 2, 170
+  size: 1024, 256
+  orig: 1024, 256
+  offset: 0, 0
+  index: 2
+sky
+  rotate: false
+  xy: 1030, 170
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
 tree
   rotate: false
-  xy: 298, 410
+  xy: 1326, 410
   size: 16, 16
   orig: 16, 16
   offset: 0, 0

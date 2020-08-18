@@ -3,6 +3,7 @@ package cz.shroomware.diorama.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
@@ -19,6 +20,7 @@ import cz.shroomware.diorama.SelectedItemIndicator;
 public abstract class Hud extends Stage {
     TextureAtlas atlas;
     SelectedItemIndicator selectedItemIndicator;
+    ScrollPane scrollPane;
 
     public Hud(DioramaGame game, TextureAtlas sourceAtlas) {
         super();
@@ -47,7 +49,7 @@ public abstract class Hud extends Stage {
         itemGroup.pad(20);
         itemGroup.space(20);
 
-        ScrollPane scrollPane = new ScrollPane(itemGroup);
+        scrollPane = new ScrollPane(itemGroup);
         scrollPane.getStyle().background = new TextureRegionDrawable(game.getUiAtlas().findRegion("translucent")); //TODO FIX IN STYLE
         scrollPane.pack();
         scrollPane.setHeight(getViewport().getWorldHeight());
@@ -57,6 +59,13 @@ public abstract class Hud extends Stage {
 
         addActor(scrollPane);
     }
+
+    public Vector3 getMenuScreenPosition(){
+        Vector3 position = new Vector3();
+        position.set(scrollPane.getX(),scrollPane.getY(),0);
+        return getCamera().project(position);
+    }
+
 
     public abstract void onSelectedItemRegion(TextureAtlas.AtlasRegion region);
 

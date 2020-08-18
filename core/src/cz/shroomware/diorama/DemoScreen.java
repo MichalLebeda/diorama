@@ -7,14 +7,13 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,7 +23,11 @@ import com.badlogic.gdx.utils.Array;
 import cz.shroomware.diorama.ui.Hud;
 
 public class DemoScreen implements Screen, InputProcessor {
-    MinimalisticDecalBatch batch;
+    private static final float SCROLL_RATIO = 0.4f;
+    private static final float RELATIVE_SHADOW_SIZE = 1.2f;
+    private static final int GRID_SIZE = 200;
+    MinimalisticDecalBatch decalBatch;
+    SpriteBatch spriteBatch;
     PerspectiveCamera camera;
     TextureAtlas atlas;
     TextureRegion cursorRegion;
@@ -32,6 +35,7 @@ public class DemoScreen implements Screen, InputProcessor {
     TextureRegion shadowRegion;
     Vector2 lastDragScreenPos = new Vector2();
     Array<Decal> decals = new Array<Decal>();
+    Array<Sprite> sprites = new Array<Sprite>();
     Decal cursor;
     Hud hud;
     InputMultiplexer inputMultiplexer;
@@ -39,6 +43,7 @@ public class DemoScreen implements Screen, InputProcessor {
     DemoScreen(DioramaGame game) {
         initCamera();
         atlas = game.getAtlas();
+        decalBatch = new MinimalisticDecalBatch();
         hud = new Hud(game, atlas) {
             @Override
             public void onSelectedItemRegion(TextureAtlas.AtlasRegion region) {
@@ -48,22 +53,24 @@ public class DemoScreen implements Screen, InputProcessor {
         cursorRegion = atlas.findRegion("tree");
         floorRegion = atlas.findRegion("floor");
         shadowRegion = atlas.findRegion("shadow");
-        batch = new MinimalisticDecalBatch();
-        int size = 100;
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                Decal decal = Decal.newDecal(1, 1, floorRegion, false);
-                decal.setPosition(x, y, 0);
-                decals.add(decal);
+
+        spriteBatch = new SpriteBatch();
+        for (int x = 0; x < GRID_SIZE; x++) {
+            for (int y = 0; y < GRID_SIZE; y++) {
+                Sprite sprite = new Sprite(floorRegion);
+                sprite.setSize(1, 1);
+                sprite.setPosition(x, y);
+                sprites.add(sprite);
             }
         }
+
 
         cursor = Decal.newDecal(1, 1, cursorRegion, true);
         cursor.rotateX(90);
 
         inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(hud);
         inputMultiplexer.addProcessor(this);
+        inputMultiplexer.addProcessor(hud);
     }
 
     private void initCamera() {
@@ -71,8 +78,8 @@ public class DemoScreen implements Screen, InputProcessor {
         double ratio = (double) Gdx.graphics.getWidth() / (double) Gdx.graphics.getHeight();
         float width = (float) (height * ratio);
         camera = new PerspectiveCamera(50, width, height);
-        camera.position.set(7, -2, 5);
-        camera.lookAt(7, 4, 0);
+        camera.position.set(GRID_SIZE / 2.f, -2, 5);
+        camera.lookAt(GRID_SIZE / 2.f, 4, 0);
     }
 
     @Override
@@ -87,16 +94,34 @@ public class DemoScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
 
-        for (Decal decal : decals) {
-            batch.add(decal);
-        }
         camera.update();
 
+        spriteBatch.setProjectionMatrix(camera.combined);
+        spriteBatch.begin();
+        spriteBatch.end();
+
+        spriteBatch.begin();
+        for (Sprite sprite : sprites) {
+            sprite.draw(spriteBatch);
+        }
         if (hud.hasSelectedRegion()) {
-            batch.add(cursor);
+            float width = cursor.getWidth() * RELATIVE_SHADOW_SIZE;
+            spriteBatch.draw(shadowRegion,
+                    cursor.getPosition().x - width / 2,
+                    cursor.getPosition().y - width / 2,
+                    width, width);
+        }
+        spriteBatch.end();
+
+        for (Decal decal : decals) {
+            decalBatch.add(decal);
         }
 
-        batch.render(camera);
+        if (hud.hasSelectedRegion()) {
+            decalBatch.add(cursor);
+        }
+
+        decalBatch.render(camera);
 
         hud.act();
         hud.draw();
@@ -110,13 +135,12 @@ public class DemoScreen implements Screen, InputProcessor {
         decal.setHeight(source.getHeight());
         decals.add(decal);
 
-        Decal shadowDecal = Decal.newDecal(shadowRegion, true);
-        shadowDecal.setPosition(source.getPosition());
-        shadowDecal.setZ(0.01f);
-        shadowDecal.setWidth(2);
-        shadowDecal.setHeight(2);
-
-        decals.add(shadowDecal);
+        Sprite shadowSprite = new Sprite(shadowRegion);
+        shadowSprite.setSize(decal.getWidth() * RELATIVE_SHADOW_SIZE,
+                decal.getWidth() * RELATIVE_SHADOW_SIZE);
+        shadowSprite.setOriginCenter();
+        shadowSprite.setOriginBasedPosition(decal.getPosition().x, decal.getPosition().y);
+        sprites.add(shadowSprite);
     }
 
     private void updateCursor(TextureAtlas.AtlasRegion region) {
@@ -169,6 +193,10 @@ public class DemoScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        //let hud handle this if event occurred on top of menu
+        if (screenX >= hud.getMenuScreenPosition().x) {
+            return false;
+        }
         if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
             lastDragScreenPos.set(screenX, screenY);
 
@@ -202,7 +230,7 @@ public class DemoScreen implements Screen, InputProcessor {
     }
 
     Vector3 worldPos = new Vector3();
-    float degreesPerPixel = 0.4f;
+    float degreesPerPixel = 0.2f;
     float translationLimit = 12;
 
     @Override
@@ -223,8 +251,8 @@ public class DemoScreen implements Screen, InputProcessor {
                 transform.z = 0; //TODO: pri dlouhym dragu blbne
 
                 // fix rychlyho posouvani kdyz se klikne daleko
-                if(transform.len()>20){//TODO: zkontrolovat
-                    transform.nor().scl(20);
+                if (transform.len() > translationLimit) {//TODO: zkontrolovat
+                    transform.nor().scl(translationLimit);
                 }
                 camera.translate(transform);
                 cameraLastDragWorldPos = intersection.add(transform);
@@ -244,7 +272,7 @@ public class DemoScreen implements Screen, InputProcessor {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         moveCursorTo(new Vector3(screenX, screenY, 0));
-        return false;
+        return true;
     }
 
     private void moveCursorTo(Vector3 screenCoords) {
@@ -269,6 +297,12 @@ public class DemoScreen implements Screen, InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
-        return false;
+        //let hud handle this if event occurred on top of menu
+        if (Gdx.input.getX() >= hud.getMenuScreenPosition().x) {
+            return false;
+        }
+
+        camera.position.add(camera.direction.cpy().nor().scl(-SCROLL_RATIO * amount));//TODO FIX ztratu focusu pri kliknuti na pane
+        return true;
     }
 }

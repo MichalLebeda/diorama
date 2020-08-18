@@ -20,7 +20,7 @@ public class Item extends HorizontalGroup {
     public Item(DioramaGame game, final TextureAtlas.AtlasRegion region, final SelectedItemIndicator selectedItemIndicator) {
         space(20);
         DFLabel label = new DFLabel(region.name, game);
-        label.setFontScale(0.5f);
+        label.setFontScale(0.3f);
         addActor(label);
 
         Image image = new Image(region);
