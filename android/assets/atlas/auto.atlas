@@ -4,31 +4,73 @@ size: 512,512
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-cursor
+baobab
   rotate: false
-  xy: 2, 22
+  xy: 262, 394
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+bush
+  rotate: false
+  xy: 22, 26
+  size: 5, 8
+  orig: 5, 8
+  offset: 0, 0
+  index: -1
+desert_bush
+  rotate: false
+  xy: 134, 140
+  size: 5, 6
+  orig: 5, 6
+  offset: 0, 0
+  index: -1
+desert_tree
+  rotate: false
+  xy: 2, 18
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 floor
   rotate: false
-  xy: 262, 282
+  xy: 134, 150
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
+hut
+  rotate: false
+  xy: 262, 374
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: false
+  xy: 2, 38
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
 test
   rotate: false
-  xy: 2, 42
+  xy: 2, 170
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
 tree
   rotate: false
-  xy: 2, 2
+  xy: 298, 410
   size: 16, 16
   orig: 16, 16
+  offset: 0, 0
+  index: -1
+well
+  rotate: false
+  xy: 2, 2
+  size: 9, 12
+  orig: 9, 12
   offset: 0, 0
   index: -1

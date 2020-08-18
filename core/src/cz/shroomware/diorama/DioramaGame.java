@@ -19,6 +19,7 @@ public class DioramaGame extends Game {
     TextureAtlas uiAtlas;
     Skin skin;
     ShaderProgram dfShader;
+    ShaderProgram decalShader;
 
     @Override
     public void create() {
@@ -29,6 +30,11 @@ public class DioramaGame extends Game {
         dfShader = new ShaderProgram(Gdx.files.internal("shaders/font.vert"), Gdx.files.internal("shaders/font.frag"));
         if (!dfShader.isCompiled()) {
             Gdx.app.error("fontShader", "compilation failed:\n" + dfShader.getLog());
+        }
+
+        decalShader = new ShaderProgram(Gdx.files.internal("shaders/v.glsl"), Gdx.files.internal("shaders/f.glsl"));
+        if (!decalShader.isCompiled()) {
+            Gdx.app.error("decalShader", "compilation failed:\n" + dfShader.getLog());
         }
 
         demoScreen = new DemoScreen(this);
@@ -43,8 +49,16 @@ public class DioramaGame extends Game {
         return dfShader;
     }
 
+    public ShaderProgram getDecalShader() {
+        return decalShader;
+    }
+
     public TextureAtlas getAtlas(){
         return atlas;
+    }
+
+    public TextureAtlas getUiAtlas(){
+        return uiAtlas;
     }
 
     @Override

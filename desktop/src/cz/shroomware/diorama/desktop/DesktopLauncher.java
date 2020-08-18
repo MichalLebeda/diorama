@@ -1,5 +1,7 @@
 package cz.shroomware.diorama.desktop;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,8 +20,9 @@ public class DesktopLauncher {
 
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 //        config.setWindowedMode(600, 600 / 3 * 4);
-        config.setWindowedMode(1000, 880);
+        config.setWindowedMode(1920, 1080);
         new Lwjgl3Application(new DioramaGame(), config);
+
     }
 
     private static void packAtlas() {

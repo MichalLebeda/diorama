@@ -2,24 +2,27 @@ package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import javax.xml.soap.Text;
+
 import cz.shroomware.diorama.DioramaGame;
+import cz.shroomware.diorama.SelectedItemIndicator;
 
-public class Hud extends Stage {
-
+public abstract class Hud extends Stage {
     TextureAtlas atlas;
+    SelectedItemIndicator selectedItemIndicator;
 
-    public Hud(DioramaGame game, TextureAtlas atlas) {
+    public Hud(DioramaGame game, TextureAtlas sourceAtlas) {
         super();
-        setDebugAll(true);
+//        setDebugAll(true);
 
         setViewport(new ScreenViewport());
         getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -27,15 +30,25 @@ public class Hud extends Stage {
                 getViewport().getWorldHeight() / 2,
                 0);
 
+        selectedItemIndicator = new SelectedItemIndicator() {
+            @Override
+            public void onSelectedItemRegion(TextureAtlas.AtlasRegion region) {
+                Hud.this.onSelectedItemRegion(region);
+            }
+        };
+
+        addActor(selectedItemIndicator);
+
         VerticalGroup itemGroup = new VerticalGroup();
-
-        for (int i = 0; i < atlas.getRegions().size; i++) {
-            itemGroup.addActor(new Item(game, atlas.getRegions().get(i)));
+        for (int i = 0; i < sourceAtlas.getRegions().size; i++) {
+            itemGroup.addActor(new Item(game, sourceAtlas.getRegions().get(i), selectedItemIndicator));
         }
-
         itemGroup.columnAlign(Align.right);
+        itemGroup.pad(20);
+        itemGroup.space(20);
 
         ScrollPane scrollPane = new ScrollPane(itemGroup);
+        scrollPane.getStyle().background = new TextureRegionDrawable(game.getUiAtlas().findRegion("translucent")); //TODO FIX IN STYLE
         scrollPane.pack();
         scrollPane.setHeight(getViewport().getWorldHeight());
         scrollPane.setPosition(
@@ -43,8 +56,16 @@ public class Hud extends Stage {
                 0);
 
         addActor(scrollPane);
+    }
 
-        addActor(new Image(atlas.findRegion("floor")));
+    public abstract void onSelectedItemRegion(TextureAtlas.AtlasRegion region);
+
+    public TextureRegion getSelectedRegion() {
+        return selectedItemIndicator.getSelectedItemRegion();
+    }
+
+    public boolean hasSelectedRegion() {
+        return selectedItemIndicator.getSelectedItemRegion() != null;
     }
 
     @Override
