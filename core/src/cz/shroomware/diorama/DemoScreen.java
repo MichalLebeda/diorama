@@ -26,7 +26,10 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import cz.shroomware.diorama.ui.Hud;
 
-public class DemoScreen implements Screen, InputProcessor {
+import static cz.shroomware.diorama.DemoScreen.Mode.DELETE;
+import static cz.shroomware.diorama.DemoScreen.Mode.PLACE;
+
+public class DemoScreen extends BaseGameScreen {
     private static final float SCROLL_RATIO = 0.4f;
     private static final float RELATIVE_SHADOW_SIZE = 1.2f;
     private static final int GRID_SIZE = 200;
@@ -47,6 +50,11 @@ public class DemoScreen implements Screen, InputProcessor {
     Decal cursor;
     Hud hud;
     InputMultiplexer inputMultiplexer;
+
+    Mode mode = PLACE;
+    boolean cursorEnabled = true;
+    boolean cursorVisible = true;
+    Vector3 cameraLastDragWorldPos;
 
     DemoScreen(DioramaGame game) {
         initCamera();
@@ -99,13 +107,13 @@ public class DemoScreen implements Screen, InputProcessor {
     public void render(float delta) {
         boolean takingScreenshot = Gdx.input.isKeyJustPressed(Input.Keys.F);
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-//            hud.set TODO:HIDE HUD
+            // hud.set TODO:HIDE HUD
         }
 
         Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT
+                | GL20.GL_DEPTH_BUFFER_BIT);
 
         camera.update();
 
@@ -123,7 +131,13 @@ public class DemoScreen implements Screen, InputProcessor {
             decalBatch.add(decal);
         }
 
-        if (!takingScreenshot) {
+        if (!takingScreenshot && cursorVisible) {
+            if (cursorEnabled) {
+                cursor.setColor(1, 1, 1, 1);
+            } else {
+                cursor.setColor(1, 1, 1, 0.1f);
+            }
+
             if (hud.hasSelectedRegion()) {
                 decalBatch.add(cursor);
             }
@@ -139,10 +153,11 @@ public class DemoScreen implements Screen, InputProcessor {
         }
     }
 
+    // https://github.com/libgdx/libgdx/wiki/Taking-a-Screenshot
     private void saveScreenshot() {
         byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), true);
 
-// This loop makes sure the whole screenshot is opaque and looks exactly like what the user is seeing
+        // This loop makes sure the whole screenshot is opaque and looks exactly like what the user is seeing
         for (int i = 4; i < pixels.length; i += 4) {
             pixels[i - 1] = (byte) 255;
         }
@@ -175,48 +190,6 @@ public class DemoScreen implements Screen, InputProcessor {
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    Vector3 cameraLastDragWorldPos;
-
-    @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //let hud handle this if event occurred on top of menu
         if (screenX >= hud.getMenuScreenPosition().x) {
@@ -238,10 +211,14 @@ public class DemoScreen implements Screen, InputProcessor {
                 return true;
             }
         } else if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (hud.hasSelectedRegion()) {
-                placeObject(cursor);
+            if (mode == PLACE && cursorEnabled) {
+                if (hud.hasSelectedRegion()) {
+                    placeObject(cursor);
 
-                return true;
+                    return true;
+                }
+            } else if (mode == DELETE) {
+
             }
         }
 
@@ -249,21 +226,7 @@ public class DemoScreen implements Screen, InputProcessor {
     }
 
     @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-
-        return false;
-    }
-
-    @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        //let hud handle this if event occurred on top of menu
-        if (screenX >= hud.getMenuScreenPosition().x) {
-            cursor.setColor(0, 0, 0, 0);
-        } else {
-            cursor.setColor(1, 1, 1, 1);
-            moveCursorTo(new Vector3(screenX, screenY, 0));
-        }
-
         if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
             Vector3 intersection;
             Ray ray = camera.getPickRay(screenX, screenY);
@@ -288,21 +251,48 @@ public class DemoScreen implements Screen, InputProcessor {
                 camera.rotateAround(camera.position, camera.direction.cpy().rotate(camera.up, -90), (screenY - lastDragScreenPos.y) * DEGREES_PER_PIXEL);
                 lastDragScreenPos.set(screenX, screenY);
             }
-        } else {
-
         }
 
-        return false;
+        //let hud handle this if event occurred on top of menu
+        if (screenX >= hud.getMenuScreenPosition().x) {
+            disableCursor();
+            return false;
+        } else {
+            // fixes item jitter when moving/rotating camera
+            camera.update();
+            enableCursor();
+            moveCursorTo(new Vector3(screenX, screenY, 0));
+            return true;
+        }
+    }
+
+    private boolean isInBounds(float x, float y) {
+        return (x >= 0 && x <= GRID_SIZE && y >= 0 && y <= GRID_SIZE);
+    }
+
+    private void disableCursor() {
+        cursorEnabled = false;
+    }
+
+    private void enableCursor() {
+        cursorEnabled = true;
+    }
+
+    private void hideCursor() {
+        cursorVisible = false;
+    }
+
+    private void showCursor() {
+        cursorVisible = true;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         //let hud handle this if event occurred on top of menu
         if (screenX >= hud.getMenuScreenPosition().x) {
-            cursor.setColor(0, 0, 0, 0);
+            hideCursor();
         } else {
-            cursor.setColor(1, 1, 1, 1);
-            moveCursorTo(new Vector3(screenX, screenY, 0));
+            showCursor();
         }
 
         moveCursorTo(new Vector3(screenX, screenY, 0));
@@ -324,6 +314,12 @@ public class DemoScreen implements Screen, InputProcessor {
         }
         intersection.y = Utils.round(intersection.y, 1f / 16f);
 
+        if (isInBounds(intersection.x, intersection.y)) {
+            enableCursor();
+        } else {
+            disableCursor();
+        }
+
         cursor.setPosition(intersection);
         cursor.translate(0, 0, cursor.getHeight() / 2);
     }
@@ -337,5 +333,9 @@ public class DemoScreen implements Screen, InputProcessor {
 
         camera.position.add(camera.direction.cpy().nor().scl(-SCROLL_RATIO * amount));//TODO FIX ztratu focusu pri kliknuti na pane
         return true;
+    }
+
+    public enum Mode {
+        PLACE, DELETE
     }
 }

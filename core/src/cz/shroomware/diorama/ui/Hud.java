@@ -7,12 +7,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import javax.xml.soap.Text;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.SelectedItemIndicator;
@@ -39,8 +36,6 @@ public abstract class Hud extends Stage {
             }
         };
 
-        addActor(selectedItemIndicator);
-
         VerticalGroup itemGroup = new VerticalGroup();
         for (int i = 0; i < sourceAtlas.getRegions().size; i++) {
             itemGroup.addActor(new Item(game, sourceAtlas.getRegions().get(i), selectedItemIndicator));
@@ -58,11 +53,17 @@ public abstract class Hud extends Stage {
                 0);
 
         addActor(scrollPane);
+
+        selectedItemIndicator.setPosition(scrollPane.getX() - selectedItemIndicator.getWidth(),
+                getHeight() - selectedItemIndicator.getHeight());
+
+        addActor(selectedItemIndicator);
+
     }
 
-    public Vector3 getMenuScreenPosition(){
+    public Vector3 getMenuScreenPosition() {
         Vector3 position = new Vector3();
-        position.set(scrollPane.getX(),scrollPane.getY(),0);
+        position.set(scrollPane.getX(), scrollPane.getY(), 0);
         return getCamera().project(position);
     }
 
