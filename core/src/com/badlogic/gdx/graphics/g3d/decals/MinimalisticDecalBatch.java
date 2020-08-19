@@ -18,15 +18,21 @@ import com.badlogic.gdx.utils.Disposable;
 
 public class MinimalisticDecalBatch implements Disposable {
     private static final int DEFAULT_SIZE = 1000;
-    public ShaderProgram defaultShader;
+    public ShaderProgram shaderProgram;
     private float[] vertices;
     private Mesh mesh;
     private Array<Decal> decals;
 
+    public MinimalisticDecalBatch(ShaderProgram shaderProgram){
+        initialize(DEFAULT_SIZE);
+        decals = new Array<>();
+        this.shaderProgram = shaderProgram;
+    }
+
     public MinimalisticDecalBatch() {
         initialize(DEFAULT_SIZE);
-        compileShader();
         decals = new Array<>();
+        compileShader();
     }
 
     public void add(Decal decal) {
@@ -48,10 +54,9 @@ public class MinimalisticDecalBatch implements Disposable {
         String vertexShader = Gdx.files.internal("shaders/v.glsl").readString();
         String fragmentShader = Gdx.files.internal("shaders/f.glsl").readString();
 
-        defaultShader = new ShaderProgram(vertexShader, fragmentShader);
-        if (defaultShader.isCompiled() == false)
-            throw new IllegalArgumentException("couldn't compileShader defaultShader: " + defaultShader.getLog());
-
+        shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+        if (!shaderProgram.isCompiled())
+            throw new IllegalArgumentException("couldn't compileShader defaultShader: " + shaderProgram.getLog());
     }
 
     private void clear() {
@@ -67,7 +72,7 @@ public class MinimalisticDecalBatch implements Disposable {
 
     @Override
     public void dispose() {
-        defaultShader.dispose();
+        shaderProgram.dispose();
 
         clear();
         vertices = null;
@@ -78,7 +83,7 @@ public class MinimalisticDecalBatch implements Disposable {
         beforeGroups();
 
 
-        ShaderProgram shaderProgram = defaultShader;
+        ShaderProgram shaderProgram = this.shaderProgram;
 
         shaderProgram.bind();
         shaderProgram.setUniformMatrix("u_projectionViewMatrix", camera.combined);

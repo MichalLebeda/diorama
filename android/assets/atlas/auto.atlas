@@ -1,83 +1,97 @@
 
 auto.png
-size: 2048,512
+size: 256,256
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 baobab
   rotate: false
-  xy: 1290, 394
+  xy: 2, 40
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
+big_rock
+  rotate: false
+  xy: 2, 2
+  size: 12, 14
+  orig: 12, 14
+  offset: 0, 0
+  index: -1
 bush
   rotate: false
-  xy: 22, 26
+  xy: 134, 140
   size: 5, 8
   orig: 5, 8
   offset: 0, 0
   index: -1
 desert_bush
   rotate: false
-  xy: 134, 140
+  xy: 154, 162
   size: 5, 6
   orig: 5, 6
   offset: 0, 0
   index: -1
 desert_tree
   rotate: false
-  xy: 2, 18
+  xy: 2, 20
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 floor
   rotate: false
-  xy: 134, 150
+  xy: 38, 56
   size: 16, 16
   orig: 16, 16
+  offset: 0, 0
+  index: -1
+giraffe
+  rotate: false
+  xy: 134, 172
+  size: 32, 32
+  orig: 32, 32
   offset: 0, 0
   index: -1
 hut
   rotate: false
-  xy: 1290, 374
+  xy: 134, 152
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
+rock
+  rotate: false
+  xy: 38, 44
+  size: 16, 8
+  orig: 16, 8
+  offset: 0, 0
+  index: -1
 shadow
   rotate: false
-  xy: 2, 38
+  xy: 2, 76
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-sky
+small_rock
   rotate: false
-  xy: 2, 170
-  size: 1024, 256
-  orig: 1024, 256
-  offset: 0, 0
-  index: 2
-sky
-  rotate: false
-  xy: 1030, 170
-  size: 256, 256
-  orig: 256, 256
+  xy: 58, 68
+  size: 10, 4
+  orig: 10, 4
   offset: 0, 0
   index: -1
 tree
   rotate: false
-  xy: 1326, 410
+  xy: 170, 188
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 well
   rotate: false
-  xy: 2, 2
-  size: 9, 12
-  orig: 9, 12
+  xy: 22, 27
+  size: 9, 9
+  orig: 9, 9
   offset: 0, 0
   index: -1

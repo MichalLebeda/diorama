@@ -16,6 +16,7 @@ public class DesktopLauncher {
     public static void main(String[] arg) {
 
         packAtlas();
+        packShadowAtlas();
         packUiAtlas();
 
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
@@ -25,10 +26,45 @@ public class DesktopLauncher {
 
     }
 
+    private static void packShadowAtlas() {
+        TexturePacker.Settings settings = new TexturePacker.Settings();
+        settings.maxWidth = 2048;
+        settings.maxHeight = 2048;
+        settings.paddingX = 8;
+        settings.paddingY = 8;
+        settings.silent = true;
+        settings.duplicatePadding = true;
+        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
+        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear;
+        boolean forceUpdate = true;
+
+        OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
+        TexturePacker.process(settings, "../../raw_shadows", "atlas", "shadows");
+        switch (ostype) {
+            case Windows:
+                File atlasFile = new File("atlas\\auto.atlas");
+                if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\raw_shadows\\").lastModified()) {
+                    TexturePacker.process(settings, "..\\..\\raw_shadows\\", "atlas", "shadows");
+                    System.out.println("atlas packed");
+                } else {
+                    System.out.println("nothing to pack");
+                }
+                break;
+            case Linux:
+                atlasFile = new File("atlas/shadows.atlas");
+                if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("../../raw_shadows").lastModified()) {
+                    TexturePacker.process(settings, "../../raw_shadows", "atlas", "shadows");
+                    System.out.println("atlas packed");
+                } else {
+                    System.out.println("nothing to pack");
+                }
+                break;
+        }
+    }
     private static void packAtlas() {
         TexturePacker.Settings settings = new TexturePacker.Settings();
         settings.maxWidth = 2048;
-        settings.maxHeight = 2048 / 2;
+        settings.maxHeight = 2048;
         settings.paddingX = 4;
         settings.paddingY = 4;
         settings.silent = true;
@@ -64,7 +100,7 @@ public class DesktopLauncher {
     private static void packUiAtlas() {
         TexturePacker.Settings settings = new TexturePacker.Settings();
         settings.maxWidth = 2048;
-        settings.maxHeight = 2048 / 2;
+        settings.maxHeight = 2048;
         settings.paddingX = 4;
         settings.paddingY = 4;
         settings.silent = true;

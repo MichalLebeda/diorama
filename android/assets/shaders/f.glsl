@@ -12,5 +12,7 @@ void main()
         discard; //discards transparent pixels
    }
 
+   texel.r = 0.4f;
+
    gl_FragColor = v_color * texture2D(u_texture, v_texCoords);
 }

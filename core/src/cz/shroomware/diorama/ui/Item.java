@@ -30,7 +30,7 @@ public class Item extends HorizontalGroup {
         Drawable drawable = image.getDrawable();
         if (region.getRegionWidth() > region.getRegionHeight()) {
             drawable.setMinWidth(ITEM_SIZE);
-            drawable.setMinHeight((float) region.getRegionHeight() / (float) region.getRegionHeight() * ITEM_SIZE);
+            drawable.setMinHeight((float) region.getRegionHeight() / (float) region.getRegionWidth() * ITEM_SIZE);
         } else {
             drawable.setMinHeight(ITEM_SIZE);
             drawable.setMinWidth((float) region.getRegionWidth() / (float) region.getRegionHeight() * ITEM_SIZE);

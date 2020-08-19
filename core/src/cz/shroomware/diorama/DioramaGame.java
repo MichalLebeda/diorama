@@ -16,6 +16,7 @@ import javax.xml.soap.Text;
 public class DioramaGame extends Game {
     DemoScreen demoScreen;
     TextureAtlas atlas;
+    TextureAtlas shadowsAtlas;
     TextureAtlas uiAtlas;
     Skin skin;
     ShaderProgram dfShader;
@@ -24,6 +25,7 @@ public class DioramaGame extends Game {
     @Override
     public void create() {
         atlas = new TextureAtlas(Gdx.files.internal("atlas/auto.atlas"));
+        shadowsAtlas = new TextureAtlas(Gdx.files.internal("atlas/shadows.atlas"));
         uiAtlas = new TextureAtlas(Gdx.files.internal("atlas/ui.atlas"));
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"), uiAtlas);
 
@@ -55,6 +57,10 @@ public class DioramaGame extends Game {
 
     public TextureAtlas getAtlas(){
         return atlas;
+    }
+
+    public TextureAtlas getShadowsAtlas(){
+        return shadowsAtlas;
     }
 
     public TextureAtlas getUiAtlas(){

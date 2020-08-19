@@ -7,6 +7,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -19,6 +21,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BufferUtils;
+import com.badlogic.gdx.utils.ScreenUtils;
 
 import cz.shroomware.diorama.ui.Hud;
 
@@ -26,10 +30,14 @@ public class DemoScreen implements Screen, InputProcessor {
     private static final float SCROLL_RATIO = 0.4f;
     private static final float RELATIVE_SHADOW_SIZE = 1.2f;
     private static final int GRID_SIZE = 200;
+    private static final float DEGREES_PER_PIXEL = 0.2f;
+    private static final float TRANSLATION_LIMIT = 1;
+
     MinimalisticDecalBatch decalBatch;
     SpriteBatch spriteBatch;
     PerspectiveCamera camera;
     TextureAtlas atlas;
+    TextureAtlas shadowsAtlas;
     TextureRegion cursorRegion;
     TextureRegion floorRegion;
     TextureRegion shadowRegion;
@@ -43,6 +51,7 @@ public class DemoScreen implements Screen, InputProcessor {
     DemoScreen(DioramaGame game) {
         initCamera();
         atlas = game.getAtlas();
+        shadowsAtlas = game.getShadowsAtlas();
         decalBatch = new MinimalisticDecalBatch();
         hud = new Hud(game, atlas) {
             @Override
@@ -63,7 +72,6 @@ public class DemoScreen implements Screen, InputProcessor {
                 sprites.add(sprite);
             }
         }
-
 
         cursor = Decal.newDecal(1, 1, cursorRegion, true);
         cursor.rotateX(90);
@@ -89,6 +97,11 @@ public class DemoScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
+        boolean takingScreenshot = Gdx.input.isKeyJustPressed(Input.Keys.F);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+//            hud.set TODO:HIDE HUD
+        }
+
         Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -104,27 +117,40 @@ public class DemoScreen implements Screen, InputProcessor {
         for (Sprite sprite : sprites) {
             sprite.draw(spriteBatch);
         }
-        if (hud.hasSelectedRegion()) {
-            float width = cursor.getWidth() * RELATIVE_SHADOW_SIZE;
-            spriteBatch.draw(shadowRegion,
-                    cursor.getPosition().x - width / 2,
-                    cursor.getPosition().y - width / 2,
-                    width, width);
-        }
         spriteBatch.end();
 
         for (Decal decal : decals) {
             decalBatch.add(decal);
         }
 
-        if (hud.hasSelectedRegion()) {
-            decalBatch.add(cursor);
+        if (!takingScreenshot) {
+            if (hud.hasSelectedRegion()) {
+                decalBatch.add(cursor);
+            }
         }
 
         decalBatch.render(camera);
 
         hud.act();
-        hud.draw();
+        if (!takingScreenshot) {
+            hud.draw();
+        } else {
+            saveScreenshot();
+        }
+    }
+
+    private void saveScreenshot() {
+        byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), true);
+
+// This loop makes sure the whole screenshot is opaque and looks exactly like what the user is seeing
+        for (int i = 4; i < pixels.length; i += 4) {
+            pixels[i - 1] = (byte) 255;
+        }
+
+        Pixmap pixmap = new Pixmap(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), Pixmap.Format.RGBA8888);
+        BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
+        PixmapIO.writePNG(Gdx.files.external("mypixmap.png"), pixmap);
+        pixmap.dispose();
     }
 
     private void placeObject(Decal source) {
@@ -135,11 +161,10 @@ public class DemoScreen implements Screen, InputProcessor {
         decal.setHeight(source.getHeight());
         decals.add(decal);
 
-        Sprite shadowSprite = new Sprite(shadowRegion);
-        shadowSprite.setSize(decal.getWidth() * RELATIVE_SHADOW_SIZE,
-                decal.getWidth() * RELATIVE_SHADOW_SIZE);
-        shadowSprite.setOriginCenter();
-        shadowSprite.setOriginBasedPosition(decal.getPosition().x, decal.getPosition().y);
+        Sprite shadowSprite = new Sprite(shadowsAtlas.findRegion(((TextureAtlas.AtlasRegion) decal.getTextureRegion()).name));
+        shadowSprite.setSize(decal.getWidth() * 2, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * 2));
+        shadowSprite.setPosition(decal.getPosition().x - shadowSprite.getWidth() / 2, decal.getPosition().y - shadowSprite.getHeight());
+        shadowSprite.setColor(1, 1, 1, 0.8f);
         sprites.add(shadowSprite);
     }
 
@@ -229,16 +254,17 @@ public class DemoScreen implements Screen, InputProcessor {
         return false;
     }
 
-    Vector3 worldPos = new Vector3();
-    float degreesPerPixel = 0.2f;
-    float translationLimit = 12;
-
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        moveCursorTo(new Vector3(screenX, screenY, 0));
+        //let hud handle this if event occurred on top of menu
+        if (screenX >= hud.getMenuScreenPosition().x) {
+            cursor.setColor(0, 0, 0, 0);
+        } else {
+            cursor.setColor(1, 1, 1, 1);
+            moveCursorTo(new Vector3(screenX, screenY, 0));
+        }
 
         if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
-
             Vector3 intersection;
             Ray ray = camera.getPickRay(screenX, screenY);
             intersection = ray.direction.cpy().add(ray.origin);
@@ -251,15 +277,15 @@ public class DemoScreen implements Screen, InputProcessor {
                 transform.z = 0; //TODO: pri dlouhym dragu blbne
 
                 // fix rychlyho posouvani kdyz se klikne daleko
-                if (transform.len() > translationLimit) {//TODO: zkontrolovat
-                    transform.nor().scl(translationLimit);
+                if (transform.len() > TRANSLATION_LIMIT) {//TODO: zkontrolovat
+                    transform.nor().scl(TRANSLATION_LIMIT);
                 }
                 camera.translate(transform);
                 cameraLastDragWorldPos = intersection.add(transform);
                 cameraLastDragWorldPos.z = 0;
             } else {
-                camera.rotateAround(camera.position, Vector3.Z, (screenX - lastDragScreenPos.x) * degreesPerPixel);
-                camera.rotateAround(camera.position, camera.direction.cpy().rotate(camera.up, -90), (screenY - lastDragScreenPos.y) * degreesPerPixel);
+                camera.rotateAround(camera.position, Vector3.Z, (screenX - lastDragScreenPos.x) * DEGREES_PER_PIXEL);
+                camera.rotateAround(camera.position, camera.direction.cpy().rotate(camera.up, -90), (screenY - lastDragScreenPos.y) * DEGREES_PER_PIXEL);
                 lastDragScreenPos.set(screenX, screenY);
             }
         } else {
@@ -271,6 +297,14 @@ public class DemoScreen implements Screen, InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        //let hud handle this if event occurred on top of menu
+        if (screenX >= hud.getMenuScreenPosition().x) {
+            cursor.setColor(0, 0, 0, 0);
+        } else {
+            cursor.setColor(1, 1, 1, 1);
+            moveCursorTo(new Vector3(screenX, screenY, 0));
+        }
+
         moveCursorTo(new Vector3(screenX, screenY, 0));
         return true;
     }
@@ -286,7 +320,6 @@ public class DemoScreen implements Screen, InputProcessor {
         // round to texels
         intersection.x = Utils.round(intersection.x, 1f / 16f);
         if (cursor.getTextureRegion().getRegionWidth() % 2 == 1) {
-
             intersection.x -= 0.5f / 16f;
         }
         intersection.y = Utils.round(intersection.y, 1f / 16f);

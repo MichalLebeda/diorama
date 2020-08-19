@@ -66,7 +66,6 @@ public abstract class Hud extends Stage {
         return getCamera().project(position);
     }
 
-
     public abstract void onSelectedItemRegion(TextureAtlas.AtlasRegion region);
 
     public TextureRegion getSelectedRegion() {
