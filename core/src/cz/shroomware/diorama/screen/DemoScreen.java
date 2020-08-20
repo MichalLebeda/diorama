@@ -1,10 +1,8 @@
-package cz.shroomware.diorama;
+package cz.shroomware.diorama.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -13,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Plane;
@@ -23,53 +20,69 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Date;
+
+import cz.shroomware.diorama.DioramaGame;
+import cz.shroomware.diorama.editor.Cursor;
+import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.GameObject;
+import cz.shroomware.diorama.editor.GameObjectPrototype;
+import cz.shroomware.diorama.editor.GameObjects;
+import cz.shroomware.diorama.editor.History;
 import cz.shroomware.diorama.ui.Hud;
-
-import static cz.shroomware.diorama.DemoScreen.Mode.DELETE;
-import static cz.shroomware.diorama.DemoScreen.Mode.PLACE;
 
 public class DemoScreen extends BaseGameScreen {
     private static final float SCROLL_RATIO = 0.4f;
-    private static final float RELATIVE_SHADOW_SIZE = 1.2f;
     private static final int GRID_SIZE = 200;
     private static final float DEGREES_PER_PIXEL = 0.2f;
-    private static final float TRANSLATION_LIMIT = 1;
+    private static final float TRANSLATION_LIMIT = 3;
+    public static final float PAN_PER_PIXEL = 0.02f;
 
     MinimalisticDecalBatch decalBatch;
     SpriteBatch spriteBatch;
     PerspectiveCamera camera;
     TextureAtlas atlas;
     TextureAtlas shadowsAtlas;
-    TextureRegion cursorRegion;
+    TextureRegion defaultCursorRegion;
     TextureRegion floorRegion;
     TextureRegion shadowRegion;
     Vector2 lastDragScreenPos = new Vector2();
-    Array<Decal> decals = new Array<Decal>();
-    Array<Sprite> sprites = new Array<Sprite>();
-    Decal cursor;
+    Array<GameObjectPrototype> gameObjectPrototypes = new Array<>();
+    Array<Sprite> floorSprites = new Array<>();
+    GameObjects gameObjects;
+    Cursor cursor;
     Hud hud;
     InputMultiplexer inputMultiplexer;
+    DioramaGame game;
 
-    Mode mode = PLACE;
-    boolean cursorEnabled = true;
-    boolean cursorVisible = true;
+    Editor editor;
     Vector3 cameraLastDragWorldPos;
+    boolean takingScreenshot;
 
-    DemoScreen(DioramaGame game) {
-        initCamera();
+    public DemoScreen(DioramaGame game) {
+        this.game = game;
+
+        editor = new Editor();
+        gameObjects = new GameObjects(editor.getHistory());
+
         atlas = game.getAtlas();
-        shadowsAtlas = game.getShadowsAtlas();
-        decalBatch = new MinimalisticDecalBatch();
-        hud = new Hud(game, atlas) {
-            @Override
-            public void onSelectedItemRegion(TextureAtlas.AtlasRegion region) {
-                updateCursor(region);
-            }
-        };
-        cursorRegion = atlas.findRegion("tree");
+        defaultCursorRegion = atlas.findRegion("cursor");
         floorRegion = atlas.findRegion("floor");
         shadowRegion = atlas.findRegion("shadow");
+        shadowsAtlas = game.getShadowsAtlas();
+        decalBatch = new MinimalisticDecalBatch();
+
+        initCamera();
+        loadPrototypes();
+
+        hud = new Hud(game, gameObjectPrototypes, editor) {
+            @Override
+            public void onSelectedItemRegion(GameObjectPrototype prototype) {
+                editor.setMode(Editor.Mode.PLACE);
+            }
+        };
 
         spriteBatch = new SpriteBatch();
         for (int x = 0; x < GRID_SIZE; x++) {
@@ -77,16 +90,32 @@ public class DemoScreen extends BaseGameScreen {
                 Sprite sprite = new Sprite(floorRegion);
                 sprite.setSize(1, 1);
                 sprite.setPosition(x, y);
-                sprites.add(sprite);
+                floorSprites.add(sprite);
             }
         }
 
-        cursor = Decal.newDecal(1, 1, cursorRegion, true);
-        cursor.rotateX(90);
+        cursor = new Cursor(editor, defaultCursorRegion, GRID_SIZE);
 
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(this);
         inputMultiplexer.addProcessor(hud);
+    }
+
+    private void loadPrototypes() {
+        Array<String> blacklist = new Array<>();
+        blacklist.add("cursor");
+        blacklist.add("selector_background");
+
+        Array<TextureAtlas.AtlasRegion> regions = atlas.getRegions();
+        TextureAtlas.AtlasRegion shadowRegion;
+        for (TextureAtlas.AtlasRegion region : regions) {
+            if (blacklist.contains(region.name, false)) {
+                continue;
+            }
+
+            shadowRegion = shadowsAtlas.findRegion(region.name);
+            gameObjectPrototypes.add(new GameObjectPrototype(region, shadowRegion));
+        }
     }
 
     private void initCamera() {
@@ -95,6 +124,8 @@ public class DemoScreen extends BaseGameScreen {
         float width = (float) (height * ratio);
         camera = new PerspectiveCamera(50, width, height);
         camera.position.set(GRID_SIZE / 2.f, -2, 5);
+        camera.near = 0.1f;
+        camera.far = 300;
         camera.lookAt(GRID_SIZE / 2.f, 4, 0);
     }
 
@@ -105,11 +136,6 @@ public class DemoScreen extends BaseGameScreen {
 
     @Override
     public void render(float delta) {
-        boolean takingScreenshot = Gdx.input.isKeyJustPressed(Input.Keys.F);
-        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            // hud.set TODO:HIDE HUD
-        }
-
         Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT
@@ -122,25 +148,17 @@ public class DemoScreen extends BaseGameScreen {
         spriteBatch.end();
 
         spriteBatch.begin();
-        for (Sprite sprite : sprites) {
-            sprite.draw(spriteBatch);
+        for (Sprite floorSprite : floorSprites) {
+            floorSprite.draw(spriteBatch);
         }
+        //TODO zjistit jestli nestaci jeden loop, zalezi jak decalbatch flushuje
+        gameObjects.drawShadows(spriteBatch);
         spriteBatch.end();
 
-        for (Decal decal : decals) {
-            decalBatch.add(decal);
-        }
+        gameObjects.drawObjects(decalBatch);
 
-        if (!takingScreenshot && cursorVisible) {
-            if (cursorEnabled) {
-                cursor.setColor(1, 1, 1, 1);
-            } else {
-                cursor.setColor(1, 1, 1, 0.1f);
-            }
-
-            if (hud.hasSelectedRegion()) {
-                decalBatch.add(cursor);
-            }
+        if (!takingScreenshot) {
+            cursor.draw(decalBatch);
         }
 
         decalBatch.render(camera);
@@ -149,6 +167,7 @@ public class DemoScreen extends BaseGameScreen {
         if (!takingScreenshot) {
             hud.draw();
         } else {
+            takingScreenshot = false;
             saveScreenshot();
         }
     }
@@ -164,39 +183,23 @@ public class DemoScreen extends BaseGameScreen {
 
         Pixmap pixmap = new Pixmap(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), Pixmap.Format.RGBA8888);
         BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
-        PixmapIO.writePNG(Gdx.files.external("mypixmap.png"), pixmap);
+        PixmapIO.writePNG(Gdx.files.external("Pictures/PixelLab-" + new Date(TimeUtils.millis()).toString() + ".png"), pixmap);
         pixmap.dispose();
     }
 
-    private void placeObject(Decal source) {
-        Decal decal = Decal.newDecal(source.getTextureRegion(), true);
-        decal.setPosition(source.getPosition());
-        decal.setRotation(source.getRotation());
-        decal.setWidth(source.getWidth());
-        decal.setHeight(source.getHeight());
-        decals.add(decal);
-
-        Sprite shadowSprite = new Sprite(shadowsAtlas.findRegion(((TextureAtlas.AtlasRegion) decal.getTextureRegion()).name));
-        shadowSprite.setSize(decal.getWidth() * 2, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * 2));
-        shadowSprite.setPosition(decal.getPosition().x - shadowSprite.getWidth() / 2, decal.getPosition().y - shadowSprite.getHeight());
-        shadowSprite.setColor(1, 1, 1, 0.8f);
-        sprites.add(shadowSprite);
-    }
-
-    private void updateCursor(TextureAtlas.AtlasRegion region) {
-        cursor.setTextureRegion(region);
-        cursor.setWidth(region.getRegionWidth() / 16f);
-        cursor.setHeight(region.getRegionHeight() / 16f);
+    private void placeCurrentObjectAtCursorPosition() {
+        gameObjects.add(editor.getCurrentlySelectedPrototype().createAt(cursor.getPosition()));
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //let hud handle this if event occurred on top of menu
-        if (screenX >= hud.getMenuScreenPosition().x) {
+        if (hud.isVisible() && screenX >= hud.getMenuScreenPosition().x) {
             return false;
         }
-        if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
-            lastDragScreenPos.set(screenX, screenY);
+
+        lastDragScreenPos.set(screenX, screenY);
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
 
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                 Vector3 intersection;
@@ -208,17 +211,20 @@ public class DemoScreen extends BaseGameScreen {
 
                 cameraLastDragWorldPos = intersection;
                 cameraLastDragWorldPos.z = 0;
+
                 return true;
-            }
-        } else if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (mode == PLACE && cursorEnabled) {
-                if (hud.hasSelectedRegion()) {
-                    placeObject(cursor);
+            } else if (editor.isMode(Editor.Mode.PLACE)) {
+                if (cursor.isPlacingItemAllowed() && editor.hasSelectedPrototype()) {
+                    placeCurrentObjectAtCursorPosition();
 
                     return true;
                 }
-            } else if (mode == DELETE) {
-
+            } else if (editor.isMode(Editor.Mode.DELETE)) {
+                GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
+                if (gameObject != null) {
+                    gameObjects.remove(gameObject);
+                }
+                return true;
             }
         }
 
@@ -226,15 +232,50 @@ public class DemoScreen extends BaseGameScreen {
     }
 
     @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
-            Vector3 intersection;
-            Ray ray = camera.getPickRay(screenX, screenY);
-            intersection = ray.direction.cpy().add(ray.origin);
-            Intersector.intersectRayPlane(ray,
-                    new Plane(Vector3.Z, Vector3.X),
-                    intersection);
+    public boolean keyDown(int keycode) {
+        switch (keycode) {
+            case Input.Keys.X:
+                editor.setMode(Editor.Mode.DELETE);
+                return true;
+            case Input.Keys.F:
+                takingScreenshot = true;
+                return true;
+            case Input.Keys.ESCAPE:
+                editor.setMode(Editor.Mode.PLACE);
+                return true;
+            case Input.Keys.T:
+                hud.toggle();
+                return true;
+            case Input.Keys.U:
+                editor.getHistory().undo();
+                return true;
+            case Input.Keys.R:
+                editor.getHistory().redo();
+                return true;
+        }
 
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        Vector3 intersection;
+        Ray ray = camera.getPickRay(screenX, screenY);
+        intersection = ray.direction.cpy().add(ray.origin);
+        Intersector.intersectRayPlane(ray,
+                new Plane(Vector3.Z, Vector3.X),
+                intersection);
+
+        if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                camera.translate(Vector3.Z.cpy().scl(Gdx.input.getDeltaY() * PAN_PER_PIXEL).add(
+                        camera.direction.cpy().rotate(camera.up, 90).nor().scl(Gdx.input.getDeltaX() * PAN_PER_PIXEL)));
+            } else {
+                camera.rotateAround(camera.position, Vector3.Z, (screenX - lastDragScreenPos.x) * DEGREES_PER_PIXEL);
+                camera.rotateAround(camera.position, camera.direction.cpy().rotate(camera.up, -90), (screenY - lastDragScreenPos.y) * DEGREES_PER_PIXEL);
+                lastDragScreenPos.set(screenX, screenY);
+            }
+        } else if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                 Vector3 transform = cameraLastDragWorldPos.cpy().sub(intersection);
                 transform.z = 0; //TODO: pri dlouhym dragu blbne
@@ -246,96 +287,62 @@ public class DemoScreen extends BaseGameScreen {
                 camera.translate(transform);
                 cameraLastDragWorldPos = intersection.add(transform);
                 cameraLastDragWorldPos.z = 0;
-            } else {
-                camera.rotateAround(camera.position, Vector3.Z, (screenX - lastDragScreenPos.x) * DEGREES_PER_PIXEL);
-                camera.rotateAround(camera.position, camera.direction.cpy().rotate(camera.up, -90), (screenY - lastDragScreenPos.y) * DEGREES_PER_PIXEL);
-                lastDragScreenPos.set(screenX, screenY);
             }
         }
 
         //let hud handle this if event occurred on top of menu
-        if (screenX >= hud.getMenuScreenPosition().x) {
-            disableCursor();
+        if (hud.isVisible() && screenX >= hud.getMenuScreenPosition().x) {
+            cursor.hide();
             return false;
         } else {
             // fixes item jitter when moving/rotating camera
             camera.update();
-            enableCursor();
+            cursor.show();
             moveCursorTo(new Vector3(screenX, screenY, 0));
             return true;
         }
     }
 
-    private boolean isInBounds(float x, float y) {
-        return (x >= 0 && x <= GRID_SIZE && y >= 0 && y <= GRID_SIZE);
-    }
-
-    private void disableCursor() {
-        cursorEnabled = false;
-    }
-
-    private void enableCursor() {
-        cursorEnabled = true;
-    }
-
-    private void hideCursor() {
-        cursorVisible = false;
-    }
-
-    private void showCursor() {
-        cursorVisible = true;
-    }
-
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         //let hud handle this if event occurred on top of menu
-        if (screenX >= hud.getMenuScreenPosition().x) {
-            hideCursor();
+        if (hud.isVisible() && screenX >= hud.getMenuScreenPosition().x) {
+            cursor.hide();
         } else {
-            showCursor();
+            cursor.show();
         }
 
         moveCursorTo(new Vector3(screenX, screenY, 0));
         return true;
     }
 
-    private void moveCursorTo(Vector3 screenCoords) {
+    public GameObject findDecalByScreenCoordinates(int screenX, int screenY) {
+        Ray ray = camera.getPickRay(screenX, screenY);
+
+        return gameObjects.findIntersectingWithRay(ray);
+    }
+
+    private void moveCursorTo(Vector3 screenCoordinates) {
         Vector3 intersection = new Vector3();
-        Ray ray = camera.getPickRay(screenCoords.x, screenCoords.y);
+        Ray ray = camera.getPickRay(screenCoordinates.x, screenCoordinates.y);
 
         Intersector.intersectRayPlane(ray,
                 new Plane(Vector3.Z, Vector3.X),
                 intersection);
 
-        // round to texels
-        intersection.x = Utils.round(intersection.x, 1f / 16f);
-        if (cursor.getTextureRegion().getRegionWidth() % 2 == 1) {
-            intersection.x -= 0.5f / 16f;
-        }
-        intersection.y = Utils.round(intersection.y, 1f / 16f);
-
-        if (isInBounds(intersection.x, intersection.y)) {
-            enableCursor();
-        } else {
-            disableCursor();
-        }
-
-        cursor.setPosition(intersection);
-        cursor.translate(0, 0, cursor.getHeight() / 2);
+        cursor.moveTo(intersection);
     }
 
     @Override
     public boolean scrolled(int amount) {
         //let hud handle this if event occurred on top of menu
-        if (Gdx.input.getX() >= hud.getMenuScreenPosition().x) {
+        if (hud.isVisible() && Gdx.input.getX() >= hud.getMenuScreenPosition().x) {
             return false;
         }
 
         camera.position.add(camera.direction.cpy().nor().scl(-SCROLL_RATIO * amount));//TODO FIX ztratu focusu pri kliknuti na pane
-        return true;
-    }
+        moveCursorTo(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
-    public enum Mode {
-        PLACE, DELETE
+        return true;
     }
 }

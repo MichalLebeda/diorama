@@ -20,28 +20,35 @@ big_rock
   index: -1
 bush
   rotate: false
-  xy: 94, 34
+  xy: 62, 18
   size: 5, 8
   orig: 5, 8
   offset: 0, 0
   index: -1
-desert_bush
-  rotate: false
-  xy: 55, 20
-  size: 5, 6
-  orig: 5, 6
-  offset: 0, 0
-  index: -1
-desert_tree
+cursor
   rotate: false
   xy: 2, 10
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-floor
+desert_bush
+  rotate: false
+  xy: 94, 24
+  size: 5, 6
+  orig: 5, 6
+  offset: 0, 0
+  index: -1
+desert_tree
   rotate: false
   xy: 74, 46
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+floor
+  rotate: false
+  xy: 22, 10
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -55,16 +62,23 @@ giraffe
   index: -1
 hut
   rotate: false
-  xy: 22, 10
+  xy: 94, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 rock
   rotate: false
-  xy: 74, 34
+  xy: 94, 34
   size: 16, 8
   orig: 16, 8
+  offset: 0, 0
+  index: -1
+selector_background
+  rotate: false
+  xy: 42, 10
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 small_rock
@@ -76,14 +90,14 @@ small_rock
   index: -1
 tree
   rotate: false
-  xy: 94, 46
+  xy: 74, 26
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 well
   rotate: false
-  xy: 42, 17
+  xy: 114, 35
   size: 9, 9
   orig: 9, 9
   offset: 0, 0

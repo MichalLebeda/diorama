@@ -30,13 +30,13 @@ public class DesktopLauncher {
         TexturePacker.Settings settings = new TexturePacker.Settings();
         settings.maxWidth = 2048;
         settings.maxHeight = 2048;
-        settings.paddingX = 8;
-        settings.paddingY = 8;
+        settings.paddingX = 16;
+        settings.paddingY = 16;
         settings.silent = true;
-        settings.duplicatePadding = true;
+        settings.duplicatePadding = false;
         settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear;
-        boolean forceUpdate = true;
+        boolean forceUpdate = false;
 
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
         TexturePacker.process(settings, "../../raw_shadows", "atlas", "shadows");
@@ -71,7 +71,7 @@ public class DesktopLauncher {
         settings.duplicatePadding = true;
         settings.filterMag = Texture.TextureFilter.Nearest;
         settings.filterMin = Texture.TextureFilter.Nearest;
-        boolean forceUpdate = true;
+        boolean forceUpdate = false;
 
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
         TexturePacker.process(settings, "../../raw_assets", "atlas", "auto");
@@ -107,7 +107,7 @@ public class DesktopLauncher {
         settings.duplicatePadding = true;
         settings.filterMag = Texture.TextureFilter.Nearest;
         settings.filterMin = Texture.TextureFilter.Nearest;
-        boolean forceUpdate = true;
+        boolean forceUpdate = false;
 
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
         TexturePacker.process(settings, "../../ui_raw_assets", "atlas", "ui");

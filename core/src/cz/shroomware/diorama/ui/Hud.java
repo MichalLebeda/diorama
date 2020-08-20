@@ -1,25 +1,26 @@
 package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import cz.shroomware.diorama.DioramaGame;
-import cz.shroomware.diorama.SelectedItemIndicator;
+import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.GameObjectPrototype;
 
 public abstract class Hud extends Stage {
-    TextureAtlas atlas;
     SelectedItemIndicator selectedItemIndicator;
     ScrollPane scrollPane;
 
-    public Hud(DioramaGame game, TextureAtlas sourceAtlas) {
+
+    public Hud(DioramaGame game, Array<GameObjectPrototype> prototypes, Editor editor) {
         super();
 //        setDebugAll(true);
 
@@ -29,23 +30,24 @@ public abstract class Hud extends Stage {
                 getViewport().getWorldHeight() / 2,
                 0);
 
-        selectedItemIndicator = new SelectedItemIndicator() {
-            @Override
-            public void onSelectedItemRegion(TextureAtlas.AtlasRegion region) {
-                Hud.this.onSelectedItemRegion(region);
-            }
-        };
+        TextureRegion backgroundRegion = game.getUiAtlas().findRegion("black");
+        selectedItemIndicator = new SelectedItemIndicator(editor, backgroundRegion);
 
         VerticalGroup itemGroup = new VerticalGroup();
-        for (int i = 0; i < sourceAtlas.getRegions().size; i++) {
-            itemGroup.addActor(new Item(game, sourceAtlas.getRegions().get(i), selectedItemIndicator));
+        for (GameObjectPrototype prototype : prototypes) {
+            itemGroup.addActor(new Item(game, editor, prototype) {
+//                @Override
+//                public void onPrototypeSelect(GameObjectPrototype prototype) {
+//                    Hud.this.onSelectedItemRegion(prototype);
+//                }
+            });
         }
+
         itemGroup.columnAlign(Align.right);
         itemGroup.pad(20);
         itemGroup.space(20);
 
-        scrollPane = new ScrollPane(itemGroup);
-        scrollPane.getStyle().background = new TextureRegionDrawable(game.getUiAtlas().findRegion("translucent")); //TODO FIX IN STYLE
+        scrollPane = new ScrollPane(itemGroup, game.getSkin());
         scrollPane.pack();
         scrollPane.setHeight(getViewport().getWorldHeight());
         scrollPane.setPosition(
@@ -54,32 +56,47 @@ public abstract class Hud extends Stage {
 
         addActor(scrollPane);
 
-        selectedItemIndicator.setPosition(scrollPane.getX() - selectedItemIndicator.getWidth(),
-                getHeight() - selectedItemIndicator.getHeight());
+        selectedItemIndicator.setPosition(scrollPane.getX() - selectedItemIndicator.getWidth() - 10,
+                getHeight() - selectedItemIndicator.getHeight() - 10);
 
         addActor(selectedItemIndicator);
 
+        ModeIndicator modeIndicator = new ModeIndicator(game, editor, backgroundRegion, selectedItemIndicator.getX() - 20);
+        modeIndicator.setY(getHeight() - modeIndicator.getHeight() - 10);
+        addActor(modeIndicator);
+    }
+
+    public void hide() {
+        getRoot().setVisible(false);
+    }
+
+    public void show() {
+        getRoot().setVisible(true);
+    }
+
+    public void toggle() {
+        Actor root = getRoot();
+        root.setVisible(!root.isVisible());
+    }
+
+    public boolean isVisible() {
+        return getRoot().isVisible();
+    }
+
+    public Vector3 getMenuStagePosition() {
+        Vector3 position = new Vector3();
+        position.set(scrollPane.getX(), scrollPane.getY(), 0);
+        return position;
     }
 
     public Vector3 getMenuScreenPosition() {
-        Vector3 position = new Vector3();
-        position.set(scrollPane.getX(), scrollPane.getY(), 0);
-        return getCamera().project(position);
+        return getCamera().project(getMenuStagePosition());
     }
 
-    public abstract void onSelectedItemRegion(TextureAtlas.AtlasRegion region);
-
-    public TextureRegion getSelectedRegion() {
-        return selectedItemIndicator.getSelectedItemRegion();
-    }
-
-    public boolean hasSelectedRegion() {
-        return selectedItemIndicator.getSelectedItemRegion() != null;
-    }
+    public abstract void onSelectedItemRegion(GameObjectPrototype prototype);
 
     @Override
     public void dispose() {
         super.dispose();
-        atlas.dispose();
     }
 }

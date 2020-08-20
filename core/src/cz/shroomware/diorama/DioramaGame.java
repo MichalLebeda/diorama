@@ -1,20 +1,15 @@
 package cz.shroomware.diorama;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import javax.xml.soap.Text;
+import cz.shroomware.diorama.screen.DemoScreen;
 
 public class DioramaGame extends Game {
-    DemoScreen demoScreen;
+    cz.shroomware.diorama.screen.DemoScreen demoScreen;
     TextureAtlas atlas;
     TextureAtlas shadowsAtlas;
     TextureAtlas uiAtlas;
