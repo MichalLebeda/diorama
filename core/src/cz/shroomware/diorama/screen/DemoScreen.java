@@ -65,7 +65,7 @@ public class DemoScreen extends BaseGameScreen {
         this.game = game;
 
         editor = new Editor();
-        gameObjects = new GameObjects(editor.getHistory());
+        gameObjects = new GameObjects(editor);
 
         atlas = game.getAtlas();
         defaultCursorRegion = atlas.findRegion("cursor");
@@ -252,6 +252,11 @@ public class DemoScreen extends BaseGameScreen {
             case Input.Keys.R:
                 editor.getHistory().redo();
                 return true;
+            case Input.Keys.S:
+                gameObjects.save();
+                return  true;
+            case Input.Keys.L:
+                gameObjects.load(gameObjectPrototypes);
         }
 
         return false;

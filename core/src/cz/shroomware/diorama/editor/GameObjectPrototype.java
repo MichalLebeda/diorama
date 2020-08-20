@@ -23,7 +23,11 @@ public class GameObjectPrototype {
         return shadowRegion;
     }
 
-    public  GameObject createAt(Vector3 position){
-        return  new GameObject( position, objectRegion,shadowRegion);
+    public GameObject createAt(Vector3 position) {
+        return new GameObject(position, this);
+    }
+
+    public String getName() {
+        return objectRegion.name;
     }
 }

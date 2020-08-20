@@ -1,11 +1,22 @@
 package cz.shroomware.diorama.editor;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Editor {
     protected GameObjectPrototype currentlySelectedPrototype;
     Mode mode = Mode.PLACE;
     History history = new History();
+    FileHandle saveFile;
+
+   public Editor(){
+        saveFile = Gdx.files.local("testsave.dat");
+    }
+
+    public FileHandle getSaveFile() {
+        return saveFile;
+    }
 
     public void setMode(Mode mode) {
         this.mode = mode;

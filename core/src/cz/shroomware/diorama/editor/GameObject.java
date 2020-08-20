@@ -2,31 +2,32 @@ package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
-import java.io.Serializable;
-
-import cz.shroomware.diorama.DioramaGame;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public class GameObject implements Serializable {
+public class GameObject {
+    GameObjectPrototype prototype;
     Decal decal;
     Sprite shadowSprite;
 
-    public GameObject(Vector3 position, TextureRegion decalRegion, TextureRegion shadowRegion) {
+    public GameObject(Vector3 position, GameObjectPrototype prototype) {
+        this.prototype = prototype;
+        TextureRegion decalRegion = prototype.getObjectRegion();
         decal = Decal.newDecal(decalRegion, true);
         decal.setPosition(position);
         decal.setRotationX(90);
         decal.setWidth(decalRegion.getRegionWidth() / PIXELS_PER_METER);
         decal.setHeight(decalRegion.getRegionHeight() / PIXELS_PER_METER);
 
+        TextureRegion shadowRegion = prototype.getShadowRegion();
         if (shadowRegion != null) {
             shadowSprite = new Sprite(shadowRegion);
             shadowSprite.setSize(decal.getWidth() * 2, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * 2));
@@ -54,5 +55,12 @@ public class GameObject implements Serializable {
         if (shadowSprite != null) {
             shadowSprite.draw(spriteBatch);
         }
+    }
+
+    public void save(OutputStream outputStream) throws IOException {
+        outputStream.write((prototype.getObjectRegion().name+" ").getBytes());
+        outputStream.write((decal.getPosition().x+" ").getBytes());
+        outputStream.write((decal.getPosition().y+" ").getBytes());
+        outputStream.write((decal.getPosition().z+"\n").getBytes());
     }
 }
