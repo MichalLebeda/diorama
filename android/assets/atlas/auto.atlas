@@ -1,103 +1,159 @@
 
 auto.png
-size: 128,64
+size: 256,128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 baobab
   rotate: false
-  xy: 2, 30
+  xy: 106, 90
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-big_rock
+big_rock_a
   rotate: false
-  xy: 114, 48
+  xy: 90, 40
+  size: 12, 14
+  orig: 12, 14
+  offset: 0, 0
+  index: -1
+big_rock_b
+  rotate: false
+  xy: 106, 52
+  size: 12, 14
+  orig: 12, 14
+  offset: 0, 0
+  index: -1
+big_rock_c
+  rotate: false
+  xy: 146, 72
   size: 12, 14
   orig: 12, 14
   offset: 0, 0
   index: -1
 bush
   rotate: false
-  xy: 62, 18
+  xy: 106, 40
   size: 5, 8
   orig: 5, 8
   offset: 0, 0
   index: -1
+campfire
+  rotate: false
+  xy: 86, 58
+  size: 16, 64
+  orig: 16, 64
+  offset: 0, 0
+  index: -1
 cursor
   rotate: false
-  xy: 2, 10
+  xy: 2, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 desert_bush
   rotate: false
-  xy: 94, 24
+  xy: 122, 60
   size: 5, 6
   orig: 5, 6
   offset: 0, 0
   index: -1
 desert_tree
   rotate: false
-  xy: 74, 46
+  xy: 106, 70
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 floor
   rotate: false
-  xy: 22, 10
+  xy: 214, 106
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 giraffe
   rotate: false
-  xy: 38, 30
+  xy: 54, 22
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 hut
   rotate: false
-  xy: 94, 46
+  xy: 22, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
+hut_big
+  rotate: false
+  xy: 2, 22
+  size: 48, 32
+  orig: 48, 32
+  offset: 0, 0
+  index: -1
 rock
   rotate: false
-  xy: 94, 34
+  xy: 214, 94
   size: 16, 8
   orig: 16, 8
   offset: 0, 0
   index: -1
 selector_background
   rotate: false
-  xy: 42, 10
+  xy: 126, 70
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 small_rock
   rotate: false
-  xy: 2, 2
+  xy: 90, 32
   size: 10, 4
   orig: 10, 4
   offset: 0, 0
   index: -1
+tepee
+  rotate: false
+  xy: 142, 90
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 tree
   rotate: false
-  xy: 74, 26
+  xy: 234, 106
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
+tree-savanna
+  rotate: false
+  xy: 2, 58
+  size: 80, 64
+  orig: 80, 64
+  offset: 0, 0
+  index: -1
+tree_b
+  rotate: false
+  xy: 42, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+tree_big
+  rotate: false
+  xy: 178, 90
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 well
   rotate: false
-  xy: 114, 35
+  xy: 62, 9
   size: 9, 9
   orig: 9, 9
   offset: 0, 0

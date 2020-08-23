@@ -3,6 +3,8 @@ package cz.shroomware.diorama.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -25,46 +28,46 @@ import com.badlogic.gdx.utils.TimeUtils;
 import java.util.Date;
 
 import cz.shroomware.diorama.DioramaGame;
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Cursor;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.editor.GameObject;
 import cz.shroomware.diorama.editor.GameObjectPrototype;
 import cz.shroomware.diorama.editor.GameObjects;
-import cz.shroomware.diorama.editor.History;
 import cz.shroomware.diorama.ui.Hud;
 
-public class DemoScreen extends BaseGameScreen {
-    private static final float SCROLL_RATIO = 0.4f;
-    private static final int GRID_SIZE = 200;
-    private static final float DEGREES_PER_PIXEL = 0.2f;
-    private static final float TRANSLATION_LIMIT = 3;
-    public static final float PAN_PER_PIXEL = 0.02f;
+public class EditorScreen extends BaseGameScreen {
+    protected static final float PAN_PER_PIXEL = 0.02f;
+    protected static final float SCROLL_RATIO = 0.4f;
+    protected static final int GRID_SIZE = 200;
+    protected static final float DEGREES_PER_PIXEL = 0.2f;
+    protected static final float TRANSLATION_LIMIT = 3;
+    protected static final float MAX_CAM_DIST_FROM_GRID = 8;
+    protected DioramaGame game;
+    protected Editor editor;
+    protected InputMultiplexer inputMultiplexer;
+    protected TextureAtlas atlas;
+    protected TextureAtlas shadowsAtlas;
+    protected TextureRegion defaultCursorRegion;
+    protected TextureRegion floorRegion;
+    protected TextureRegion shadowRegion;
+    protected Array<GameObjectPrototype> gameObjectPrototypes = new Array<>();
+    protected Array<Sprite> floorSprites = new Array<>();
+    protected MinimalisticDecalBatch decalBatch;
+    protected SpriteBatch spriteBatch;
+    protected PerspectiveCamera camera;
+    protected GameObjects gameObjects;
+    protected Cursor cursor;
+    protected Hud hud;
+    protected Vector2 lastDragScreenPos = new Vector2();
+    protected Vector3 cameraLastDragWorldPos;
+    protected boolean takingScreenshot;
+    protected Color backgroundColor;
+    GameObject currentlyHighlightedObject;
 
-    MinimalisticDecalBatch decalBatch;
-    SpriteBatch spriteBatch;
-    PerspectiveCamera camera;
-    TextureAtlas atlas;
-    TextureAtlas shadowsAtlas;
-    TextureRegion defaultCursorRegion;
-    TextureRegion floorRegion;
-    TextureRegion shadowRegion;
-    Vector2 lastDragScreenPos = new Vector2();
-    Array<GameObjectPrototype> gameObjectPrototypes = new Array<>();
-    Array<Sprite> floorSprites = new Array<>();
-    GameObjects gameObjects;
-    Cursor cursor;
-    Hud hud;
-    InputMultiplexer inputMultiplexer;
-    DioramaGame game;
-
-    Editor editor;
-    Vector3 cameraLastDragWorldPos;
-    boolean takingScreenshot;
-
-    public DemoScreen(DioramaGame game) {
+    public EditorScreen(DioramaGame game, String filename) {
         this.game = game;
-
-        editor = new Editor();
+        editor = new Editor(filename);
         gameObjects = new GameObjects(editor);
 
         atlas = game.getAtlas();
@@ -74,8 +77,18 @@ public class DemoScreen extends BaseGameScreen {
         shadowsAtlas = game.getShadowsAtlas();
         decalBatch = new MinimalisticDecalBatch();
 
+        // Use dominant floor color as background
+        Pixmap pixmap = Utils.extractPixmapFromTextureRegion(floorRegion);
+        backgroundColor = Utils.getDominantColor(pixmap);
+//        backgroundColor.mul(0.9f);
+        pixmap.dispose();
+
         initCamera();
         loadPrototypes();
+
+        if (editor.getSaveFileHandle().exists()) {
+            gameObjects.load(gameObjectPrototypes);
+        }
 
         hud = new Hud(game, gameObjectPrototypes, editor) {
             @Override
@@ -136,10 +149,11 @@ public class DemoScreen extends BaseGameScreen {
 
     @Override
     public void render(float delta) {
-        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+//        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT
                 | GL20.GL_DEPTH_BUFFER_BIT);
+
 
         camera.update();
 
@@ -157,7 +171,11 @@ public class DemoScreen extends BaseGameScreen {
 
         gameObjects.drawObjects(decalBatch);
 
-        if (!takingScreenshot) {
+        if (editor.getMode() == Editor.Mode.DELETE) {
+            selectObjectUnderCursor(Gdx.input.getX(), Gdx.input.getY());
+        }
+
+        if (!takingScreenshot && !(editor.getMode() == Editor.Mode.DELETE && currentlyHighlightedObject != null)) {
             cursor.draw(decalBatch);
         }
 
@@ -169,7 +187,19 @@ public class DemoScreen extends BaseGameScreen {
         } else {
             takingScreenshot = false;
             saveScreenshot();
+            hud.showMessage("screenshot saved");
         }
+
+        if (currentlyHighlightedObject != null) {
+            currentlyHighlightedObject.setSelected(false);
+            currentlyHighlightedObject = null;
+        }
+    }
+
+    protected void clampCameraPos(Camera camera) {
+        camera.position.x = MathUtils.clamp(camera.position.x, -MAX_CAM_DIST_FROM_GRID, GRID_SIZE + MAX_CAM_DIST_FROM_GRID);
+        camera.position.y = MathUtils.clamp(camera.position.y, -MAX_CAM_DIST_FROM_GRID, GRID_SIZE + MAX_CAM_DIST_FROM_GRID);
+        camera.position.z = MathUtils.clamp(camera.position.z, 0.4f, 20);
     }
 
     // https://github.com/libgdx/libgdx/wiki/Taking-a-Screenshot
@@ -189,6 +219,7 @@ public class DemoScreen extends BaseGameScreen {
 
     private void placeCurrentObjectAtCursorPosition() {
         gameObjects.add(editor.getCurrentlySelectedPrototype().createAt(cursor.getPosition()));
+        hud.showMessage("add " + editor.getCurrentlySelectedPrototype().getName());
     }
 
     @Override
@@ -223,6 +254,7 @@ public class DemoScreen extends BaseGameScreen {
                 GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
                 if (gameObject != null) {
                     gameObjects.remove(gameObject);
+                    hud.showMessage("del " + gameObject.getName());
                 }
                 return true;
             }
@@ -247,16 +279,34 @@ public class DemoScreen extends BaseGameScreen {
                 hud.toggle();
                 return true;
             case Input.Keys.U:
-                editor.getHistory().undo();
+                String undoText = editor.getHistory().undo();
+                if (undoText != null) {
+                    hud.showMessage("undo: " + undoText);
+                }else {
+                    hud.showMessage("no more steps to undo");
+                }
                 return true;
             case Input.Keys.R:
-                editor.getHistory().redo();
+                String redoText = editor.getHistory().redo();
+                if (redoText != null) {
+                    hud.showMessage("redo: " + redoText);
+                }else{
+                    hud.showMessage("no more steps to redo");
+                }
                 return true;
             case Input.Keys.S:
-                gameObjects.save();
-                return  true;
+                if (gameObjects.save()) {
+                    hud.showMessage("saved as " + editor.getFilename());
+                }else{
+                    hud.showMessage("FAILED to saved as " + editor.getFilename());
+                }
+                return true;
             case Input.Keys.L:
-                gameObjects.load(gameObjectPrototypes);
+                if (gameObjects.load(gameObjectPrototypes)) {
+                    hud.showMessage("loaded " + editor.getFilename());
+                } else {
+                    hud.showMessage("FAILED to load " + editor.getFilename());
+                }
         }
 
         return false;
@@ -275,6 +325,7 @@ public class DemoScreen extends BaseGameScreen {
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                 camera.translate(Vector3.Z.cpy().scl(Gdx.input.getDeltaY() * PAN_PER_PIXEL).add(
                         camera.direction.cpy().rotate(camera.up, 90).nor().scl(Gdx.input.getDeltaX() * PAN_PER_PIXEL)));
+                clampCameraPos(camera);
             } else {
                 camera.rotateAround(camera.position, Vector3.Z, (screenX - lastDragScreenPos.x) * DEGREES_PER_PIXEL);
                 camera.rotateAround(camera.position, camera.direction.cpy().rotate(camera.up, -90), (screenY - lastDragScreenPos.y) * DEGREES_PER_PIXEL);
@@ -290,6 +341,8 @@ public class DemoScreen extends BaseGameScreen {
                     transform.nor().scl(TRANSLATION_LIMIT);
                 }
                 camera.translate(transform);
+                clampCameraPos(camera);
+
                 cameraLastDragWorldPos = intersection.add(transform);
                 cameraLastDragWorldPos.z = 0;
             }
@@ -321,6 +374,18 @@ public class DemoScreen extends BaseGameScreen {
         return true;
     }
 
+    protected void selectObjectUnderCursor(int screenX, int screenY) {
+        if (currentlyHighlightedObject != null) {
+            currentlyHighlightedObject.setSelected(false);
+        }
+
+        currentlyHighlightedObject = findDecalByScreenCoordinates(screenX, screenY);
+
+        if (currentlyHighlightedObject != null) {
+            currentlyHighlightedObject.setSelected(true);
+        }
+    }
+
     public GameObject findDecalByScreenCoordinates(int screenX, int screenY) {
         Ray ray = camera.getPickRay(screenX, screenY);
 
@@ -346,8 +411,9 @@ public class DemoScreen extends BaseGameScreen {
         }
 
         camera.position.add(camera.direction.cpy().nor().scl(-SCROLL_RATIO * amount));//TODO FIX ztratu focusu pri kliknuti na pane
-        moveCursorTo(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        clampCameraPos(camera);
 
+        moveCursorTo(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
         return true;
     }
 }

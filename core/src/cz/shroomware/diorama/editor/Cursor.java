@@ -21,8 +21,8 @@ public class Cursor {
         this.defaultRegion = defaultRegion;
         this.worldSize = worldSize;
         decal = Decal.newDecal(defaultRegion, true);
-        decal.setWidth(1);
-        decal.setHeight(1);
+        decal.setWidth(defaultRegion.getRegionWidth()/16f);
+        decal.setHeight(defaultRegion.getRegionHeight()/16f);
         decal.rotateX(90);
     }
 
@@ -66,7 +66,7 @@ public class Cursor {
         // round to texels
         worldPos.x = Utils.round(worldPos.x, 1f / 16f);
         if (decal.getTextureRegion().getRegionWidth() % 2 == 1) {
-            worldPos.x -= 0.5f / 16f;
+            worldPos.x += 0.5f / 16f;
         }
         worldPos.y = Utils.round(worldPos.y, 1f / 16f);
 

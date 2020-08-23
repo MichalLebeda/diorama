@@ -4,22 +4,31 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import cz.shroomware.diorama.Utils;
+
 public class Editor {
     protected GameObjectPrototype currentlySelectedPrototype;
     Mode mode = Mode.PLACE;
     History history = new History();
-    FileHandle saveFile;
+    String filename;
 
-   public Editor(){
-        saveFile = Gdx.files.local("testsave.dat");
+    public Editor(String filename) {
+        if(filename==null){
+            throw new NullPointerException();
+        }
+        this.filename = filename;
     }
 
-    public FileHandle getSaveFile() {
-        return saveFile;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    public FileHandle getSaveFileHandle() {
+        return Gdx.files.external(Utils.PROJECT_FOLDER + filename);
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     public GameObjectPrototype getCurrentlySelectedPrototype() {
@@ -31,10 +40,6 @@ public class Editor {
         mode = Mode.PLACE;
     }
 
-    public enum Mode {
-        PLACE, DELETE
-    }
-
     public History getHistory() {
         return history;
     }
@@ -43,19 +48,27 @@ public class Editor {
         return mode;
     }
 
-    public boolean isMode(Mode mode){
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
+    public boolean isMode(Mode mode) {
         return this.mode == mode;
     }
 
-    public boolean hasSelectedPrototype(){
+    public boolean hasSelectedPrototype() {
         return currentlySelectedPrototype != null;
     }
 
-    public TextureRegion getPrototypeObjectRegion(){
-       if(currentlySelectedPrototype!=null) {
-           return currentlySelectedPrototype.objectRegion;
-       }
+    public TextureRegion getPrototypeObjectRegion() {
+        if (currentlySelectedPrototype != null) {
+            return currentlySelectedPrototype.objectRegion;
+        }
 
-       return null;
+        return null;
+    }
+
+    public enum Mode {
+        PLACE, DELETE
     }
 }

@@ -24,22 +24,30 @@ public class History {
         Gdx.app.error("added record", "curr index " + actionIndex + " size " + historyActions.size);
     }
 
-    public void redo() {
+    public String redo() {
         if (actionIndex < historyActions.size - 1) {
             actionIndex++;
             HistoryAction historyAction = historyActions.get(actionIndex);
             historyAction.redo();
             Gdx.app.error("redo", "curr index " + actionIndex + " size " + historyActions.size);
+
+            return historyAction.getText();
         }
+
+        return null;
     }
 
-    public void undo() {
+    public String undo() {
         if (actionIndex >= 0) {
             HistoryAction actionToUndo = historyActions.get(actionIndex);
             actionToUndo.undo();
             actionIndex--;
             Gdx.app.error("undo", "curr index " + actionIndex + " size " + historyActions.size);
+
+            return actionToUndo.getText();
         }
+
+        return null;
     }
 
 }

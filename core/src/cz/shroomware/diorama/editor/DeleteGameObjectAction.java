@@ -18,4 +18,9 @@ public class DeleteGameObjectAction implements HistoryAction {
     public void redo() {
         gameObjects.removeNoHistory(object);
     }
+
+    @Override
+    public String getText() {
+        return "del " + object.getName();
+    }
 }

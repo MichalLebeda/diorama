@@ -9,8 +9,8 @@ import cz.shroomware.diorama.editor.Editor;
 public class ModeIndicator extends LeftToBackgroundLabel {
     Editor editor;
 
-    public ModeIndicator(DioramaGame game, Editor editor, TextureRegion textureBackgroundRegion, float alignLeftTo) {
-        super("error", game, textureBackgroundRegion, alignLeftTo);
+    public ModeIndicator(DioramaGame game, Editor editor , float alignLeftTo) {
+        super("error", game, alignLeftTo);
         this.editor = editor;
         setText(getModeText());
     }

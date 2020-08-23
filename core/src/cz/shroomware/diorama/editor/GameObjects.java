@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.editor;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
@@ -14,6 +15,7 @@ import java.io.OutputStream;
 public class GameObjects {
     protected Editor editor;
     protected Array<GameObject> gameObjects = new Array<>();
+    protected boolean onGoingSave = false;
 
     public GameObjects(Editor editor) {
         this.editor = editor;
@@ -64,8 +66,8 @@ public class GameObjects {
         return null;
     }
 
-    public void save() {
-        OutputStream outputStream = editor.getSaveFile().write(false);
+    public boolean save() {
+        OutputStream outputStream = editor.getSaveFileHandle().write(false);
         try {
             for (GameObject object : gameObjects) {
                 object.save(outputStream);
@@ -75,29 +77,38 @@ public class GameObjects {
             outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+
+        return true;
     }
 
-    public void load(Array<GameObjectPrototype> prototypes) {
-        gameObjects.clear();
+    public boolean load(Array<GameObjectPrototype> prototypes) {
+        if(editor.getSaveFileHandle().exists()){
+            gameObjects.clear();
 
-        String objectData = editor.getSaveFile().readString();
-        String[] objectLines = objectData.split("\n");
+            String objectData = editor.getSaveFileHandle().readString();
+            String[] objectLines = objectData.split("\n");
 
-        Vector3 position = new Vector3();
-        for (String objectLine : objectLines) {
-            String[] atributes = objectLine.split(" ");
+            Vector3 position = new Vector3();
+            for (String objectLine : objectLines) {
+                String[] attributes = objectLine.split(" ");
 
-            position.set(
-                    Float.parseFloat(atributes[1]),
-                    Float.parseFloat(atributes[2]),
-                    Float.parseFloat(atributes[3]));
+                position.set(
+                        Float.parseFloat(attributes[1]),
+                        Float.parseFloat(attributes[2]),
+                        Float.parseFloat(attributes[3]));
 
-            for (GameObjectPrototype prototype : prototypes) {
-                if (atributes[0].equals(prototype.getName())) {
-                    addNoHistory(prototype.createAt(position));
+                for (GameObjectPrototype prototype : prototypes) {
+                    if (attributes[0].equals(prototype.getName())) {
+                        addNoHistory(prototype.createAt(position));
+                    }
                 }
             }
+
+            return true;
         }
+
+        return false;
     }
 }

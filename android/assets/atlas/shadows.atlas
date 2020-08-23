@@ -6,12 +6,26 @@ filter: MipMapLinearLinear,MipMapLinearLinear
 repeat: none
 baobab
   rotate: false
+  xy: 16, 1582
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+big_rock_a
+  rotate: false
   xy: 16, 1321
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-big_rock
+big_rock_b
+  rotate: false
+  xy: 544, 1582
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+big_rock_c
   rotate: false
   xy: 16, 1060
   size: 512, 245
@@ -21,6 +35,13 @@ big_rock
 bush
   rotate: false
   xy: 544, 1321
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+campfire
+  rotate: false
+  xy: 1072, 1582
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
@@ -60,37 +81,72 @@ hut
   orig: 512, 245
   offset: 0, 0
   index: -1
-rock
+hut_big
   rotate: false
   xy: 1072, 1060
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-shadow
+rock
   rotate: false
   xy: 16, 277
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-small_rock
+shadow
   rotate: false
   xy: 544, 538
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-tree
+small_rock
   rotate: false
   xy: 1072, 799
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-well
+tepee
   rotate: false
   xy: 16, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree
+  rotate: false
+  xy: 544, 277
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree-savanna
+  rotate: false
+  xy: 1072, 538
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_b
+  rotate: false
+  xy: 544, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_big
+  rotate: false
+  xy: 1072, 277
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+well
+  rotate: false
+  xy: 1072, 16
   size: 512, 245
   orig: 512, 245
   offset: 0, 0

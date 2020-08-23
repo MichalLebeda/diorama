@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.editor;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,11 +13,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
+import static java.lang.System.currentTimeMillis;
 
 public class GameObject {
     GameObjectPrototype prototype;
     Decal decal;
     Sprite shadowSprite;
+    boolean selected = false;
 
     public GameObject(Vector3 position, GameObjectPrototype prototype) {
         this.prototype = prototype;
@@ -58,9 +61,26 @@ public class GameObject {
     }
 
     public void save(OutputStream outputStream) throws IOException {
-        outputStream.write((prototype.getObjectRegion().name+" ").getBytes());
-        outputStream.write((decal.getPosition().x+" ").getBytes());
-        outputStream.write((decal.getPosition().y+" ").getBytes());
-        outputStream.write((decal.getPosition().z+"\n").getBytes());
+        outputStream.write((prototype.getObjectRegion().name + " ").getBytes());
+        outputStream.write((decal.getPosition().x + " ").getBytes());
+        outputStream.write((decal.getPosition().y + " ").getBytes());
+        outputStream.write((decal.getPosition().z + "\n").getBytes());
+    }
+
+    public Vector3 getPosition() {
+        return decal.getPosition();
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+        if(selected){
+            decal.setColor(0.5f,0.5f,0.5f,1);
+        }else {
+            decal.setColor(Color.WHITE);
+        }
+    }
+
+    public String getName(){
+        return prototype.getName();
     }
 }

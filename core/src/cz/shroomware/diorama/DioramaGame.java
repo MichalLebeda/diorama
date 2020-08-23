@@ -3,16 +3,19 @@ package cz.shroomware.diorama;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import cz.shroomware.diorama.screen.DemoScreen;
+import cz.shroomware.diorama.editor.ProjectSelectionScreen;
+import cz.shroomware.diorama.screen.EditorScreen;
 
 public class DioramaGame extends Game {
-    cz.shroomware.diorama.screen.DemoScreen demoScreen;
+    EditorScreen editorScreen;
     TextureAtlas atlas;
     TextureAtlas shadowsAtlas;
     TextureAtlas uiAtlas;
+    TextureRegion darkBackground;
     Skin skin;
     ShaderProgram dfShader;
     ShaderProgram decalShader;
@@ -22,7 +25,9 @@ public class DioramaGame extends Game {
         atlas = new TextureAtlas(Gdx.files.internal("atlas/auto.atlas"));
         shadowsAtlas = new TextureAtlas(Gdx.files.internal("atlas/shadows.atlas"));
         uiAtlas = new TextureAtlas(Gdx.files.internal("atlas/ui.atlas"));
+        darkBackground = uiAtlas.findRegion("black");
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"), uiAtlas);
+        skin.getFont("default-font").getData().setScale(0.32f);
 
         dfShader = new ShaderProgram(Gdx.files.internal("shaders/font.vert"), Gdx.files.internal("shaders/font.frag"));
         if (!dfShader.isCompiled()) {
@@ -34,8 +39,16 @@ public class DioramaGame extends Game {
             Gdx.app.error("decalShader", "compilation failed:\n" + dfShader.getLog());
         }
 
-        demoScreen = new DemoScreen(this);
-        setScreen(demoScreen);
+        setScreen(new ProjectSelectionScreen(this));
+    }
+
+    public  void openEditor(String filename){
+        editorScreen = new EditorScreen(this,filename);
+        setScreen(editorScreen);
+    }
+
+    public TextureRegion getDarkBackground(){
+        return darkBackground;
     }
 
     public Skin getSkin() {
@@ -50,20 +63,22 @@ public class DioramaGame extends Game {
         return decalShader;
     }
 
-    public TextureAtlas getAtlas(){
+    public TextureAtlas getAtlas() {
         return atlas;
     }
 
-    public TextureAtlas getShadowsAtlas(){
+    public TextureAtlas getShadowsAtlas() {
         return shadowsAtlas;
     }
 
-    public TextureAtlas getUiAtlas(){
+    public TextureAtlas getUiAtlas() {
         return uiAtlas;
     }
 
     @Override
     public void dispose() {
-        demoScreen.dispose();
+        if(editorScreen!=null){
+            editorScreen.dispose();
+        }
     }
 }

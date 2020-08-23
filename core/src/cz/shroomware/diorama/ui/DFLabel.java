@@ -12,6 +12,8 @@ public class DFLabel extends Label {
     public DFLabel(CharSequence text, DioramaGame game) {
         super(text, game.getSkin());
         dfShader = game.getDFShader();
+        setFontScale(0.32f);
+        pack();
     }
 
     @Override

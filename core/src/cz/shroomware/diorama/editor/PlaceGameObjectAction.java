@@ -20,4 +20,9 @@ public class PlaceGameObjectAction implements HistoryAction {
     public void redo() {
         gameObjects.addNoHistory(object);
     }
+
+    @Override
+    public String getText() {
+        return "add "+object.getName();
+    }
 }

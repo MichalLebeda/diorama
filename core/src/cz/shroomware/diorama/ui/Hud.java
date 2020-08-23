@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.Align;
@@ -18,10 +19,12 @@ import cz.shroomware.diorama.editor.GameObjectPrototype;
 public abstract class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
     ScrollPane scrollPane;
-
+    DioramaGame game;
+    LeftToBackgroundLabel saveFileLabel;
 
     public Hud(DioramaGame game, Array<GameObjectPrototype> prototypes, Editor editor) {
         super();
+        this.game = game;
 //        setDebugAll(true);
 
         setViewport(new ScreenViewport());
@@ -30,17 +33,11 @@ public abstract class Hud extends Stage {
                 getViewport().getWorldHeight() / 2,
                 0);
 
-        TextureRegion backgroundRegion = game.getUiAtlas().findRegion("black");
-        selectedItemIndicator = new SelectedItemIndicator(editor, backgroundRegion);
+        selectedItemIndicator = new SelectedItemIndicator(editor, game.getDarkBackground());
 
         VerticalGroup itemGroup = new VerticalGroup();
         for (GameObjectPrototype prototype : prototypes) {
-            itemGroup.addActor(new Item(game, editor, prototype) {
-//                @Override
-//                public void onPrototypeSelect(GameObjectPrototype prototype) {
-//                    Hud.this.onSelectedItemRegion(prototype);
-//                }
-            });
+            itemGroup.addActor(new Item(game, editor, prototype));
         }
 
         itemGroup.columnAlign(Align.right);
@@ -61,9 +58,42 @@ public abstract class Hud extends Stage {
 
         addActor(selectedItemIndicator);
 
-        ModeIndicator modeIndicator = new ModeIndicator(game, editor, backgroundRegion, selectedItemIndicator.getX() - 20);
-        modeIndicator.setY(getHeight() - modeIndicator.getHeight() - 10);
+        ModeIndicator modeIndicator = new ModeIndicator(
+                game,
+                editor,
+                selectedItemIndicator.getX() - 10);
+        modeIndicator.setY(getHeight() - modeIndicator.getHeightWithPadding() - 10);
         addActor(modeIndicator);
+
+        saveFileLabel = new LeftToBackgroundLabel(
+                editor.getFilename(),
+                game,
+                selectedItemIndicator.getX() - 10);
+
+        saveFileLabel.setPosition(
+                10,
+                selectedItemIndicator.getY()
+                        + selectedItemIndicator.getHeight()
+                        - saveFileLabel.getHeightWithPadding());
+        addActor(saveFileLabel);
+
+        messages = new Messages(game);
+        messages.setWidth(400);
+//        messages.setHeight(200);
+
+        messages.setPosition(0,0);
+        addActor(messages);
+    }
+
+    Messages messages;
+
+    public void showMessage(String text){
+        messages.showMessage(text);
+    }
+
+    @Override
+    public void draw() {
+        super.draw();
     }
 
     public void hide() {

@@ -20,8 +20,8 @@ public class DesktopLauncher {
         packUiAtlas();
 
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-//        config.setWindowedMode(600, 600 / 3 * 4);
-        config.setWindowedMode(1920, 1080);
+        config.setWindowedMode(1200, 880);
+//        config.setWindowedMode(1920, 1080);
         new Lwjgl3Application(new DioramaGame(), config);
 
     }
