@@ -28,6 +28,7 @@ public class DioramaGame extends Game {
         darkBackground = uiAtlas.findRegion("black");
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"), uiAtlas);
         skin.getFont("default-font").getData().setScale(0.32f);
+        skin.getFont("default-font").setUseIntegerPositions(false);
 
         dfShader = new ShaderProgram(Gdx.files.internal("shaders/font.vert"), Gdx.files.internal("shaders/font.frag"));
         if (!dfShader.isCompiled()) {

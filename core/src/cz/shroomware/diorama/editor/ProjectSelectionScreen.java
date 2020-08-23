@@ -52,6 +52,7 @@ public class ProjectSelectionScreen implements Screen {
         }
 
         verticalGroup.columnAlign(Align.left);
+        verticalGroup.align(Align.topLeft);
         verticalGroup.pad(20);
         verticalGroup.space(20);
 
