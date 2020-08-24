@@ -1,5 +1,7 @@
 package cz.shroomware.diorama;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
@@ -9,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Utils {
+    public static final String DARK_BACKGROUND_NAME = "dark-background";
+
     public static final float PIXELS_PER_METER = 16f;
 
     public static final String PROJECT_FOLDER = "Documents/PixelLab/";
@@ -51,7 +55,7 @@ public class Utils {
                     Integer occurrence = occurrences.get(pixel);
                     //TODO: could be done better but looks clean so...
                     occurrence++;
-                    occurrences.put(pixel,occurrence);
+                    occurrences.put(pixel, occurrence);
                 } else {
                     occurrences.put(pixel, 1);
                 }
@@ -61,11 +65,15 @@ public class Utils {
         // Pick color with most occurrences
         Map.Entry<Integer, Integer> max = null;
         for (Map.Entry<Integer, Integer> entry : occurrences.entrySet()) {
-            if (max == null ||  entry.getValue() > max.getValue()) {
+            if (max == null || entry.getValue() > max.getValue()) {
                 max = entry;
             }
         }
 
         return new Color(max.getKey());
+    }
+
+    public static FileHandle getFileHandle(String filename) {
+        return Gdx.files.external(Utils.PROJECT_FOLDER + filename);
     }
 }

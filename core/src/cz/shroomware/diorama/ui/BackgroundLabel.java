@@ -1,20 +1,25 @@
 package cz.shroomware.diorama.ui;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Null;
 
 import cz.shroomware.diorama.DioramaGame;
 
+import static cz.shroomware.diorama.Utils.DARK_BACKGROUND_NAME;
+
 public class BackgroundLabel extends DFLabel {
-    private static final float PAD = 10;
-    protected TextureRegion textureBackgroundRegion;
+    private static final float PAD = 20;
+
+    protected Drawable background;
 
     public BackgroundLabel(CharSequence text, DioramaGame game) {
         super(text, game);
-        this.textureBackgroundRegion = game.getDarkBackground();
+        background = game.getSkin().getDrawable(DARK_BACKGROUND_NAME);
     }
 
     public float getXWithPadding() {
@@ -61,21 +66,18 @@ public class BackgroundLabel extends DFLabel {
     }
 
     @Override
-    public Actor hit(float x, float y, boolean touchable) {
+    public @Null
+    Actor hit(float x, float y, boolean touchable) {
         if (touchable && this.getTouchable() != Touchable.enabled) return null;
         if (!isVisible()) return null;
-        return x >= -getPad() && x < getWidth() + 2 * getPad() && y >= -getPad() && y < getHeight() + 2 * getPad() ? this : null;
+        return x >= -PAD && x < getWidth() + PAD && y >= -PAD && y < getHeight() + PAD ? this : null;
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        batch.setColor(getColor());
-        batch.draw(
-                textureBackgroundRegion,
-                getX() - PAD,
-                getY() - PAD,
-                getWidth() + 2 * PAD,
-                getHeight() + 2 * PAD);
+        Color color = getColor();
+        batch.setColor(color.r, color.g, color.b, color.a);
+        background.draw(batch, getXWithPadding(), getYWithPadding(), getWidthWithPadding(), getHeightWithPadding());
         super.draw(batch, parentAlpha);
     }
 }

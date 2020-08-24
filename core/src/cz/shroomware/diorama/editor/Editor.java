@@ -23,10 +23,6 @@ public class Editor {
         return filename;
     }
 
-    public FileHandle getSaveFileHandle() {
-        return Gdx.files.external(Utils.PROJECT_FOLDER + filename);
-    }
-
     public void setFilename(String filename) {
         this.filename = filename;
     }

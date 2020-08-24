@@ -7,11 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.ProjectSelectionScreen;
 
 public class FilenameDialog extends Dialog {
     TextField textField;
 
-    public FilenameDialog(final DioramaGame game) {
+    public FilenameDialog(final DioramaGame game, final ProjectSelectionScreen projectSelectionScreen) {
         super("", game.getSkin());
         getTitleTable().setVisible(false);
         getContentTable().add(new DFLabel("New Project Name:", game));
@@ -34,6 +35,8 @@ public class FilenameDialog extends Dialog {
             public void clicked(InputEvent event, float x, float y) {
                 if (textField.getText().length() != 0) {
                     game.openEditor(textField.getText());
+                    hide();
+                    remove();
                 }
             }
         });

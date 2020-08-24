@@ -63,7 +63,9 @@ public class EditorScreen extends BaseGameScreen {
     protected Vector3 cameraLastDragWorldPos;
     protected boolean takingScreenshot;
     protected Color backgroundColor;
-    GameObject currentlyHighlightedObject;
+    protected GameObject currentlyHighlightedObject;
+    protected boolean showAddRemoveMessages = false;
+
 
     public EditorScreen(DioramaGame game, String filename) {
         this.game = game;
@@ -86,9 +88,7 @@ public class EditorScreen extends BaseGameScreen {
         initCamera();
         loadPrototypes();
 
-        if (editor.getSaveFileHandle().exists()) {
-            gameObjects.load(gameObjectPrototypes);
-        }
+        gameObjects.loadIfExists(gameObjectPrototypes);
 
         hud = new Hud(game, gameObjectPrototypes, editor) {
             @Override
@@ -149,7 +149,6 @@ public class EditorScreen extends BaseGameScreen {
 
     @Override
     public void render(float delta) {
-//        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT
                 | GL20.GL_DEPTH_BUFFER_BIT);
@@ -181,13 +180,14 @@ public class EditorScreen extends BaseGameScreen {
 
         decalBatch.render(camera);
 
+        hud.setDirty(gameObjects.isDirty());
         hud.act();
         if (!takingScreenshot) {
             hud.draw();
         } else {
             takingScreenshot = false;
             saveScreenshot();
-            hud.showMessage("screenshot saved");
+            hud.showMessage("Screenshot saved");
         }
 
         if (currentlyHighlightedObject != null) {
@@ -219,13 +219,17 @@ public class EditorScreen extends BaseGameScreen {
 
     private void placeCurrentObjectAtCursorPosition() {
         gameObjects.add(editor.getCurrentlySelectedPrototype().createAt(cursor.getPosition()));
-        hud.showMessage("add " + editor.getCurrentlySelectedPrototype().getName());
+        if (showAddRemoveMessages) {
+            hud.showMessage("ADD " + editor.getCurrentlySelectedPrototype().getName());
+        }
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //let hud handle this if event occurred on top of menu
-        if (hud.isVisible() && screenX >= hud.getMenuScreenPosition().x) {
+        Vector2 pos = new Vector2(screenX, screenY);
+        pos = hud.screenToStageCoordinates(pos);
+        if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
             return false;
         }
 
@@ -254,7 +258,9 @@ public class EditorScreen extends BaseGameScreen {
                 GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
                 if (gameObject != null) {
                     gameObjects.remove(gameObject);
-                    hud.showMessage("del " + gameObject.getName());
+                    if (showAddRemoveMessages) {
+                        hud.showMessage("DEL " + gameObject.getName());
+                    }
                 }
                 return true;
             }
@@ -281,29 +287,29 @@ public class EditorScreen extends BaseGameScreen {
             case Input.Keys.U:
                 String undoText = editor.getHistory().undo();
                 if (undoText != null) {
-                    hud.showMessage("undo: " + undoText);
-                }else {
-                    hud.showMessage("no more steps to undo");
+                    hud.showMessage("Undo: " + undoText);
+                } else {
+                    hud.showMessage("No more steps to undo");
                 }
                 return true;
             case Input.Keys.R:
                 String redoText = editor.getHistory().redo();
                 if (redoText != null) {
-                    hud.showMessage("redo: " + redoText);
-                }else{
-                    hud.showMessage("no more steps to redo");
+                    hud.showMessage("Redo: " + redoText);
+                } else {
+                    hud.showMessage("No more steps to redo");
                 }
                 return true;
             case Input.Keys.S:
-                if (gameObjects.save()) {
-                    hud.showMessage("saved as " + editor.getFilename());
-                }else{
-                    hud.showMessage("FAILED to saved as " + editor.getFilename());
+                if (save()) {
+                    hud.showMessage("Saved as " + editor.getFilename());
+                } else {
+                    hud.showMessage("NOT saved as " + editor.getFilename());
                 }
                 return true;
             case Input.Keys.L:
-                if (gameObjects.load(gameObjectPrototypes)) {
-                    hud.showMessage("loaded " + editor.getFilename());
+                if (gameObjects.loadIfExists(gameObjectPrototypes)) {
+                    hud.showMessage("Loaded " + editor.getFilename());
                 } else {
                     hud.showMessage("FAILED to load " + editor.getFilename());
                 }
@@ -349,7 +355,9 @@ public class EditorScreen extends BaseGameScreen {
         }
 
         //let hud handle this if event occurred on top of menu
-        if (hud.isVisible() && screenX >= hud.getMenuScreenPosition().x) {
+        Vector2 pos = new Vector2(screenX, screenY);
+        pos = hud.screenToStageCoordinates(pos);
+        if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
             cursor.hide();
             return false;
         } else {
@@ -364,7 +372,9 @@ public class EditorScreen extends BaseGameScreen {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         //let hud handle this if event occurred on top of menu
-        if (hud.isVisible() && screenX >= hud.getMenuScreenPosition().x) {
+        Vector2 pos = new Vector2(screenX, screenY);
+        pos = hud.screenToStageCoordinates(pos);
+        if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
             cursor.hide();
         } else {
             cursor.show();
@@ -405,8 +415,9 @@ public class EditorScreen extends BaseGameScreen {
 
     @Override
     public boolean scrolled(int amount) {
-        //let hud handle this if event occurred on top of menu
-        if (hud.isVisible() && Gdx.input.getX() >= hud.getMenuScreenPosition().x) {
+        Vector2 pos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+        pos = hud.screenToStageCoordinates(pos);
+        if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
             return false;
         }
 
@@ -415,5 +426,16 @@ public class EditorScreen extends BaseGameScreen {
 
         moveCursorTo(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
         return true;
+    }
+
+    public boolean save() {
+        return gameObjects.save(false);
+    }
+
+    @Override
+    public void hide() {
+        save();
+        Gdx.app.error("hide", "editor");
+        super.hide();
     }
 }

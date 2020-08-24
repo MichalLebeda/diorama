@@ -21,7 +21,7 @@ public class History {
         historyActions.add(action);
         actionIndex++;
 
-        Gdx.app.error("added record", "curr index " + actionIndex + " size " + historyActions.size);
+        Gdx.app.log("added record", "curr index " + actionIndex + " size " + historyActions.size);
     }
 
     public String redo() {
@@ -29,7 +29,7 @@ public class History {
             actionIndex++;
             HistoryAction historyAction = historyActions.get(actionIndex);
             historyAction.redo();
-            Gdx.app.error("redo", "curr index " + actionIndex + " size " + historyActions.size);
+            Gdx.app.log("redo", "curr index " + actionIndex + " size " + historyActions.size);
 
             return historyAction.getText();
         }
@@ -42,7 +42,7 @@ public class History {
             HistoryAction actionToUndo = historyActions.get(actionIndex);
             actionToUndo.undo();
             actionIndex--;
-            Gdx.app.error("undo", "curr index " + actionIndex + " size " + historyActions.size);
+            Gdx.app.log("undo", "curr index " + actionIndex + " size " + historyActions.size);
 
             return actionToUndo.getText();
         }

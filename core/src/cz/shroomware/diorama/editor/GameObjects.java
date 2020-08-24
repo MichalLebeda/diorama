@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.editor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
@@ -12,10 +13,12 @@ import com.badlogic.gdx.utils.Array;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import cz.shroomware.diorama.Utils;
+
 public class GameObjects {
     protected Editor editor;
     protected Array<GameObject> gameObjects = new Array<>();
-    protected boolean onGoingSave = false;
+    protected boolean dirty = false;
 
     public GameObjects(Editor editor) {
         this.editor = editor;
@@ -34,19 +37,23 @@ public class GameObjects {
     }
 
     public void addNoHistory(GameObject gameObject) {
+        dirty = true;
         gameObjects.add(gameObject);
     }
 
     public void add(GameObject gameObject) {
+        dirty = true;
         gameObjects.add(gameObject);
         editor.getHistory().addAction(new PlaceGameObjectAction(gameObject, this));
     }
 
     public void removeNoHistory(GameObject gameObject) {
+        dirty = true;
         gameObjects.removeValue(gameObject, false);
     }
 
     public void remove(GameObject gameObject) {
+        dirty = true;
         gameObjects.removeValue(gameObject, false);
         editor.getHistory().addAction(new DeleteGameObjectAction(gameObject, this));
     }
@@ -66,8 +73,12 @@ public class GameObjects {
         return null;
     }
 
-    public boolean save() {
-        OutputStream outputStream = editor.getSaveFileHandle().write(false);
+    public boolean save(boolean force) {
+        if(!dirty&&!force){
+            return false;
+        }
+        Gdx.app.log("GameObject","saved");
+        OutputStream outputStream = Utils.getFileHandle(editor.getFilename()).write(false);
         try {
             for (GameObject object : gameObjects) {
                 object.save(outputStream);
@@ -80,20 +91,29 @@ public class GameObjects {
             return false;
         }
 
+        dirty = false;
         return true;
     }
 
-    public boolean load(Array<GameObjectPrototype> prototypes) {
-        if(editor.getSaveFileHandle().exists()){
+    public boolean isDirty(){
+        return dirty;
+    }
+
+    public boolean loadIfExists(Array<GameObjectPrototype> prototypes) {
+        FileHandle fileHandle = Utils.getFileHandle(editor.getFilename());
+        if (fileHandle.exists()) {
             gameObjects.clear();
 
-            String objectData = editor.getSaveFileHandle().readString();
+            String objectData = fileHandle.readString();
             String[] objectLines = objectData.split("\n");
 
             Vector3 position = new Vector3();
             for (String objectLine : objectLines) {
                 String[] attributes = objectLine.split(" ");
 
+                if(attributes.length!=4){
+                   continue;
+                }
                 position.set(
                         Float.parseFloat(attributes[1]),
                         Float.parseFloat(attributes[2]),
@@ -106,8 +126,14 @@ public class GameObjects {
                 }
             }
 
+            dirty = false;
+
             return true;
+        }else{
+            // save as blank project if now saved yet
+            save(true);
         }
+
 
         return false;
     }

@@ -13,7 +13,6 @@ public class LeftToBackgroundLabel extends BackgroundLabel {
                                  float alignLeftToX) {
         super(text, game);
 
-        this.textureBackgroundRegion = textureBackgroundRegion;
         this.alignLeftToX = alignLeftToX;
 
         setX(alignLeftToX - getWidthWithPadding());

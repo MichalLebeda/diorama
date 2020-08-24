@@ -1,13 +1,16 @@
 package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -20,9 +23,12 @@ public abstract class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
     ScrollPane scrollPane;
     DioramaGame game;
-    LeftToBackgroundLabel saveFileLabel;
+    LeftToBackgroundLabel projectNameLabel;
+    BackgroundLabel unsavedChangesLabel;
+    Messages messages;
+    boolean lastDirtyState = false;
 
-    public Hud(DioramaGame game, Array<GameObjectPrototype> prototypes, Editor editor) {
+    public Hud(final DioramaGame game, Array<GameObjectPrototype> prototypes, Editor editor) {
         super();
         this.game = game;
 //        setDebugAll(true);
@@ -33,16 +39,21 @@ public abstract class Hud extends Stage {
                 getViewport().getWorldHeight() / 2,
                 0);
 
-        selectedItemIndicator = new SelectedItemIndicator(editor, game.getDarkBackground());
+        selectedItemIndicator = new SelectedItemIndicator(editor, game.getSkin());
 
-        VerticalGroup itemGroup = new VerticalGroup();
+        final VerticalGroup itemGroup = new VerticalGroup();
         for (GameObjectPrototype prototype : prototypes) {
-            itemGroup.addActor(new Item(game, editor, prototype));
+            itemGroup.addActor(new Item(game, editor, prototype) {
+                @Override
+                public float getPrefWidth() {
+                    return 260;
+                }
+            });
         }
 
         itemGroup.columnAlign(Align.right);
-        itemGroup.pad(20);
-        itemGroup.space(20);
+        itemGroup.pad(10);
+        itemGroup.space(10);
 
         scrollPane = new ScrollPane(itemGroup, game.getSkin());
         scrollPane.pack();
@@ -65,29 +76,60 @@ public abstract class Hud extends Stage {
         modeIndicator.setY(getHeight() - modeIndicator.getHeightWithPadding() - 10);
         addActor(modeIndicator);
 
-        saveFileLabel = new LeftToBackgroundLabel(
+        messages = new Messages(game);
+        messages.setWidth(400);
+        messages.setPosition(0, 0);
+        addActor(messages);
+
+        projectNameLabel = new LeftToBackgroundLabel(
                 editor.getFilename(),
                 game,
                 selectedItemIndicator.getX() - 10);
-
-        saveFileLabel.setPosition(
+        projectNameLabel.setPosition(
                 10,
                 selectedItemIndicator.getY()
                         + selectedItemIndicator.getHeight()
-                        - saveFileLabel.getHeightWithPadding());
-        addActor(saveFileLabel);
+                        - projectNameLabel.getHeightWithPadding());
+        projectNameLabel.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.openSelection();
+            }
+        });
+        projectNameLabel.setTouchable(Touchable.enabled);
+        addActor(projectNameLabel);
 
-        messages = new Messages(game);
-        messages.setWidth(400);
-//        messages.setHeight(200);
-
-        messages.setPosition(0,0);
-        addActor(messages);
+        unsavedChangesLabel = new BackgroundLabel(" . ", game);
+        unsavedChangesLabel.setX(projectNameLabel.getXWithPadding() + projectNameLabel.getWidthWithPadding() + 10);
+        unsavedChangesLabel.setY(projectNameLabel.getYWithPadding());
+        unsavedChangesLabel.setVisible(false);
+        addActor(unsavedChangesLabel);
     }
 
-    Messages messages;
+    public void setDirty(boolean dirty) {
+        if(dirty==lastDirtyState){
+            return;
+        }
 
-    public void showMessage(String text){
+        if (dirty) {
+            unsavedChangesLabel.setColor(1, 1, 1, 0);
+            unsavedChangesLabel.setVisible(true);
+            unsavedChangesLabel.clearActions();
+            unsavedChangesLabel.addAction(Actions.alpha(1, 0.2f, Interpolation.circleOut));
+        } else {
+            unsavedChangesLabel.clearActions();
+            unsavedChangesLabel.addAction(Actions.sequence(Actions.alpha(0, 0.2f, Interpolation.circleOut), Actions.run(new Runnable() {
+                @Override
+                public void run() {
+                    unsavedChangesLabel.setVisible(false);
+                }
+            })));
+        }
+
+        lastDirtyState = dirty;
+    }
+
+    public void showMessage(String text) {
         messages.showMessage(text);
     }
 

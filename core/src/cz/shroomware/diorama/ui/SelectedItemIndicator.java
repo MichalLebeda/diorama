@@ -5,20 +5,23 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Editor;
 
 public class SelectedItemIndicator extends Actor {
-    private static final float ITEM_SIZE = 100;
-    private static final float BORDER_WIDTH = 10;
+    private static final float ITEM_SIZE = 60;
+    private static final float BORDER_WIDTH = 20;
     protected TextureRegion region = null;
-    protected TextureRegion backgroundRegion;
+    protected Drawable background;
     protected Editor editor;
     private Sprite sprite;
 
-    public SelectedItemIndicator(Editor editor, TextureRegion backgroundRegion) {
+    public SelectedItemIndicator(Editor editor, Skin skin) {
         this.editor = editor;
-        this.backgroundRegion = backgroundRegion;
+        this.background = skin.getDrawable(Utils.DARK_BACKGROUND_NAME);
         setSize(ITEM_SIZE + 2 * BORDER_WIDTH, ITEM_SIZE + 2 * BORDER_WIDTH);
         sprite = new Sprite();
     }
@@ -50,7 +53,7 @@ public class SelectedItemIndicator extends Actor {
             setItemRegion(region);
         }
 
-        batch.draw(backgroundRegion,
+        background.draw(batch,
                 getX(),
                 getY(),
                 getWidth(),

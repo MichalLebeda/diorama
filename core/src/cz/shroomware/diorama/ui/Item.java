@@ -1,10 +1,12 @@
 package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
@@ -17,6 +19,7 @@ public class Item extends HorizontalGroup {
     public Item(DioramaGame game, final Editor editor, final GameObjectPrototype prototype) {
         this.prototype = prototype;
         space(20);
+        align(Align.right);
         DFLabel label = new DFLabel(prototype.getObjectRegion().name, game);
         label.setFontScale(0.3f);
         addActor(label);
@@ -33,11 +36,12 @@ public class Item extends HorizontalGroup {
             drawable.setMinHeight(ITEM_SIZE);
             drawable.setMinWidth((float) prototype.getObjectRegion().getRegionWidth() / (float) prototype.getObjectRegion().getRegionHeight() * ITEM_SIZE);
 
-            padLeft((drawable.getMinHeight()-drawable.getMinWidth())/2);
-            padRight((drawable.getMinHeight()-drawable.getMinWidth())/2);
+//            padLeft((drawable.getMinHeight() - drawable.getMinWidth()) / 2);
+            padRight((drawable.getMinHeight() - drawable.getMinWidth()) / 2);
         }
 
-        image.addListener(new ClickListener() {
+        setTouchable(Touchable.enabled);
+        addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 editor.setCurrentlySelectedPrototype(prototype);
@@ -46,6 +50,4 @@ public class Item extends HorizontalGroup {
         });
         addActor(image);
     }
-
-//    public abstract void onPrototypeSelect(GameObjectPrototype prototype);
 }

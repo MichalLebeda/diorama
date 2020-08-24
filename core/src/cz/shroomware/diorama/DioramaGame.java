@@ -12,6 +12,7 @@ import cz.shroomware.diorama.screen.EditorScreen;
 
 public class DioramaGame extends Game {
     EditorScreen editorScreen;
+    ProjectSelectionScreen projectSelectionScreen;
     TextureAtlas atlas;
     TextureAtlas shadowsAtlas;
     TextureAtlas uiAtlas;
@@ -40,15 +41,26 @@ public class DioramaGame extends Game {
             Gdx.app.error("decalShader", "compilation failed:\n" + dfShader.getLog());
         }
 
-        setScreen(new ProjectSelectionScreen(this));
+        projectSelectionScreen = new ProjectSelectionScreen(this);
+        setScreen(projectSelectionScreen);
     }
 
-    public  void openEditor(String filename){
-        editorScreen = new EditorScreen(this,filename);
+    @Override
+    public void render() {
+//        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        super.render();
+    }
+
+    public void openEditor(String filename) {
+        editorScreen = new EditorScreen(this, filename);
         setScreen(editorScreen);
     }
 
-    public TextureRegion getDarkBackground(){
+    public void openSelection() {
+        setScreen(projectSelectionScreen);
+    }
+
+    public TextureRegion getDarkBackground() {
         return darkBackground;
     }
 
@@ -78,8 +90,12 @@ public class DioramaGame extends Game {
 
     @Override
     public void dispose() {
-        if(editorScreen!=null){
+        getScreen().hide();
+
+        if (editorScreen != null) {
             editorScreen.dispose();
         }
+
+        projectSelectionScreen.dispose();
     }
 }
