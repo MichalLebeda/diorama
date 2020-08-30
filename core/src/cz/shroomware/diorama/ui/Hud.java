@@ -21,6 +21,8 @@ import cz.shroomware.diorama.editor.GameObjectPrototype;
 
 public abstract class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
+    SelectedModeIndicator selectedModeIndicator;
+    ModeIndicator modeIndicator;
     ScrollPane scrollPane;
     DioramaGame game;
     LeftToBackgroundLabel projectNameLabel;
@@ -34,14 +36,15 @@ public abstract class Hud extends Stage {
 //        setDebugAll(true);
 
         setViewport(new ScreenViewport());
-        getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        getCamera().translate(getViewport().getWorldWidth() / 2,
-                getViewport().getWorldHeight() / 2,
-                0);
+        getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
         selectedItemIndicator = new SelectedItemIndicator(editor, game.getSkin());
+        addActor(selectedItemIndicator);
 
         final VerticalGroup itemGroup = new VerticalGroup();
+        itemGroup.columnAlign(Align.right);
+        itemGroup.pad(10);
+        itemGroup.space(10);
         for (GameObjectPrototype prototype : prototypes) {
             itemGroup.addActor(new Item(game, editor, prototype) {
                 @Override
@@ -51,45 +54,29 @@ public abstract class Hud extends Stage {
             });
         }
 
-        itemGroup.columnAlign(Align.right);
-        itemGroup.pad(10);
-        itemGroup.space(10);
-
         scrollPane = new ScrollPane(itemGroup, game.getSkin());
         scrollPane.pack();
-        scrollPane.setHeight(getViewport().getWorldHeight());
-        scrollPane.setPosition(
-                getViewport().getWorldWidth() - scrollPane.getWidth(),
-                0);
-
         addActor(scrollPane);
 
-        selectedItemIndicator.setPosition(scrollPane.getX() - selectedItemIndicator.getWidth() - 10,
-                getHeight() - selectedItemIndicator.getHeight() - 10);
+        selectedModeIndicator = new SelectedModeIndicator(editor, game.getSkin());
+        addActor(selectedModeIndicator);
 
-        addActor(selectedItemIndicator);
-
-        ModeIndicator modeIndicator = new ModeIndicator(
+        modeIndicator = new ModeIndicator(
                 game,
                 editor,
-                selectedItemIndicator.getX() - 10);
-        modeIndicator.setY(getHeight() - modeIndicator.getHeightWithPadding() - 10);
-        addActor(modeIndicator);
+                selectedModeIndicator.getX() - 10);
+//        modeIndicator.setY(getHeight() - modeIndicator.getHeightWithPadding() - 10);
+//        //TODO: remove
+//        addActor(modeIndicator);
 
         messages = new Messages(game);
         messages.setWidth(400);
-        messages.setPosition(0, 0);
         addActor(messages);
 
         projectNameLabel = new LeftToBackgroundLabel(
                 editor.getFilename(),
                 game,
                 selectedItemIndicator.getX() - 10);
-        projectNameLabel.setPosition(
-                10,
-                selectedItemIndicator.getY()
-                        + selectedItemIndicator.getHeight()
-                        - projectNameLabel.getHeightWithPadding());
         projectNameLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -100,14 +87,12 @@ public abstract class Hud extends Stage {
         addActor(projectNameLabel);
 
         unsavedChangesLabel = new BackgroundLabel(" . ", game);
-        unsavedChangesLabel.setX(projectNameLabel.getXWithPadding() + projectNameLabel.getWidthWithPadding() + 10);
-        unsavedChangesLabel.setY(projectNameLabel.getYWithPadding());
         unsavedChangesLabel.setVisible(false);
         addActor(unsavedChangesLabel);
     }
 
     public void setDirty(boolean dirty) {
-        if(dirty==lastDirtyState){
+        if (dirty == lastDirtyState) {
             return;
         }
 
@@ -170,5 +155,32 @@ public abstract class Hud extends Stage {
     @Override
     public void dispose() {
         super.dispose();
+    }
+
+    public void resize(int width, int height) {
+        getViewport().update(width, height, true);
+
+        messages.setPosition(0, 0);
+
+        projectNameLabel.setPosition(
+                10,
+                getHeight()-10 - projectNameLabel.getHeightWithPadding());
+
+        unsavedChangesLabel.setX(projectNameLabel.getXWithPadding() + projectNameLabel.getWidthWithPadding() + 10);
+        unsavedChangesLabel.setY(projectNameLabel.getYWithPadding());
+
+        modeIndicator.setY(getHeight() - modeIndicator.getHeightWithPadding() - 10);
+
+        scrollPane.setHeight(getViewport().getWorldHeight());
+        scrollPane.setPosition(
+                getViewport().getWorldWidth() - scrollPane.getWidth(),
+                0);
+
+        selectedItemIndicator.setPosition(scrollPane.getX() - selectedItemIndicator.getWidth() - 10,
+                getHeight() - selectedItemIndicator.getHeight() - 10);
+
+        selectedModeIndicator.setPosition(
+                selectedItemIndicator.getX() - selectedModeIndicator.getWidth() - 10,
+                selectedItemIndicator.getY());
     }
 }

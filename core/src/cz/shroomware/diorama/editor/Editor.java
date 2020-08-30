@@ -1,14 +1,10 @@
 package cz.shroomware.diorama.editor;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
-import cz.shroomware.diorama.Utils;
 
 public class Editor {
     protected GameObjectPrototype currentlySelectedPrototype;
-    Mode mode = Mode.PLACE;
+    Mode mode = Mode.ITEM;
     History history = new History();
     String filename;
 
@@ -33,7 +29,7 @@ public class Editor {
 
     public void setCurrentlySelectedPrototype(GameObjectPrototype currentlySelectedPrototype) {
         this.currentlySelectedPrototype = currentlySelectedPrototype;
-        mode = Mode.PLACE;
+        mode = Mode.ITEM;
     }
 
     public History getHistory() {
@@ -65,6 +61,6 @@ public class Editor {
     }
 
     public enum Mode {
-        PLACE, DELETE
+        ITEM,TILE, DELETE
     }
 }

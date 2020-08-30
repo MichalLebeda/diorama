@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -16,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import cz.shroomware.diorama.DioramaGame;
@@ -28,42 +31,34 @@ import cz.shroomware.diorama.ui.FilenameDialog;
 public class ProjectSelectionScreen implements Screen {
     final VerticalGroup verticalGroup;
     ScrollPane scrollPane;
+    BackgroundLabel createFileLabel;
     DioramaGame game;
     Stage stage;
     Color backgroundColor = new Color(0x424242ff);
 
+
     public ProjectSelectionScreen(final DioramaGame game) {
         this.game = game;
 
-        stage = new Stage();
-//        stage.setDebugAll(true);
-        stage.setViewport(new ScreenViewport());
-        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        stage.getCamera().translate(stage.getViewport().getWorldWidth() / 2,
-                stage.getViewport().getWorldHeight() / 2,
-                0);
+        stage = new Stage(new ScreenViewport());
+        stage.setDebugAll(true);
 
         verticalGroup = new VerticalGroup();
         verticalGroup.columnAlign(Align.left);
         verticalGroup.align(Align.topLeft);
         verticalGroup.pad(20);
         verticalGroup.space(20);
-        verticalGroup.setWidth(stage.getWidth() / 2);
 
-         scrollPane = new ScrollPane(verticalGroup);
-//        scrollPane.setWidth(verticalGroup.getWidth());
+        scrollPane = new ScrollPane(verticalGroup);
 
-        BackgroundLabel createFileLabel = new BackgroundLabel(
+         createFileLabel = new BackgroundLabel(
                 "New File",
                 game);
 
-        createFileLabel.setPosition(
-                stage.getWidth() - createFileLabel.getWidthWithPadding() - 10,
-                stage.getHeight() - createFileLabel.getHeightWithPadding() - 10);
         createFileLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                FilenameDialog dialog = new FilenameDialog(game,ProjectSelectionScreen.this);
+                FilenameDialog dialog = new FilenameDialog(game, ProjectSelectionScreen.this);
                 dialog.show(stage);
                 super.clicked(event, x, y);
             }
@@ -75,7 +70,7 @@ public class ProjectSelectionScreen implements Screen {
 
     public void refreshList() {
         verticalGroup.clear();
-        final Drawable darkBackground = game.getSkin().getDrawable(Utils.DARK_BACKGROUND_NAME);
+        final Drawable darkBackground = game.getSkin().getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
 
         FileHandle[] fileHandles = Gdx.files.external(Utils.PROJECT_FOLDER).list();
         for (final FileHandle fileHandle : fileHandles) {
@@ -126,11 +121,8 @@ public class ProjectSelectionScreen implements Screen {
             horizontalGroup.addActor(new DFLabel(fileHandle.name(), game));
             verticalGroup.addActor(horizontalGroup);
         }
-        verticalGroup.pack();
-        scrollPane.setWidth(verticalGroup.getWidth());
-        scrollPane.setHeight(stage.getHeight());
-        scrollPane.setPosition(
-                stage.getWidth() / 2 - scrollPane.getWidth() / 2, 0);
+
+        updateScrollPaneSize();
     }
 
     @Override
@@ -150,6 +142,24 @@ public class ProjectSelectionScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        stage.getViewport().update(width,height,true);
+
+        createFileLabel.setPosition(
+                stage.getWidth() - createFileLabel.getWidthWithPadding() - 10,
+                stage.getHeight() - createFileLabel.getHeightWithPadding() - 10);
+
+        updateScrollPaneSize();
+    }
+
+    private void updateScrollPaneSize(){
+        verticalGroup.layout();
+        verticalGroup.pack();
+
+        scrollPane.setWidth(verticalGroup.getWidth());
+        scrollPane.setHeight(stage.getHeight());
+        scrollPane.setPosition(
+                stage.getWidth() / 2 - scrollPane.getWidth() / 2, 0);
+        scrollPane.layout();
 
     }
 

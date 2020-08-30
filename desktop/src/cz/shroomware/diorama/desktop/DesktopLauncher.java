@@ -14,14 +14,14 @@ import cz.shroomware.diorama.DioramaGame;
 
 public class DesktopLauncher {
     public static void main(String[] arg) {
-
         packAtlas();
         packShadowAtlas();
         packUiAtlas();
 
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setWindowedMode(1600, 780);
+        config.setWindowedMode(1100, 680);
 //        config.setWindowedMode(1920, 1080);
+        config.setWindowSizeLimits(640,560,16000,9000);
         new Lwjgl3Application(new DioramaGame(), config);
     }
 

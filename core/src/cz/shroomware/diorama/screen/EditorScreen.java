@@ -93,7 +93,7 @@ public class EditorScreen extends BaseGameScreen {
         hud = new Hud(game, gameObjectPrototypes, editor) {
             @Override
             public void onSelectedItemRegion(GameObjectPrototype prototype) {
-                editor.setMode(Editor.Mode.PLACE);
+                editor.setMode(Editor.Mode.ITEM);
             }
         };
 
@@ -132,10 +132,10 @@ public class EditorScreen extends BaseGameScreen {
     }
 
     private void initCamera() {
-        float height = 20;
-        double ratio = (double) Gdx.graphics.getWidth() / (double) Gdx.graphics.getHeight();
-        float width = (float) (height * ratio);
-        camera = new PerspectiveCamera(50, width, height);
+        camera = new PerspectiveCamera(
+                50,
+                calculateCameraViewportWidth(),
+                calculateCameraViewportHeight());
         camera.position.set(GRID_SIZE / 2.f, -2, 5);
         camera.near = 0.1f;
         camera.far = 300;
@@ -218,7 +218,7 @@ public class EditorScreen extends BaseGameScreen {
     }
 
     private void placeCurrentObjectAtCursorPosition() {
-        gameObjects.add(editor.getCurrentlySelectedPrototype().createAt(cursor.getPosition()));
+        gameObjects.add(editor.getCurrentlySelectedPrototype().createAtCursor(cursor));
         if (showAddRemoveMessages) {
             hud.showMessage("ADD " + editor.getCurrentlySelectedPrototype().getName());
         }
@@ -248,7 +248,7 @@ public class EditorScreen extends BaseGameScreen {
                 cameraLastDragWorldPos.z = 0;
 
                 return true;
-            } else if (editor.isMode(Editor.Mode.PLACE)) {
+            } else if (editor.isMode(Editor.Mode.ITEM)) {
                 if (cursor.isPlacingItemAllowed() && editor.hasSelectedPrototype()) {
                     placeCurrentObjectAtCursorPosition();
 
@@ -279,7 +279,7 @@ public class EditorScreen extends BaseGameScreen {
                 takingScreenshot = true;
                 return true;
             case Input.Keys.ESCAPE:
-                editor.setMode(Editor.Mode.PLACE);
+                editor.setMode(Editor.Mode.ITEM);
                 return true;
             case Input.Keys.T:
                 hud.toggle();
@@ -313,6 +313,10 @@ public class EditorScreen extends BaseGameScreen {
                 } else {
                     hud.showMessage("FAILED to load " + editor.getFilename());
                 }
+                return true;
+            case Input.Keys.Z:
+                cursor.rotateY(90);
+                return true;
         }
 
         return false;
@@ -430,6 +434,24 @@ public class EditorScreen extends BaseGameScreen {
 
     public boolean save() {
         return gameObjects.save(false);
+    }
+
+    float calculateCameraViewportHeight() {
+        return 20;
+    }
+
+    float calculateCameraViewportWidth() {
+        double ratio = (double) Gdx.graphics.getWidth() / (double) Gdx.graphics.getHeight();
+        return (float) (calculateCameraViewportHeight() * ratio);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        camera.viewportWidth = calculateCameraViewportWidth();
+        camera.viewportHeight = calculateCameraViewportHeight();
+        camera.update();
+
+        hud.resize(width, height);
     }
 
     @Override

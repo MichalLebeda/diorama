@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
-import static java.lang.System.currentTimeMillis;
 
 public class GameObject {
     GameObjectPrototype prototype;
@@ -21,12 +21,21 @@ public class GameObject {
     Sprite shadowSprite;
     boolean selected = false;
 
-    public GameObject(Vector3 position, GameObjectPrototype prototype) {
+    public GameObject(Cursor cursor, GameObjectPrototype prototype) {
+        this(cursor.getPosition(), prototype);
+        decal.setRotation(cursor.getRotation());
+    }
+
+    public GameObject(Vector3 position,Quaternion quaternion, GameObjectPrototype prototype) {
+        this(position,prototype);
+        setRotation(quaternion);
+    }
+
+    protected GameObject(Vector3 position, GameObjectPrototype prototype) {
         this.prototype = prototype;
         TextureRegion decalRegion = prototype.getObjectRegion();
         decal = Decal.newDecal(decalRegion, true);
         decal.setPosition(position);
-        decal.setRotationX(90);
         decal.setWidth(decalRegion.getRegionWidth() / PIXELS_PER_METER);
         decal.setHeight(decalRegion.getRegionHeight() / PIXELS_PER_METER);
 
@@ -64,7 +73,11 @@ public class GameObject {
         outputStream.write((prototype.getObjectRegion().name + " ").getBytes());
         outputStream.write((decal.getPosition().x + " ").getBytes());
         outputStream.write((decal.getPosition().y + " ").getBytes());
-        outputStream.write((decal.getPosition().z + "\n").getBytes());
+        outputStream.write((decal.getPosition().z + " ").getBytes());
+        outputStream.write((decal.getRotation().x + " ").getBytes());
+        outputStream.write((decal.getRotation().y + " ").getBytes());
+        outputStream.write((decal.getRotation().z + " ").getBytes());
+        outputStream.write((decal.getRotation().w + "\n").getBytes());
     }
 
     public Vector3 getPosition() {
@@ -73,14 +86,34 @@ public class GameObject {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
-        if(selected){
-            decal.setColor(0.5f,0.5f,0.5f,1);
-        }else {
+        if (selected) {
+            decal.setColor(0.5f, 0.5f, 0.5f, 1);
+        } else {
             decal.setColor(Color.WHITE);
         }
     }
 
-    public String getName(){
+    public String getName() {
         return prototype.getName();
+    }
+
+    public void setRotationX(float angle) {
+        decal.setRotationX(angle);
+    }
+
+    public void setRotationY(float angle) {
+        decal.setRotationY(angle);
+    }
+
+    public void setRotationZ(float angle) {
+        decal.setRotationZ(angle);
+    }
+
+    public void setRotation(float yaw, float pitch, float roll) {
+        decal.setRotation(yaw, pitch, roll);
+    }
+
+    public void setRotation(Quaternion quaternion){
+        decal.setRotation(quaternion);
     }
 }

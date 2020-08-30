@@ -1,6 +1,7 @@
 package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 public class GameObjectPrototype {
@@ -23,8 +24,12 @@ public class GameObjectPrototype {
         return shadowRegion;
     }
 
-    public GameObject createAt(Vector3 position) {
-        return new GameObject(position, this);
+    public GameObject createAtCursor(Cursor cursor) {
+        return new GameObject(cursor, this);
+    }
+
+    public GameObject createAt(Vector3 position, Quaternion quaternion) {
+        return new GameObject(position, quaternion, this);
     }
 
     public String getName() {

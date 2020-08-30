@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -74,10 +75,10 @@ public class GameObjects {
     }
 
     public boolean save(boolean force) {
-        if(!dirty&&!force){
+        if (!dirty && !force) {
             return false;
         }
-        Gdx.app.log("GameObject","saved");
+        Gdx.app.log("GameObject", "saved");
         OutputStream outputStream = Utils.getFileHandle(editor.getFilename()).write(false);
         try {
             for (GameObject object : gameObjects) {
@@ -95,7 +96,7 @@ public class GameObjects {
         return true;
     }
 
-    public boolean isDirty(){
+    public boolean isDirty() {
         return dirty;
     }
 
@@ -111,8 +112,8 @@ public class GameObjects {
             for (String objectLine : objectLines) {
                 String[] attributes = objectLine.split(" ");
 
-                if(attributes.length!=4){
-                   continue;
+                if (attributes.length != 8) {
+                    continue;
                 }
                 position.set(
                         Float.parseFloat(attributes[1]),
@@ -121,7 +122,14 @@ public class GameObjects {
 
                 for (GameObjectPrototype prototype : prototypes) {
                     if (attributes[0].equals(prototype.getName())) {
-                        addNoHistory(prototype.createAt(position));
+                        Quaternion quaternion = new Quaternion(
+                                Float.parseFloat(attributes[4]),
+                                Float.parseFloat(attributes[5]),
+                                Float.parseFloat(attributes[6]),
+                                Float.parseFloat(attributes[7]));
+                        GameObject object = prototype.createAt(position,quaternion);
+                        object.setRotation(quaternion);
+                        addNoHistory(object);
                     }
                 }
             }
@@ -129,7 +137,7 @@ public class GameObjects {
             dirty = false;
 
             return true;
-        }else{
+        } else {
             // save as blank project if now saved yet
             save(true);
         }

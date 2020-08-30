@@ -1,7 +1,6 @@
 package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
@@ -17,7 +16,7 @@ public class ModeIndicator extends LeftToBackgroundLabel {
 
     protected String getModeText() {
         switch (editor.getMode()) {
-            case PLACE:
+            case ITEM:
                 return "Place MODE";
             case DELETE:
                 return "Delete MODE";

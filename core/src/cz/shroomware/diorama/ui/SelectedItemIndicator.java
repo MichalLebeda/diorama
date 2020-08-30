@@ -12,7 +12,7 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Editor;
 
 public class SelectedItemIndicator extends Actor {
-    private static final float ITEM_SIZE = 60;
+    private static final float ITEM_SIZE = 64;
     private static final float BORDER_WIDTH = 20;
     protected TextureRegion region = null;
     protected Drawable background;
@@ -21,7 +21,7 @@ public class SelectedItemIndicator extends Actor {
 
     public SelectedItemIndicator(Editor editor, Skin skin) {
         this.editor = editor;
-        this.background = skin.getDrawable(Utils.DARK_BACKGROUND_NAME);
+        this.background = skin.getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
         setSize(ITEM_SIZE + 2 * BORDER_WIDTH, ITEM_SIZE + 2 * BORDER_WIDTH);
         sprite = new Sprite();
     }
@@ -37,6 +37,14 @@ public class SelectedItemIndicator extends Actor {
             sprite.setSize((float) region.getRegionWidth() / (float) region.getRegionHeight() * ITEM_SIZE,
                     ITEM_SIZE);
         }
+
+        sprite.setPosition(getX() + (getWidth() / 2 - sprite.getWidth() / 2),
+                getY() + (getHeight() / 2 - sprite.getHeight() / 2));
+    }
+
+    @Override
+    protected void positionChanged() {
+        super.positionChanged();
 
         sprite.setPosition(getX() + (getWidth() / 2 - sprite.getWidth() / 2),
                 getY() + (getHeight() / 2 - sprite.getHeight() / 2));

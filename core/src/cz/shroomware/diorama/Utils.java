@@ -11,7 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Utils {
-    public static final String DARK_BACKGROUND_NAME = "dark-background";
+    public static final String DARK_BACKGROUND_DRAWABLE = "dark-background";
+
+    public static final String ITEM_MODE_ICON_DRAWABLE = "item_mode_icon";
+
+    public static final String TILE_MODE_ICON_DRAWABLE = "tile_mode_icon";
 
     public static final float PIXELS_PER_METER = 16f;
 

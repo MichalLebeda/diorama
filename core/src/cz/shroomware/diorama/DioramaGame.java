@@ -2,10 +2,13 @@ package cz.shroomware.diorama;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+
+import java.io.InputStream;
 
 import cz.shroomware.diorama.editor.ProjectSelectionScreen;
 import cz.shroomware.diorama.screen.EditorScreen;
@@ -45,10 +48,25 @@ public class DioramaGame extends Game {
         setScreen(projectSelectionScreen);
     }
 
+    int lastWindowedWidth;
+    int lastWindowedHeight;
+
     @Override
     public void render() {
-//        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F11)){
+            toggleFullscreen();
+        }
         super.render();
+    }
+
+    public void toggleFullscreen(){
+        if(Gdx.graphics.isFullscreen()){
+            Gdx.graphics.setWindowedMode(lastWindowedWidth,lastWindowedHeight);
+        }else {
+            lastWindowedWidth = Gdx.graphics.getWidth();
+            lastWindowedHeight = Gdx.graphics.getHeight();
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        }
     }
 
     public void openEditor(String filename) {

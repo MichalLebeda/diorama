@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Null;
 
 import cz.shroomware.diorama.DioramaGame;
 
-import static cz.shroomware.diorama.Utils.DARK_BACKGROUND_NAME;
+import static cz.shroomware.diorama.Utils.DARK_BACKGROUND_DRAWABLE;
 
 public class BackgroundLabel extends DFLabel {
     private static final float PAD = 20;
@@ -19,7 +19,7 @@ public class BackgroundLabel extends DFLabel {
 
     public BackgroundLabel(CharSequence text, DioramaGame game) {
         super(text, game);
-        background = game.getSkin().getDrawable(DARK_BACKGROUND_NAME);
+        background = game.getSkin().getDrawable(DARK_BACKGROUND_DRAWABLE);
     }
 
     public float getXWithPadding() {

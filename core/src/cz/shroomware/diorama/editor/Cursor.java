@@ -43,7 +43,7 @@ public class Cursor {
                     updateRegion(defaultRegion);
                 }
                 break;
-            case PLACE:
+            case ITEM:
                 TextureRegion selectedPrototypeObjectRegion = editor.getPrototypeObjectRegion();
                 if(selectedPrototypeObjectRegion==null){
                     if (decal.getTextureRegion() != defaultRegion) {
@@ -120,5 +120,9 @@ public class Cursor {
 
     public Vector3 getPosition() {
         return decal.getPosition();
+    }
+
+    public void rotateY(float angle){
+        decal.rotateY(angle);
     }
 }

@@ -27,7 +27,7 @@ big_rock_b
   index: -1
 big_rock_c
   rotate: false
-  xy: 146, 72
+  xy: 62, 4
   size: 12, 14
   orig: 12, 14
   offset: 0, 0
@@ -95,6 +95,13 @@ hut_big
   orig: 48, 32
   offset: 0, 0
   index: -1
+planks
+  rotate: false
+  xy: 126, 70
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
 rock
   rotate: false
   xy: 214, 94
@@ -104,7 +111,7 @@ rock
   index: -1
 selector_background
   rotate: false
-  xy: 126, 70
+  xy: 234, 106
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -125,7 +132,7 @@ tepee
   index: -1
 tree
   rotate: false
-  xy: 234, 106
+  xy: 42, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -139,7 +146,7 @@ tree-savanna
   index: -1
 tree_b
   rotate: false
-  xy: 42, 2
+  xy: 146, 70
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -153,7 +160,7 @@ tree_big
   index: -1
 well
   rotate: false
-  xy: 62, 9
+  xy: 166, 77
   size: 9, 9
   orig: 9, 9
   offset: 0, 0
