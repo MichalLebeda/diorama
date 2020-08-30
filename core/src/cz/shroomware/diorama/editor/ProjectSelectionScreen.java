@@ -41,7 +41,7 @@ public class ProjectSelectionScreen implements Screen {
         this.game = game;
 
         stage = new Stage(new ScreenViewport());
-        stage.setDebugAll(true);
+//        stage.setDebugAll(true);
 
         verticalGroup = new VerticalGroup();
         verticalGroup.columnAlign(Align.left);
