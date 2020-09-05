@@ -104,8 +104,8 @@ public class DesktopLauncher {
         settings.paddingY = 4;
         settings.silent = true;
         settings.duplicatePadding = true;
-        settings.filterMag = Texture.TextureFilter.Nearest;
-        settings.filterMin = Texture.TextureFilter.Nearest;
+        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
+        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear;
         boolean forceUpdate = false;
 
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();

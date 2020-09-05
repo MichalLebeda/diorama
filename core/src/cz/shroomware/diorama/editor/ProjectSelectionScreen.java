@@ -6,10 +6,11 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -17,14 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.ui.BackgroundLabel;
-import cz.shroomware.diorama.ui.DFButton;
 import cz.shroomware.diorama.ui.DFLabel;
 import cz.shroomware.diorama.ui.FilenameDialog;
 
@@ -51,7 +49,7 @@ public class ProjectSelectionScreen implements Screen {
 
         scrollPane = new ScrollPane(verticalGroup);
 
-         createFileLabel = new BackgroundLabel(
+        createFileLabel = new BackgroundLabel(
                 "New File",
                 game);
 
@@ -95,7 +93,19 @@ public class ProjectSelectionScreen implements Screen {
                     game.openEditor(fileHandle.name());
                 }
             });
-            final DFButton button = new DFButton("X", game);
+            final Button button = new Button(game.getSkin()) {
+                @Override
+                public void draw(Batch batch, float parentAlpha) {
+                    super.draw(batch, parentAlpha);
+
+                    TextureRegion crossRegion = game.getUiAtlas().findRegion("cross");
+                    float PAD = 30;
+                    batch.draw(crossRegion, getX() + PAD,
+                            getY() + PAD,
+                            getWidth() - 2 * PAD,
+                            getHeight() - 2 * PAD);
+                }
+            };
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -142,7 +152,7 @@ public class ProjectSelectionScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width,height,true);
+        stage.getViewport().update(width, height, true);
 
         createFileLabel.setPosition(
                 stage.getWidth() - createFileLabel.getWidthWithPadding() - 10,
@@ -151,7 +161,7 @@ public class ProjectSelectionScreen implements Screen {
         updateScrollPaneSize();
     }
 
-    private void updateScrollPaneSize(){
+    private void updateScrollPaneSize() {
         verticalGroup.layout();
         verticalGroup.pack();
 
