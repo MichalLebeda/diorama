@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.Utils;
+
 public class GameObjectPrototype {
     protected TextureAtlas.AtlasRegion objectRegion, shadowRegion;
 
@@ -29,6 +31,11 @@ public class GameObjectPrototype {
     }
 
     public GameObject createAt(Vector3 position, Quaternion quaternion) {
+        return new GameObject(position, quaternion, this);
+    }
+
+    public GameObject createAt(float x, float y, Quaternion quaternion) {
+        Vector3 position = new Vector3(x, y, ((float) objectRegion.getRegionHeight()) / 2 / Utils.PIXELS_PER_METER);
         return new GameObject(position, quaternion, this);
     }
 

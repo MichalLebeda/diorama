@@ -1,7 +1,6 @@
 package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
@@ -11,18 +10,17 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import cz.shroomware.diorama.Utils;
-
 public class GameObjects {
-    protected Editor editor;
     protected Array<GameObject> gameObjects = new Array<>();
     protected boolean dirty = false;
+    protected History history;
 
-    public GameObjects(Editor editor) {
-        this.editor = editor;
+    public GameObjects(History history) {
+        this.history = history;
     }
 
     public void drawShadows(Batch batch) {
@@ -45,7 +43,7 @@ public class GameObjects {
     public void add(GameObject gameObject) {
         dirty = true;
         gameObjects.add(gameObject);
-        editor.getHistory().addAction(new PlaceGameObjectAction(gameObject, this));
+        history.addAction(new PlaceGameObjectAction(gameObject, this));
     }
 
     public void removeNoHistory(GameObject gameObject) {
@@ -56,7 +54,7 @@ public class GameObjects {
     public void remove(GameObject gameObject) {
         dirty = true;
         gameObjects.removeValue(gameObject, false);
-        editor.getHistory().addAction(new DeleteGameObjectAction(gameObject, this));
+        history.addAction(new DeleteGameObjectAction(gameObject, this));
     }
 
     public GameObject findIntersectingWithRay(Ray ray) {
@@ -74,12 +72,8 @@ public class GameObjects {
         return null;
     }
 
-    public boolean save(boolean force) {
-        if (!dirty && !force) {
-            return false;
-        }
+    public void save(OutputStream outputStream) {
         Gdx.app.log("GameObject", "saved");
-        OutputStream outputStream = Utils.getFileHandle(editor.getFilename()).write(false);
         try {
             for (GameObject object : gameObjects) {
                 object.save(outputStream);
@@ -89,60 +83,62 @@ public class GameObjects {
             outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
 
         dirty = false;
-        return true;
     }
 
     public boolean isDirty() {
         return dirty;
     }
 
-    public boolean loadIfExists(Array<GameObjectPrototype> prototypes) {
-        FileHandle fileHandle = Utils.getFileHandle(editor.getFilename());
-        if (fileHandle.exists()) {
-            gameObjects.clear();
+    public void load(BufferedReader bufferedReader, Array<GameObjectPrototype> prototypes) {
+        gameObjects.clear();
 
-            String objectData = fileHandle.readString();
-            String[] objectLines = objectData.split("\n");
+        String line = null;
+        try {
 
             Vector3 position = new Vector3();
-            for (String objectLine : objectLines) {
-                String[] attributes = objectLine.split(" ");
+            while ((line = bufferedReader.readLine()) != null) {
+                Gdx.app.error("LINE", line);
+
+                String[] attributes = line.split(" ");
 
                 if (attributes.length != 8) {
                     continue;
                 }
-                position.set(
-                        Float.parseFloat(attributes[1]),
-                        Float.parseFloat(attributes[2]),
-                        Float.parseFloat(attributes[3]));
+//                position.set(
+//                        Float.parseFloat(attributes[1]),
+//                        Float.parseFloat(attributes[2]),
+//                        Float.parseFloat(attributes[3]));
 
                 for (GameObjectPrototype prototype : prototypes) {
                     if (attributes[0].equals(prototype.getName())) {
+                        Gdx.app.error("LINE 2", prototype.getName());
                         Quaternion quaternion = new Quaternion(
                                 Float.parseFloat(attributes[4]),
                                 Float.parseFloat(attributes[5]),
                                 Float.parseFloat(attributes[6]),
                                 Float.parseFloat(attributes[7]));
-                        GameObject object = prototype.createAt(position,quaternion);
+                        GameObject object = prototype.createAt(
+                                Float.parseFloat(attributes[1]),
+                                Float.parseFloat(attributes[2]),
+                                quaternion);
+//                        GameObject object = prototype.createAt(position, quaternion);
                         object.setRotation(quaternion);
                         addNoHistory(object);
                     }
                 }
             }
-
-            dirty = false;
-
-            return true;
-        } else {
-            // save as blank project if now saved yet
-            save(true);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+        dirty = false;
 
-        return false;
+        int i = 0;
+        for (GameObject object : gameObjects) {
+            Gdx.app.error("OBJ " + i++, object.toString());
+        }
     }
 }

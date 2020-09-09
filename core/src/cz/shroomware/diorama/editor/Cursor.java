@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.editor;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
@@ -11,22 +12,22 @@ import cz.shroomware.diorama.Utils;
 public class Cursor {
     Decal decal;
     Editor editor;
+    Level level;
     TextureRegion defaultRegion;
     boolean itemPlacingAllowed = true;
     boolean visible = true;
-    int worldSize;
 
-    public Cursor(Editor editor, TextureRegion defaultRegion, int worldSize) {
+    public Cursor(Editor editor, Level level, TextureRegion defaultRegion) {
         this.editor = editor;
+        this.level = level;
         this.defaultRegion = defaultRegion;
-        this.worldSize = worldSize;
         decal = Decal.newDecal(defaultRegion, true);
-        decal.setWidth(defaultRegion.getRegionWidth()/16f);
-        decal.setHeight(defaultRegion.getRegionHeight()/16f);
+        decal.setWidth(defaultRegion.getRegionWidth() / 16f);
+        decal.setHeight(defaultRegion.getRegionHeight() / 16f);
         decal.rotateX(90);
     }
 
-    public void draw(MinimalisticDecalBatch decalBatch) {
+    public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch) {
         if (!visible) {
             return;
         }
@@ -42,24 +43,26 @@ public class Cursor {
                 if (decal.getTextureRegion() != defaultRegion) {
                     updateRegion(defaultRegion);
                 }
+                decalBatch.add(decal);
                 break;
             case ITEM:
                 TextureRegion selectedPrototypeObjectRegion = editor.getPrototypeObjectRegion();
-                if(selectedPrototypeObjectRegion==null){
+                if (selectedPrototypeObjectRegion == null) {
                     if (decal.getTextureRegion() != defaultRegion) {
                         updateRegion(defaultRegion);
                     }
                 } else if (decal.getTextureRegion() != selectedPrototypeObjectRegion) {
                     updateRegion(selectedPrototypeObjectRegion);
                 }
+                decalBatch.add(decal);
+                break;
+            case TILE:
+                spriteBatch.draw(defaultRegion,(int)getPosition().x,(int)getPosition().y,1,1);
+                break;
+            case TILE_BUCKET:
+                spriteBatch.draw(defaultRegion,(int)getPosition().x,(int)getPosition().y,1,1);
                 break;
         }
-
-        decalBatch.add(decal);
-    }
-
-    private boolean isInBounds(float x, float y) {
-        return (x >= 0 && x <= worldSize && y >= 0 && y <= worldSize);
     }
 
     public void moveTo(Vector3 worldPos) {
@@ -70,7 +73,7 @@ public class Cursor {
         }
         worldPos.y = Utils.round(worldPos.y, 1f / 16f);
 
-        if (isInBounds(worldPos.x, worldPos.y)) {
+        if (level.isInBounds(worldPos.x, worldPos.y)) {
             allowPlacingItem();
         } else {
             forbidPlacingItem();
@@ -122,7 +125,7 @@ public class Cursor {
         return decal.getPosition();
     }
 
-    public void rotateY(float angle){
+    public void rotateY(float angle) {
         decal.rotateY(angle);
     }
 }

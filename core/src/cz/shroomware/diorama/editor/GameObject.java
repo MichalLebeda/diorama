@@ -13,6 +13,8 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import cz.shroomware.diorama.Utils;
+
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class GameObject {
@@ -26,8 +28,8 @@ public class GameObject {
         decal.setRotation(cursor.getRotation());
     }
 
-    public GameObject(Vector3 position,Quaternion quaternion, GameObjectPrototype prototype) {
-        this(position,prototype);
+    public GameObject(Vector3 position, Quaternion quaternion, GameObjectPrototype prototype) {
+        this(position, prototype);
         setRotation(quaternion);
     }
 
@@ -42,8 +44,8 @@ public class GameObject {
         TextureRegion shadowRegion = prototype.getShadowRegion();
         if (shadowRegion != null) {
             shadowSprite = new Sprite(shadowRegion);
-            shadowSprite.setSize(decal.getWidth() * 2, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * 2));
-            shadowSprite.setPosition(decal.getPosition().x - shadowSprite.getWidth() / 2, decal.getPosition().y - shadowSprite.getHeight());
+            shadowSprite.setSize(decal.getWidth() * Utils.SHADOW_SCALE, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * Utils.SHADOW_SCALE));
+            shadowSprite.setPosition(decal.getPosition().x - shadowSprite.getWidth() / 2, decal.getPosition().y - shadowSprite.getHeight() - 0.01f / PIXELS_PER_METER);
         }
     }
 
@@ -113,7 +115,23 @@ public class GameObject {
         decal.setRotation(yaw, pitch, roll);
     }
 
-    public void setRotation(Quaternion quaternion){
+    public void setRotation(Quaternion quaternion) {
         decal.setRotation(quaternion);
+    }
+
+    public void translate(Vector3 translation) {
+        decal.translate(translation);
+    }
+
+    public void translate(float x, float y, float z) {
+        decal.translate(x, y, z);
+    }
+
+    public float getHeight(){
+        return decal.getHeight();
+    }
+
+    public float getWidth(){
+        return decal.getWidth();
     }
 }

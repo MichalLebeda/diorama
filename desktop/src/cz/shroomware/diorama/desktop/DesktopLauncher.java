@@ -33,8 +33,8 @@ public class DesktopLauncher {
         settings.paddingY = 16;
         settings.silent = true;
         settings.duplicatePadding = false;
-        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
-        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear;
+        settings.filterMag = Texture.TextureFilter.Nearest;
+        settings.filterMin = Texture.TextureFilter.Nearest;
         boolean forceUpdate = false;
 
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();

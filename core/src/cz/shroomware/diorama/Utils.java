@@ -21,6 +21,8 @@ public class Utils {
 
     public static final float PIXELS_PER_METER = 16f;
 
+    public static final float SHADOW_SCALE = 2;
+
     public static final String PROJECT_FOLDER = "Documents/PixelLab/";
 
     public static float round(float input, float step) {

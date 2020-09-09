@@ -18,8 +18,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.editor.GameObjectPrototype;
+import cz.shroomware.diorama.editor.Level;
 
-public abstract class Hud extends Stage {
+public class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
     SelectedModeIndicator selectedModeIndicator;
     ModeIndicator modeIndicator;
@@ -30,7 +31,7 @@ public abstract class Hud extends Stage {
     Messages messages;
     boolean lastDirtyState = false;
 
-    public Hud(final DioramaGame game, Array<GameObjectPrototype> prototypes, Editor editor) {
+    public Hud(final DioramaGame game, Array<GameObjectPrototype> prototypes, Editor editor, Level level) {
         super();
         this.game = game;
 //        setDebugAll(true);
@@ -74,7 +75,7 @@ public abstract class Hud extends Stage {
         addActor(messages);
 
         projectNameLabel = new LeftToBackgroundLabel(
-                editor.getFilename(),
+                level.getFilename(),
                 game,
                 selectedItemIndicator.getX() - 10);
         projectNameLabel.addListener(new ClickListener() {
@@ -149,8 +150,6 @@ public abstract class Hud extends Stage {
     public Vector3 getMenuScreenPosition() {
         return getCamera().project(getMenuStagePosition());
     }
-
-    public abstract void onSelectedItemRegion(GameObjectPrototype prototype);
 
     @Override
     public void dispose() {

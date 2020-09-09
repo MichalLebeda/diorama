@@ -2,7 +2,7 @@
 shadows.png
 size: 2048,2048
 format: RGBA8888
-filter: MipMapLinearLinear,MipMapLinearLinear
+filter: Nearest,Nearest
 repeat: none
 baobab
   rotate: false
@@ -32,98 +32,286 @@ big_rock_c
   orig: 512, 245
   offset: 0, 0
   index: -1
-bush
+boar
   rotate: false
   xy: 544, 1321
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
-  index: -1
-campfire
+  index: 3
+boar_back
   rotate: false
   xy: 1072, 1582
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
-  index: -1
-desert_bush
+  index: 0
+bush
   rotate: false
   xy: 16, 799
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-desert_tree
+campfire
   rotate: false
   xy: 544, 1060
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-floor
+cursor
   rotate: false
   xy: 1072, 1321
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-giraffe
+desert_bush
   rotate: false
   xy: 16, 538
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-hut
+desert_tree
   rotate: false
   xy: 544, 799
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-hut_big
+dirt
   rotate: false
   xy: 1072, 1060
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-rock
+floor
+  rotate: false
+  xy: 1072, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+ground
+  rotate: false
+  xy: 1072, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+selector_background
+  rotate: false
+  xy: 1072, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+wall_top
+  rotate: false
+  xy: 1072, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+white
+  rotate: false
+  xy: 1072, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+dwarf_a
   rotate: false
   xy: 16, 277
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-shadow
+flower_a
   rotate: false
   xy: 544, 538
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
-  index: -1
-small_rock
+  index: 0
+flower_c
   rotate: false
   xy: 1072, 799
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
-  index: -1
-tepee
+  index: 1
+giraffe
   rotate: false
   xy: 16, 16
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
-tree
+hut
   rotate: false
   xy: 544, 277
   size: 512, 245
   orig: 512, 245
   offset: 0, 0
   index: -1
+hut_a
+  rotate: false
+  xy: 1072, 538
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+hut_big
+  rotate: false
+  xy: 544, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+knob
+  rotate: false
+  xy: 1072, 277
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+planks
+  rotate: false
+  xy: 1072, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+
+shadows2.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+reed
+  rotate: false
+  xy: 16, 1582
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+rock
+  rotate: false
+  xy: 16, 1321
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+rock_a
+  rotate: false
+  xy: 544, 1582
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+rock_b
+  rotate: false
+  xy: 16, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+rooter
+  rotate: false
+  xy: 544, 1321
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+shroom_a
+  rotate: false
+  xy: 1072, 1582
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: 0
+shroom_a_1_extra
+  rotate: false
+  xy: 16, 799
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+shroom_b
+  rotate: false
+  xy: 544, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: 0
+shroom_b_1_extra
+  rotate: false
+  xy: 1072, 1321
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+shroom_c
+  rotate: false
+  xy: 16, 538
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: 0
+shroom_c_1_extra
+  rotate: false
+  xy: 544, 799
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+shroom_d
+  rotate: false
+  xy: 1072, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: 0
+shroom_d_1_extra
+  rotate: false
+  xy: 16, 277
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+small_rock
+  rotate: false
+  xy: 544, 538
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tepee
+  rotate: false
+  xy: 1072, 799
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree
+  rotate: false
+  xy: 16, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
 tree-savanna
+  rotate: false
+  xy: 544, 277
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_a
   rotate: false
   xy: 1072, 538
   size: 512, 245
@@ -144,9 +332,175 @@ tree_big
   orig: 512, 245
   offset: 0, 0
   index: -1
+tree_c
+  rotate: false
+  xy: 1072, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+
+shadows3.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+tree_d
+  rotate: false
+  xy: 16, 1582
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_e
+  rotate: false
+  xy: 16, 1321
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_f
+  rotate: false
+  xy: 544, 1582
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_g
+  rotate: false
+  xy: 16, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_h
+  rotate: false
+  xy: 544, 1321
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_i
+  rotate: false
+  xy: 1072, 1582
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+tree_k
+  rotate: false
+  xy: 16, 799
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water
+  rotate: false
+  xy: 544, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_bottom
+  rotate: false
+  xy: 1072, 1321
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_bottom_left
+  rotate: false
+  xy: 16, 538
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_bottom_left_small
+  rotate: false
+  xy: 544, 799
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_bottom_right
+  rotate: false
+  xy: 1072, 1060
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_bottom_right_small
+  rotate: false
+  xy: 16, 277
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_left
+  rotate: false
+  xy: 544, 538
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_right
+  rotate: false
+  xy: 1072, 799
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_top
+  rotate: false
+  xy: 16, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_top_left
+  rotate: false
+  xy: 544, 277
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_top_left_small
+  rotate: false
+  xy: 1072, 538
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_top_right
+  rotate: false
+  xy: 544, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+water_to_grass_top_right_small
+  rotate: false
+  xy: 1072, 277
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
 well
   rotate: false
   xy: 1072, 16
+  size: 512, 245
+  orig: 512, 245
+  offset: 0, 0
+  index: -1
+
+shadows4.png
+size: 1024,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+witch
+  rotate: false
+  xy: 16, 16
   size: 512, 245
   orig: 512, 245
   offset: 0, 0

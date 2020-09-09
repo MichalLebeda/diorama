@@ -9,17 +9,9 @@ public class Editor {
     String filename;
 
     public Editor(String filename) {
-        if(filename==null){
+        if (filename == null) {
             throw new NullPointerException();
         }
-        this.filename = filename;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
         this.filename = filename;
     }
 
@@ -29,7 +21,9 @@ public class Editor {
 
     public void setCurrentlySelectedPrototype(GameObjectPrototype currentlySelectedPrototype) {
         this.currentlySelectedPrototype = currentlySelectedPrototype;
-        mode = Mode.ITEM;
+        if (isMode(Editor.Mode.DELETE)) {
+            setMode(Editor.Mode.ITEM);
+        }
     }
 
     public History getHistory() {
@@ -60,7 +54,15 @@ public class Editor {
         return null;
     }
 
+    public void setNextMode() {
+        mode = mode.getNextMode();
+    }
+
     public enum Mode {
-        ITEM,TILE, DELETE
+        ITEM, TILE, TILE_BUCKET, DELETE;
+
+        public Mode getNextMode() {
+            return Mode.values()[(this.ordinal() + 1) % (Mode.values().length)];
+        }
     }
 }
