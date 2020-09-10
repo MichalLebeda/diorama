@@ -2,10 +2,13 @@ package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import cz.shroomware.diorama.editor.history.History;
+import cz.shroomware.diorama.engine.GameObjectPrototype;
+
 public class Editor {
-    protected GameObjectPrototype currentlySelectedPrototype;
+    protected cz.shroomware.diorama.engine.GameObjectPrototype currentlySelectedPrototype;
     Mode mode = Mode.ITEM;
-    History history = new History();
+    cz.shroomware.diorama.editor.history.History history = new cz.shroomware.diorama.editor.history.History();
     String filename;
 
     public Editor(String filename) {
@@ -15,7 +18,7 @@ public class Editor {
         this.filename = filename;
     }
 
-    public GameObjectPrototype getCurrentlySelectedPrototype() {
+    public cz.shroomware.diorama.engine.GameObjectPrototype getCurrentlySelectedPrototype() {
         return currentlySelectedPrototype;
     }
 
@@ -48,7 +51,7 @@ public class Editor {
 
     public TextureRegion getPrototypeObjectRegion() {
         if (currentlySelectedPrototype != null) {
-            return currentlySelectedPrototype.objectRegion;
+            return currentlySelectedPrototype.getObjectRegion();
         }
 
         return null;

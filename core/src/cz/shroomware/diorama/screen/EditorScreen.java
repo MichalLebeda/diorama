@@ -24,9 +24,9 @@ import java.util.Date;
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Cursor;
 import cz.shroomware.diorama.editor.Editor;
-import cz.shroomware.diorama.editor.GameObject;
-import cz.shroomware.diorama.editor.GameObjectPrototype;
-import cz.shroomware.diorama.editor.Level;
+import cz.shroomware.diorama.engine.GameObject;
+import cz.shroomware.diorama.engine.GameObjectPrototype;
+import cz.shroomware.diorama.engine.Level;
 import cz.shroomware.diorama.ui.Hud;
 
 public class EditorScreen extends BaseLevelScreen {
@@ -135,8 +135,6 @@ public class EditorScreen extends BaseLevelScreen {
             currentlyHighlightedObject.setSelected(false);
             currentlyHighlightedObject = null;
         }
-
-        Gdx.app.error("dragging",""+dragging);
     }
 
     protected void clampCameraPos(Camera camera) {

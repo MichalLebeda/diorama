@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.editor.history.actions;
 
 public interface HistoryAction {
     public void undo();

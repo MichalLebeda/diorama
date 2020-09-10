@@ -9,11 +9,10 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
-import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.editor.Level;
+import cz.shroomware.diorama.engine.Level;
 
 public class BaseLevelScreen implements Screen, InputProcessor {
     protected DioramaGame game;

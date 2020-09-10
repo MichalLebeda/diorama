@@ -7,9 +7,9 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.DioramaGame;
-import cz.shroomware.diorama.editor.GameObject;
-import cz.shroomware.diorama.editor.GameObjectPrototype;
-import cz.shroomware.diorama.editor.Level;
+import cz.shroomware.diorama.engine.GameObject;
+import cz.shroomware.diorama.engine.GameObjectPrototype;
+import cz.shroomware.diorama.engine.Level;
 
 public class PlayScreen extends BaseLevelScreen implements InputProcessor {
     private static final float SPEED = 0.1f;

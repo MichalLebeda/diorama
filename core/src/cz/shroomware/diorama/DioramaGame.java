@@ -8,10 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import java.io.InputStream;
-
-import cz.shroomware.diorama.editor.Level;
-import cz.shroomware.diorama.editor.ProjectSelectionScreen;
+import cz.shroomware.diorama.engine.Level;
+import cz.shroomware.diorama.screen.ProjectSelectionScreen;
 import cz.shroomware.diorama.screen.EditorScreen;
 import cz.shroomware.diorama.screen.PlayScreen;
 

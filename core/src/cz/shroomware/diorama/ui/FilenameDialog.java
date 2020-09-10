@@ -6,8 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import cz.shroomware.diorama.DioramaGame;
-import cz.shroomware.diorama.editor.Editor;
-import cz.shroomware.diorama.editor.ProjectSelectionScreen;
+import cz.shroomware.diorama.screen.ProjectSelectionScreen;
 
 public class FilenameDialog extends Dialog {
     TextField textField;

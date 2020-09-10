@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

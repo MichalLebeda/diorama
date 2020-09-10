@@ -1,7 +1,9 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.editor.history;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+
+import cz.shroomware.diorama.editor.history.actions.HistoryAction;
 
 public class History {
     int actionIndex = -1;

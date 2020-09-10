@@ -1,10 +1,11 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.engine;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.editor.Cursor;
 
 public class GameObjectPrototype {
     protected TextureAtlas.AtlasRegion objectRegion, shadowRegion;

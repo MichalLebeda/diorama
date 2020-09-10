@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Align;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
-import cz.shroomware.diorama.editor.GameObjectPrototype;
+import cz.shroomware.diorama.engine.GameObjectPrototype;
 
 public class Item extends HorizontalGroup {
     static final int ITEM_SIZE = 100;

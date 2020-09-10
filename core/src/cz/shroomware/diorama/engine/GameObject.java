@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.engine;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.editor.Cursor;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 

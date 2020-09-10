@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.engine;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;

@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.engine;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,13 +15,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.editor.history.History;
 
 public class Level {
     protected String filename;
     protected Ground ground;
     protected GameObjects gameObjects;
 //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
-    public Level(String filename, History history, Array<GameObjectPrototype> gameObjectPrototypes,TextureAtlas atlas) {
+    public Level(String filename, History history, Array<GameObjectPrototype> gameObjectPrototypes, TextureAtlas atlas) {
         this.filename = filename;
         ground = new Ground(atlas.findRegion("floor"));
         gameObjects = new GameObjects(history);

@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.engine;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -13,6 +13,10 @@ import com.badlogic.gdx.utils.Array;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import cz.shroomware.diorama.editor.history.actions.DeleteGameObjectAction;
+import cz.shroomware.diorama.editor.history.History;
+import cz.shroomware.diorama.editor.history.actions.PlaceGameObjectAction;
 
 public class GameObjects {
     protected Array<GameObject> gameObjects = new Array<>();
@@ -65,6 +69,7 @@ public class GameObjects {
         for (GameObject gameObject : gameObjects) {
             gameObject.sizeBoundingBox(boundingBox);
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
+
                 return gameObject;
             }
         }

@@ -1,10 +1,11 @@
-package cz.shroomware.diorama.editor;
+package cz.shroomware.diorama.editor.history.actions;
 
-import com.badlogic.gdx.Gdx;
+import cz.shroomware.diorama.engine.GameObject;
+import cz.shroomware.diorama.engine.GameObjects;
 
 public class PlaceGameObjectAction implements HistoryAction {
-    GameObject object;
-    GameObjects gameObjects;
+    cz.shroomware.diorama.engine.GameObject object;
+    cz.shroomware.diorama.engine.GameObjects gameObjects;
 
     public PlaceGameObjectAction(GameObject object, GameObjects gameObjects) {
         this.object = object;
