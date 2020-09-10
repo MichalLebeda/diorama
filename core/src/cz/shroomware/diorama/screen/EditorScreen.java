@@ -24,25 +24,30 @@ import java.util.Date;
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Cursor;
 import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.GameObjectsTool;
+import cz.shroomware.diorama.editor.GroundTool;
 import cz.shroomware.diorama.engine.GameObject;
 import cz.shroomware.diorama.engine.GameObjectPrototype;
 import cz.shroomware.diorama.engine.Level;
+import cz.shroomware.diorama.engine.Prototypes;
 import cz.shroomware.diorama.ui.Hud;
 
-public class EditorScreen extends BaseLevelScreen {
+public class EditorScreen extends BaseScreen {
     protected static final float PAN_PER_PIXEL = 0.02f;
     protected static final float SCROLL_RATIO = 0.4f;
     protected static final float DEGREES_PER_PIXEL = 0.2f;
     protected static final float TRANSLATION_LIMIT = 3;
     protected static final float MAX_CAM_DIST_FROM_GRID = 8;
     protected Editor editor;
+    protected GroundTool groundTool;
+    protected GameObjectsTool gameObjectsTool;
     protected InputMultiplexer inputMultiplexer;
     protected TextureAtlas atlas;
     protected TextureAtlas shadowsAtlas;
     protected TextureRegion defaultCursorRegion;
-    protected Array<GameObjectPrototype> gameObjectPrototypes = new Array<>();
     protected Cursor cursor;
     protected Hud hud;
+    protected Prototypes gameObjectPrototypes;
     protected Vector2 lastDragScreenPos = new Vector2();
     protected Vector3 cameraLastDragWorldPos;
     protected GameObject currentlyHighlightedObject;
@@ -50,6 +55,7 @@ public class EditorScreen extends BaseLevelScreen {
     protected boolean showAddRemoveMessages = false;
     protected boolean preventSave = false; //TODO: this is a workaround for not saving player from preview etc.
     boolean dragging = false;
+    Level level;
 
     public EditorScreen(DioramaGame game, String filename) {
         super(game);
@@ -59,10 +65,16 @@ public class EditorScreen extends BaseLevelScreen {
         defaultCursorRegion = atlas.findRegion("cursor");
         shadowsAtlas = game.getShadowsAtlas();
 
+        gameObjectPrototypes = new Prototypes();
         loadPrototypes();
-        level = new Level(filename, editor.getHistory(), gameObjectPrototypes, atlas);
+
+        level = new Level(filename, gameObjectPrototypes, atlas);
+        updateBackgorundColor(level);
         initCamera(level);
-        updateBackgorundColor();
+
+        groundTool = new GroundTool(level.getGround(), editor.getHistory());
+        gameObjectsTool = new GameObjectsTool(level.getGameObjects(), editor.getHistory());
+
         cursor = new Cursor(editor, level, defaultCursorRegion);
 
         hud = new Hud(game, gameObjectPrototypes, editor, level);
@@ -85,7 +97,7 @@ public class EditorScreen extends BaseLevelScreen {
             }
 
             shadowRegion = shadowsAtlas.findRegion(region.name);
-            gameObjectPrototypes.add(new GameObjectPrototype(region, shadowRegion));
+            gameObjectPrototypes.addGameObjectProtoype(new GameObjectPrototype(region, shadowRegion));
         }
     }
 
@@ -159,7 +171,7 @@ public class EditorScreen extends BaseLevelScreen {
     }
 
     private void placeCurrentObjectAtCursorPosition() {
-        level.addObject(editor.getCurrentlySelectedPrototype().createAtCursor(cursor));
+        gameObjectsTool.addObject(editor.getCurrentlySelectedPrototype().createAtCursor(cursor));
         if (showAddRemoveMessages) {
             hud.showMessage("ADD " + editor.getCurrentlySelectedPrototype().getName());
         }
@@ -199,7 +211,7 @@ public class EditorScreen extends BaseLevelScreen {
             } else if (editor.isMode(Editor.Mode.DELETE)) {
                 GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
                 if (gameObject != null) {
-                    level.removeObject(gameObject);
+                    gameObjectsTool.removeObject(gameObject);
                     if (showAddRemoveMessages) {
                         hud.showMessage("DEL " + gameObject.getName());
                     }
@@ -214,7 +226,7 @@ public class EditorScreen extends BaseLevelScreen {
                             new Plane(Vector3.Z, Vector3.X),
                             intersection);
 
-                    level.setTileAt(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
+                    groundTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
                 }
             } else if (editor.isMode(Editor.Mode.TILE_BUCKET)) {
                 if (editor.getCurrentlySelectedPrototype() != null) {
@@ -225,7 +237,7 @@ public class EditorScreen extends BaseLevelScreen {
                             new Plane(Vector3.Z, Vector3.X),
                             intersection);
 
-                    level.setTileBucketAt(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
+                    groundTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
                 }
             }
         }

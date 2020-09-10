@@ -11,21 +11,22 @@ import cz.shroomware.diorama.engine.GameObject;
 import cz.shroomware.diorama.engine.GameObjectPrototype;
 import cz.shroomware.diorama.engine.Level;
 
-public class PlayScreen extends BaseLevelScreen implements InputProcessor {
-    private static final float SPEED = 0.1f;
-    private static final float Y_CAMERA_DISTANCE = 4;
+public class PlayScreen extends BaseScreen implements InputProcessor {
+    protected static final float SPEED = 0.1f;
+    protected static final float Y_CAMERA_DISTANCE = 4;
+    protected Level level;
     GameObject player;
 
     public PlayScreen(DioramaGame game, Level level) {
         super(game);
         this.level = level;
-        updateBackgorundColor();
+        updateBackgorundColor(level);
         initCamera(level);
 
         player = new GameObject(new Vector3(level.getSize() / 2.f, 4, 0.5f),
                 new Quaternion().setFromAxis(Vector3.X, 90),
                 new GameObjectPrototype(game.getAtlas().findRegion("dwarf")));
-        level.addObject(player);
+        level.getGameObjects().add(player);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class PlayScreen extends BaseLevelScreen implements InputProcessor {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case Input.Keys.ESCAPE:
-                level.removeObject(player);
+                level.getGameObjects().remove(player);
                 game.returnToEditor();
                 return true;
         }

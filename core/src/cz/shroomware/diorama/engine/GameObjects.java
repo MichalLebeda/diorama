@@ -23,11 +23,6 @@ import cz.shroomware.diorama.editor.history.actions.PlaceGameObjectAction;
 public class GameObjects {
     protected Array<GameObject> gameObjects = new Array<>();
     protected boolean dirty = false;
-    protected History history;
-
-    public GameObjects(History history) {
-        this.history = history;
-    }
 
     public void drawShadows(Batch batch) {
         for (GameObject object : gameObjects) {
@@ -41,26 +36,14 @@ public class GameObjects {
         }
     }
 
-    public void addNoHistory(GameObject gameObject) {
-        dirty = true;
-        gameObjects.add(gameObject);
-    }
-
     public void add(GameObject gameObject) {
         dirty = true;
         gameObjects.add(gameObject);
-        history.addAction(new PlaceGameObjectAction(gameObject, this));
-    }
-
-    public void removeNoHistory(GameObject gameObject) {
-        dirty = true;
-        gameObjects.removeValue(gameObject, false);
     }
 
     public void remove(GameObject gameObject) {
         dirty = true;
         gameObjects.removeValue(gameObject, false);
-        history.addAction(new DeleteGameObjectAction(gameObject, this));
     }
 
     public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
@@ -108,7 +91,7 @@ public class GameObjects {
         return dirty;
     }
 
-    public void load(BufferedReader bufferedReader, Array<GameObjectPrototype> prototypes) {
+    public void load(BufferedReader bufferedReader,Prototypes gameObjectPrototypes) {
         gameObjects.clear();
 
         String line = null;
@@ -128,7 +111,8 @@ public class GameObjects {
 //                        Float.parseFloat(attributes[2]),
 //                        Float.parseFloat(attributes[3]));
 
-                for (GameObjectPrototype prototype : prototypes) {
+                for (int i =0;i<gameObjectPrototypes.getSize();i++) {
+                    GameObjectPrototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
                     if (attributes[0].equals(prototype.getName())) {
                         Gdx.app.error("LINE 2", prototype.getName());
                         Quaternion quaternion = new Quaternion(
@@ -142,7 +126,7 @@ public class GameObjects {
                                 quaternion);
 //                        GameObject object = prototype.createAt(position, quaternion);
                         object.setRotation(quaternion);
-                        addNoHistory(object);
+                        add(object);
                     }
                 }
             }

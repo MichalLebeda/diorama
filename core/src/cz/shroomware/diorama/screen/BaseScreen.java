@@ -14,24 +14,23 @@ import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.Level;
 
-public class BaseLevelScreen implements Screen, InputProcessor {
+public class BaseScreen implements Screen, InputProcessor {
     protected DioramaGame game;
     protected Color backgroundColor;
     protected SpriteBatch spriteBatch;
     protected MinimalisticDecalBatch decalBatch;
     protected PerspectiveCamera camera;
-    protected Level level;
 
-    BaseLevelScreen(DioramaGame game) {
+    BaseScreen(DioramaGame game) {
         this.game = game;
         spriteBatch = new SpriteBatch();
         spriteBatch.setShader(game.getSpriteBatchShader());
         decalBatch = new MinimalisticDecalBatch();
     }
 
-    protected void updateBackgorundColor() {
+    protected void updateBackgorundColor(Level level) {
         // Use dominant floor color as background
-        Pixmap pixmap = Utils.extractPixmapFromTextureRegion(level.getGrid().getTileAt(0, 0));
+        Pixmap pixmap = Utils.extractPixmapFromTextureRegion(level.getGround().getTileAtIndex(0, 0));
         backgroundColor = Utils.getDominantColor(pixmap);
 //        backgroundColor.mul(0.9f);
         pixmap.dispose();

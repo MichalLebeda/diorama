@@ -4,8 +4,8 @@ import cz.shroomware.diorama.engine.GameObject;
 import cz.shroomware.diorama.engine.GameObjects;
 
 public class PlaceGameObjectAction implements HistoryAction {
-    cz.shroomware.diorama.engine.GameObject object;
-    cz.shroomware.diorama.engine.GameObjects gameObjects;
+    GameObjects gameObjects;
+    GameObject object;
 
     public PlaceGameObjectAction(GameObject object, GameObjects gameObjects) {
         this.object = object;
@@ -14,16 +14,16 @@ public class PlaceGameObjectAction implements HistoryAction {
 
     @Override
     public void undo() {
-        gameObjects.removeNoHistory(object);
+        gameObjects.remove(object);
     }
 
     @Override
     public void redo() {
-        gameObjects.addNoHistory(object);
+        gameObjects.add(object);
     }
 
     @Override
     public String getText() {
-        return "add "+object.getName();
+        return "add " + object.getName();
     }
 }

@@ -4,8 +4,8 @@ import cz.shroomware.diorama.engine.GameObject;
 import cz.shroomware.diorama.engine.GameObjects;
 
 public class DeleteGameObjectAction implements HistoryAction {
-    cz.shroomware.diorama.engine.GameObject object;
-    cz.shroomware.diorama.engine.GameObjects gameObjects;
+    GameObjects gameObjects;
+    GameObject object;
 
     public DeleteGameObjectAction(GameObject object, GameObjects gameObjects) {
         this.object = object;
@@ -14,12 +14,12 @@ public class DeleteGameObjectAction implements HistoryAction {
 
     @Override
     public void undo() {
-        gameObjects.addNoHistory(object);
+        gameObjects.add(object);
     }
 
     @Override
     public void redo() {
-        gameObjects.removeNoHistory(object);
+        gameObjects.remove(object);
     }
 
     @Override

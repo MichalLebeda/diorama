@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import cz.shroomware.diorama.DioramaGame;
@@ -22,6 +21,7 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.engine.GameObjectPrototype;
 import cz.shroomware.diorama.engine.Level;
+import cz.shroomware.diorama.engine.Prototypes;
 
 public class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
@@ -35,7 +35,7 @@ public class Hud extends Stage {
     Image colorIndicator;
     boolean lastDirtyState = false;
 
-    public Hud(final DioramaGame game, Array<GameObjectPrototype> prototypes, Editor editor, Level level) {
+    public Hud(final DioramaGame game, Prototypes prototypes, Editor editor, Level level) {
         super();
         this.game = game;
 //        setDebugAll(true);
@@ -50,7 +50,8 @@ public class Hud extends Stage {
         itemGroup.columnAlign(Align.right);
         itemGroup.pad(10);
         itemGroup.space(10);
-        for (GameObjectPrototype prototype : prototypes) {
+        for (int i = 0; i < prototypes.getSize(); i++) {
+            GameObjectPrototype prototype = prototypes.getGameObjectPrototype(i);
             itemGroup.addActor(new Item(game, editor, prototype) {
                 @Override
                 public float getPrefWidth() {
@@ -95,7 +96,7 @@ public class Hud extends Stage {
         unsavedChangesLabel.setVisible(false);
         addActor(unsavedChangesLabel);
 
-        colorIndicator = new Image(game.getUiAtlas().findRegion("white")){
+        colorIndicator = new Image(game.getUiAtlas().findRegion("white")) {
             @Override
             public float getMinHeight() {
                 return 100;
@@ -106,7 +107,7 @@ public class Hud extends Stage {
                 return 100;
             }
         };
-        colorIndicator.setSize(100,100);
+        colorIndicator.setSize(100, 100);
         addActor(colorIndicator);
     }
 
@@ -182,7 +183,7 @@ public class Hud extends Stage {
 
         projectNameLabel.setPosition(
                 10,
-                getHeight()-10 - projectNameLabel.getHeightWithPadding());
+                getHeight() - 10 - projectNameLabel.getHeightWithPadding());
 
         unsavedChangesLabel.setX(projectNameLabel.getXWithPadding() + projectNameLabel.getWidthWithPadding() + 10);
         unsavedChangesLabel.setY(projectNameLabel.getYWithPadding());

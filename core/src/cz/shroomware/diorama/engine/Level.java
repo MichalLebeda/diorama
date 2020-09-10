@@ -3,11 +3,9 @@ package cz.shroomware.diorama.engine;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.Array;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +14,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.editor.history.History;
 
 public class Level {
     protected String filename;
@@ -25,14 +22,14 @@ public class Level {
 
     //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
     //TODO ZBAVIT SE HISTORIE AT JE TO HEZKY ROZDELENY
-    public Level(String filename, History history, Array<GameObjectPrototype> gameObjectPrototypes, TextureAtlas atlas) {
+    public Level(String filename, Prototypes gameObjectPrototypes, TextureAtlas atlas) {
         this.filename = filename;
-        ground = new Ground(atlas.findRegion("floor"), history);
-        gameObjects = new GameObjects(history);
+        ground = new Ground(atlas.findRegion("floor"));
+        gameObjects = new GameObjects();
         loadIfExists(gameObjectPrototypes, atlas);
     }
 
-    public boolean loadIfExists(Array<GameObjectPrototype> gameObjectPrototypes, TextureAtlas atlas) {
+    public boolean loadIfExists(Prototypes gameObjectPrototypes, TextureAtlas atlas) {
         FileHandle fileHandle = Utils.getFileHandle(filename);
         if (fileHandle.exists()) {
             InputStream inputStream = fileHandle.read();
@@ -96,27 +93,23 @@ public class Level {
         return gameObjects.isDirty() || ground.isDirty();
     }
 
-    public void addObject(GameObject object) {
-        gameObjects.add(object);
-    }
-
-    public void removeObject(GameObject object) {
-        gameObjects.remove(object);
-    }
-
-    public void setTileAt(float x, float y, TextureRegion region) {
-        ground.setTileRegionAt(x, y, region);
-    }
-
-    public void setTileBucketAt(float x, float y, TextureRegion region) {
-        ground.tileRegionBucketAt(x, y, region);
-    }
+//    public void addObject(GameObject object) {
+//        gameObjects.add(object);
+//    }
+//
+//    public void removeObject(GameObject object) {
+//        gameObjects.remove(object);
+//    }
 
     public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
-        return gameObjects.findIntersectingWithRay(ray,cameraPos);
+        return gameObjects.findIntersectingWithRay(ray, cameraPos);
     }
 
-    public Ground getGrid() {
+    public Ground getGround() {
         return ground;
+    }
+
+    public GameObjects getGameObjects() {
+        return gameObjects;
     }
 }

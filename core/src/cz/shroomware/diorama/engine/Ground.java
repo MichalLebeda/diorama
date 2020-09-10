@@ -3,25 +3,17 @@ package cz.shroomware.diorama.engine;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Array;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import cz.shroomware.diorama.editor.history.History;
-import cz.shroomware.diorama.editor.history.actions.BucketTileAction;
-import cz.shroomware.diorama.editor.history.actions.PlaceTileAction;
-
 public class Ground {
     protected static final int GRID_SIZE = 100;
     protected Tile[][] grid = new Tile[GRID_SIZE][GRID_SIZE];
     protected boolean dirty = false;
-    protected History history;
 
-    public Ground(TextureRegion region, History history) {
-        this.history = history;
-
+    public Ground(TextureRegion region) {
         for (int x = 0; x < GRID_SIZE; x++) {
             for (int y = 0; y < GRID_SIZE; y++) {
                 Tile sprite = new Tile(x, y, region);
@@ -40,117 +32,40 @@ public class Ground {
         }
     }
 
-    public void setTileRegionAt(float x, float y, TextureRegion region) {
+    public boolean setTileRegionAtWorld(float x, float y, TextureRegion region) {
         int xIndex = (int) x;
         int yIndex = (int) y;
 
-        if (isInBounds(x, y)) {
-            Tile tile = grid[xIndex][yIndex];
-            TextureRegion tileRegion = tile.getRegion();
-            if (tileRegion != region) {
-                history.addAction(new PlaceTileAction(tile, tileRegion, region));
-                tile.setRegion(region);
-            }
-        }
-        dirty = true;
+        return setTileRegionAtIndex(xIndex, yIndex, region);
     }
 
-    public Tile getTileAt(int x, int y) {
-        if (isInBounds(x, y)) {
-            return grid[x][y];
-        }
-
-        return null;
-    }
-
-    protected void floodFillTileByOffset(Tile tile,
-                                         int xOffset, int yOffset,
-                                         TextureRegion toReplace, TextureRegion replacement,
-                                         Array<Tile> queue,
-                                         BucketTileAction bucketTileAction) {
-
-        int x = tile.getXIndex() + xOffset;
-        int y = tile.getYIndex() + yOffset;
-
-        if (isInBounds(x, y)) {
-            tile = grid[x][y];
-            if (tile.getRegion() == toReplace) {
-                bucketTileAction.add(tile, toReplace, replacement);
-                tile.setRegion(replacement);
-                queue.add(tile);
-            }
-        }
-    }
-
-    protected void floodFillTileByOffset(Tile tile,
-                                         int xOffset, int yOffset,
-                                         TextureRegion toReplace, TextureRegion replacement,
-                                         Array<Tile> queue) {
-
-        int x = tile.getXIndex() + xOffset;
-        int y = tile.getYIndex() + yOffset;
-
-        if (isInBounds(x, y)) {
-            tile = grid[x][y];
-            if (tile.getRegion() == toReplace) {
-                tile.setRegion(replacement);
-                queue.add(tile);
-            }
-        }
-    }
-
-    protected boolean floodFill(int x, int y, TextureRegion toReplace, TextureRegion replacement) {
-        Array<Tile> queue = new Array<>();
-
-        if (toReplace == replacement) {
+    protected boolean setTileRegionAtIndex(int xIndex, int yIndex, TextureRegion region) {
+        if (!isInBounds(xIndex, yIndex)) {
             return false;
         }
 
-        Tile tile = grid[x][y];
+        Tile tile = getTileAtIndex(xIndex, yIndex);
+        TextureRegion tileRegion = tile.getRegion();
+        if (tileRegion != region) {
+            tile.setRegion(region);
 
-        if (tile.getRegion() == toReplace) {
-            if (history != null) {
-                BucketTileAction bucketTileAction = new BucketTileAction();
-                bucketTileAction.add(tile, toReplace, replacement);
-
-                tile.setRegion(replacement);
-
-                queue.add(tile);
-
-                while (!queue.isEmpty()) {
-                    tile = queue.get(0);
-                    queue.removeIndex(0);
-
-                    floodFillTileByOffset(tile, 1, 0, toReplace, replacement, queue, bucketTileAction);
-                    floodFillTileByOffset(tile, -1, 0, toReplace, replacement, queue, bucketTileAction);
-                    floodFillTileByOffset(tile, 0, 1, toReplace, replacement, queue, bucketTileAction);
-                    floodFillTileByOffset(tile, 0, -1, toReplace, replacement, queue, bucketTileAction);
-                }
-                history.addAction(bucketTileAction);
-            } else {
-                tile.setRegion(replacement);
-
-                queue.add(tile);
-
-                while (!queue.isEmpty()) {
-                    tile = queue.get(0);
-                    queue.removeIndex(0);
-
-                    floodFillTileByOffset(tile, 1, 0, toReplace, replacement, queue);
-                    floodFillTileByOffset(tile, -1, 0, toReplace, replacement, queue);
-                    floodFillTileByOffset(tile, 0, 1, toReplace, replacement, queue);
-                    floodFillTileByOffset(tile, 0, -1, toReplace, replacement, queue);
-                }
-            }
-
+            dirty = true;
             return true;
         }
 
         return false;
     }
 
-    public void tileRegionBucketAt(float x, float y, TextureRegion region) {
-        dirty = floodFill((int) x, (int) y, grid[(int) x][(int) y].region, region);
+    public Tile getTileAtWorld(float x, float y) {
+        return getTileAtIndex((int) x, (int) y);
+    }
+
+    public Tile getTileAtIndex(int x, int y) {
+        if (isInBounds(x, y)) {
+            return grid[x][y];
+        }
+
+        return null;
     }
 
     public boolean isInBounds(int x, int y) {

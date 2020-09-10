@@ -8,7 +8,7 @@ import cz.shroomware.diorama.engine.GameObjectPrototype;
 public class Editor {
     protected cz.shroomware.diorama.engine.GameObjectPrototype currentlySelectedPrototype;
     Mode mode = Mode.ITEM;
-    cz.shroomware.diorama.editor.history.History history = new cz.shroomware.diorama.editor.history.History();
+    History history = new History();
     String filename;
 
     public Editor(String filename) {
