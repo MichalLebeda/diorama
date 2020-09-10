@@ -9,10 +9,12 @@ uniform mat4 u_projectionViewMatrix;
 // uniform float time;
 varying vec4 v_color;
 varying vec2 v_texCoords;
- 
+varying vec4 v_position;
+
 void main()
 {
     v_color = a_color;
+    v_position = a_position;
     v_color.a = v_color.a * (255.0/254.0);
     v_texCoords = a_texCoord0;
     gl_Position = u_projectionViewMatrix * a_position;

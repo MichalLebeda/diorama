@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
@@ -22,9 +23,10 @@ public class BaseLevelScreen implements Screen, InputProcessor {
     protected PerspectiveCamera camera;
     protected Level level;
 
-    BaseLevelScreen(DioramaGame game){
+    BaseLevelScreen(DioramaGame game) {
         this.game = game;
         spriteBatch = new SpriteBatch();
+        spriteBatch.setShader(game.getSpriteBatchShader());
         decalBatch = new MinimalisticDecalBatch();
     }
 

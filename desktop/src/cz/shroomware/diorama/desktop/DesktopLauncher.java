@@ -22,6 +22,7 @@ public class DesktopLauncher {
         config.setWindowedMode(1100, 680);
 //        config.setWindowedMode(1920, 1080);
         config.setWindowSizeLimits(640,560,16000,9000);
+        config.setTitle("Editor");
         new Lwjgl3Application(new DioramaGame(), config);
     }
 

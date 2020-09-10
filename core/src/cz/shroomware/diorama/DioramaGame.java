@@ -24,7 +24,7 @@ public class DioramaGame extends Game {
     TextureRegion darkBackground;
     Skin skin;
     ShaderProgram dfShader;
-    ShaderProgram decalShader;
+    ShaderProgram spriteBatchShader;
 
     @Override
     public void create() {
@@ -36,14 +36,15 @@ public class DioramaGame extends Game {
         skin.getFont("default-font").getData().setScale(0.32f);
         skin.getFont("default-font").setUseIntegerPositions(false);
 
+//        ShaderProgram.pedantic = false;
         dfShader = new ShaderProgram(Gdx.files.internal("shaders/font.vert"), Gdx.files.internal("shaders/font.frag"));
         if (!dfShader.isCompiled()) {
             Gdx.app.error("fontShader", "compilation failed:\n" + dfShader.getLog());
         }
 
-        decalShader = new ShaderProgram(Gdx.files.internal("shaders/v.glsl"), Gdx.files.internal("shaders/f.glsl"));
-        if (!decalShader.isCompiled()) {
-            Gdx.app.error("decalShader", "compilation failed:\n" + dfShader.getLog());
+        spriteBatchShader = new ShaderProgram(Gdx.files.internal("shaders/sprite.vert"), Gdx.files.internal("shaders/sprite.frag"));
+        if (!spriteBatchShader.isCompiled()) {
+            Gdx.app.error("spriteBatchShader", "compilation failed:\n" + dfShader.getLog());
         }
 
         projectSelectionScreen = new ProjectSelectionScreen(this);
@@ -102,8 +103,8 @@ public class DioramaGame extends Game {
         return dfShader;
     }
 
-    public ShaderProgram getDecalShader() {
-        return decalShader;
+    public ShaderProgram getSpriteBatchShader(){
+        return spriteBatchShader;
     }
 
     public TextureAtlas getAtlas() {

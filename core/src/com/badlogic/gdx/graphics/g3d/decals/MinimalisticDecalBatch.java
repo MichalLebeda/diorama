@@ -51,8 +51,8 @@ public class MinimalisticDecalBatch implements Disposable {
     }
 
     private void compileShader() {
-        String vertexShader = Gdx.files.internal("shaders/v.glsl").readString();
-        String fragmentShader = Gdx.files.internal("shaders/f.glsl").readString();
+        String vertexShader = Gdx.files.internal("shaders/decal.vert").readString();
+        String fragmentShader = Gdx.files.internal("shaders/decal.frag").readString();
 
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
         if (!shaderProgram.isCompiled())
@@ -88,6 +88,7 @@ public class MinimalisticDecalBatch implements Disposable {
         shaderProgram.bind();
         shaderProgram.setUniformMatrix("u_projectionViewMatrix", camera.combined);
         shaderProgram.setUniformi("u_texture", 0);
+        shaderProgram.setUniformf("u_camera_pos",camera.position);
         // batch vertices
         DecalMaterial lastMaterial = null;
         int idx = 0;

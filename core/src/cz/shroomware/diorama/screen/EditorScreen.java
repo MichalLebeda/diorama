@@ -48,6 +48,8 @@ public class EditorScreen extends BaseLevelScreen {
     protected GameObject currentlyHighlightedObject;
     protected boolean takingScreenshot;
     protected boolean showAddRemoveMessages = false;
+    protected boolean preventSave = false; //TODO: this is a workaround for not saving player from preview etc.
+    boolean dragging = false;
 
     public EditorScreen(DioramaGame game, String filename) {
         super(game);
@@ -89,6 +91,7 @@ public class EditorScreen extends BaseLevelScreen {
 
     @Override
     public void show() {
+        preventSave = false;
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
@@ -100,6 +103,8 @@ public class EditorScreen extends BaseLevelScreen {
         spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
+
+        game.getSpriteBatchShader().setUniformf("u_camera_pos", camera.position);
         level.draw(spriteBatch, decalBatch, delta);
 
         if (editor.getMode() == Editor.Mode.DELETE) {
@@ -130,6 +135,8 @@ public class EditorScreen extends BaseLevelScreen {
             currentlyHighlightedObject.setSelected(false);
             currentlyHighlightedObject = null;
         }
+
+        Gdx.app.error("dragging",""+dragging);
     }
 
     protected void clampCameraPos(Camera camera) {
@@ -162,6 +169,7 @@ public class EditorScreen extends BaseLevelScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        dragging = false;
         //let hud handle this if event occurred on top of menu
         Vector2 pos = new Vector2(screenX, screenY);
         pos = hud.screenToStageCoordinates(pos);
@@ -171,7 +179,6 @@ public class EditorScreen extends BaseLevelScreen {
 
         lastDragScreenPos.set(screenX, screenY);
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                 Vector3 intersection;
                 Ray ray = camera.getPickRay(screenX, screenY);
@@ -180,6 +187,7 @@ public class EditorScreen extends BaseLevelScreen {
                         new Plane(Vector3.Z, Vector3.X),
                         intersection);
 
+                dragging = true;
                 cameraLastDragWorldPos = intersection;
                 cameraLastDragWorldPos.z = 0;
 
@@ -279,7 +287,19 @@ public class EditorScreen extends BaseLevelScreen {
                 editor.setNextMode();
                 return true;
             case Input.Keys.P:
-                game.setScreen(new PlayScreen(game,level));
+                preventSave = true;
+                game.openGamePreview(level);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        switch (keycode){
+            case Input.Keys.SHIFT_LEFT:
+                dragging = false;
+                return true;
         }
 
         return false;
@@ -299,13 +319,14 @@ public class EditorScreen extends BaseLevelScreen {
                 camera.translate(Vector3.Z.cpy().scl(Gdx.input.getDeltaY() * PAN_PER_PIXEL).add(
                         camera.direction.cpy().rotate(camera.up, 90).nor().scl(Gdx.input.getDeltaX() * PAN_PER_PIXEL)));
                 clampCameraPos(camera);
-            } else {
+                lastDragScreenPos.set(screenX, screenY);
+            } else if (!dragging) {
                 camera.rotateAround(camera.position, Vector3.Z, (screenX - lastDragScreenPos.x) * DEGREES_PER_PIXEL);
                 camera.rotateAround(camera.position, camera.direction.cpy().rotate(camera.up, -90), (screenY - lastDragScreenPos.y) * DEGREES_PER_PIXEL);
                 lastDragScreenPos.set(screenX, screenY);
             }
         } else if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && dragging) {
                 Vector3 transform = cameraLastDragWorldPos.cpy().sub(intersection);
                 transform.z = 0; //TODO: pri dlouhym dragu blbne
 
@@ -410,7 +431,10 @@ public class EditorScreen extends BaseLevelScreen {
 
     @Override
     public void hide() {
-        save();
+        if (!preventSave) {
+            save();
+        }
+
         Gdx.app.error("hide", "editor");
         super.hide();
     }

@@ -25,10 +25,6 @@ public class Ground {
         }
     }
 
-    public boolean isInBounds(float x, float y) {
-        return (x >= 0 && x <= GRID_SIZE && y >= 0 && y <= GRID_SIZE);
-    }
-
     public void draw(SpriteBatch spriteBatch, float delta) {
         for (int x = 0; x < GRID_SIZE; x++) {
             for (int y = 0; y < GRID_SIZE; y++) {
@@ -41,13 +37,18 @@ public class Ground {
         int xIndex = (int) x;
         int yIndex = (int) y;
 
-        grid[xIndex][yIndex].setRegion(region);
-
+        if (isInBounds(x, y)) {
+            grid[xIndex][yIndex].setRegion(region);
+        }
         dirty = true;
     }
 
-    public Tile getTileAt(int x,int y){
-        return grid[x][y];
+    public Tile getTileAt(int x, int y) {
+        if (isInBounds(x, y)) {
+            return grid[x][y];
+        }
+
+        return null;
     }
 
     protected void floodFillTileByOffset(Tile tile,
@@ -58,7 +59,7 @@ public class Ground {
         int x = tile.getXIndex() + xOffset;
         int y = tile.getYIndex() + yOffset;
 
-        if (x >= 0 && x < getSize() && y >= 0 && y < getSize()) {
+        if (isInBounds(x, y)) {
             tile = grid[x][y];
             if (tile.getRegion() == toReplace) {
                 tile.setRegion(replacement);
@@ -97,6 +98,14 @@ public class Ground {
         floodFill((int) x, (int) y, grid[(int) x][(int) y].region, region);
 
         dirty = true;
+    }
+
+    public boolean isInBounds(int x, int y) {
+        return (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE);
+    }
+
+    public boolean isInBounds(float x, float y) {
+        return (x >= 0 && x <= GRID_SIZE && y >= 0 && y <= GRID_SIZE);
     }
 
     public int getSize() {
