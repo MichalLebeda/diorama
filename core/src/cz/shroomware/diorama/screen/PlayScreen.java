@@ -50,16 +50,17 @@ public class PlayScreen extends BaseLevelScreen implements InputProcessor {
             player.translate(SPEED, 0, 0);
         }
 
-        spriteBatch.getShader().setUniform2fv("u_test", new float[]{player.getPosition().x,player.getPosition().y}, 0, 2);
-        camera.position.set(player.getPosition().cpy().add(0,-6,4.5f));
+        camera.position.set(player.getPosition().cpy().add(0,-6,2.5f));
+        camera.lookAt(player.getPosition());
         camera.update();
         spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
+        spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
         level.draw(spriteBatch, decalBatch, delta);
         spriteBatch.end();
 
-        decalBatch.render(camera);
+        decalBatch.render(camera,backgroundColor);
     }
 
     @Override

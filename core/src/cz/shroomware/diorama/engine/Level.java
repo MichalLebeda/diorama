@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 
@@ -21,12 +22,14 @@ public class Level {
     protected String filename;
     protected Ground ground;
     protected GameObjects gameObjects;
-//TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
+
+    //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
+    //TODO ZBAVIT SE HISTORIE AT JE TO HEZKY ROZDELENY
     public Level(String filename, History history, Array<GameObjectPrototype> gameObjectPrototypes, TextureAtlas atlas) {
         this.filename = filename;
-        ground = new Ground(atlas.findRegion("floor"));
+        ground = new Ground(atlas.findRegion("floor"), history);
         gameObjects = new GameObjects(history);
-        loadIfExists(gameObjectPrototypes,atlas);
+        loadIfExists(gameObjectPrototypes, atlas);
     }
 
     public boolean loadIfExists(Array<GameObjectPrototype> gameObjectPrototypes, TextureAtlas atlas) {
@@ -36,7 +39,7 @@ public class Level {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-            ground.load(bufferedReader,atlas);
+            ground.load(bufferedReader, atlas);
             gameObjects.load(bufferedReader, gameObjectPrototypes);
 
             try {
@@ -109,11 +112,11 @@ public class Level {
         ground.tileRegionBucketAt(x, y, region);
     }
 
-    public GameObject findIntersectingWithRay(Ray ray) {
-        return gameObjects.findIntersectingWithRay(ray);
+    public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
+        return gameObjects.findIntersectingWithRay(ray,cameraPos);
     }
 
-    public Ground getGrid(){
+    public Ground getGrid() {
         return ground;
     }
 }

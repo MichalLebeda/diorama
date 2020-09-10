@@ -1,11 +1,14 @@
 package cz.shroomware.diorama.engine;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -53,12 +56,13 @@ public class GameObject {
     public void sizeBoundingBox(BoundingBox boundingBox) {
         Vector3 min = new Vector3();
         Vector3 max = new Vector3();
-        min.set(decal.getPosition().x - decal.getWidth() / 2,
-                decal.getPosition().y,
-                decal.getPosition().z - decal.getHeight() / 2);
-        max.set(decal.getPosition().x + decal.getWidth() / 2,
-                decal.getPosition().y,
-                decal.getPosition().z + decal.getHeight() / 2);
+        float[] vertices = decal.getVertices();
+        min.set(vertices[Decal.X1],
+                vertices[Decal.Y1],
+                vertices[Decal.Z1]);
+        max.set(vertices[Decal.X4],
+                vertices[Decal.Y4],
+                vertices[Decal.Z4]);
         boundingBox.set(min, max);
     }
 
@@ -90,10 +94,47 @@ public class GameObject {
     public void setSelected(boolean selected) {
         this.selected = selected;
         if (selected) {
-            decal.setColor(0.5f, 0.5f, 0.5f, 1);
+            decal.setColor(0.2f, 0.2f, 0.2f, 1);
         } else {
             decal.setColor(Color.WHITE);
         }
+    }
+
+    //TODO: IF DECAL WAS ROTATED BY NON MULTIPLE OF 90, PASSED POSITION WILL FAIL COS BOUNDS WILL BE NON PLANAR
+    public boolean isPixelOpaque(Vector3 intersection) {
+//        decal.update();
+        float[] vertices = decal.getVertices();
+        Vector3 vecA = new Vector3(vertices[Decal.X2] - vertices[Decal.X1],
+                vertices[Decal.Y2] - vertices[Decal.Y1],
+                vertices[Decal.Z2] - vertices[Decal.Z1]);
+        Vector3 vecB = new Vector3(vertices[Decal.X3] - vertices[Decal.X1],
+                vertices[Decal.Y3] - vertices[Decal.Y1],
+                vertices[Decal.Z3] - vertices[Decal.Z1]);
+        Vector3 vecC = vecA.cpy().crs(vecB);
+
+        Matrix3 matrix3 = new Matrix3(
+                new float[]{vecA.x, vecA.y, vecA.z,
+                        vecB.x, vecB.y, vecB.z,
+                        vecC.x, vecC.y, vecC.z});
+        matrix3.inv();
+
+        Vector3 origin = new Vector3(vertices[Decal.X1], vertices[Decal.Y1], vertices[Decal.Z1]);
+        intersection.add(origin.scl(-1));
+        intersection.mul(matrix3);
+
+        TextureRegion region = decal.getTextureRegion();
+        Texture texture = region.getTexture();
+        if (!texture.getTextureData().isPrepared()) {
+            texture.getTextureData().prepare();
+        }
+        Pixmap pixmap = texture.getTextureData().consumePixmap();
+
+        int color = pixmap.getPixel((int) (region.getRegionX() + intersection.x * region.getRegionWidth()),
+                (int) (region.getRegionY() + intersection.y * region.getRegionHeight()));
+
+        Utils.pixel = color;
+        pixmap.dispose();
+        return ((color & 0x000000ff)) / 255f > 0.5f;
     }
 
     public String getName() {
@@ -128,11 +169,11 @@ public class GameObject {
         decal.translate(x, y, z);
     }
 
-    public float getHeight(){
+    public float getHeight() {
         return decal.getHeight();
     }
 
-    public float getWidth(){
+    public float getWidth() {
         return decal.getWidth();
     }
 }

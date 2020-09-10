@@ -1,6 +1,7 @@
 package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -16,6 +18,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import cz.shroomware.diorama.DioramaGame;
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.engine.GameObjectPrototype;
 import cz.shroomware.diorama.engine.Level;
@@ -29,6 +32,7 @@ public class Hud extends Stage {
     LeftToBackgroundLabel projectNameLabel;
     BackgroundLabel unsavedChangesLabel;
     Messages messages;
+    Image colorIndicator;
     boolean lastDirtyState = false;
 
     public Hud(final DioramaGame game, Array<GameObjectPrototype> prototypes, Editor editor, Level level) {
@@ -90,6 +94,20 @@ public class Hud extends Stage {
         unsavedChangesLabel = new BackgroundLabel(" . ", game);
         unsavedChangesLabel.setVisible(false);
         addActor(unsavedChangesLabel);
+
+        colorIndicator = new Image(game.getUiAtlas().findRegion("white")){
+            @Override
+            public float getMinHeight() {
+                return 100;
+            }
+
+            @Override
+            public float getMaxHeight() {
+                return 100;
+            }
+        };
+        colorIndicator.setSize(100,100);
+        addActor(colorIndicator);
     }
 
     public void setDirty(boolean dirty) {
@@ -121,6 +139,7 @@ public class Hud extends Stage {
 
     @Override
     public void draw() {
+        colorIndicator.setColor(new Color(Utils.pixel));
         super.draw();
     }
 

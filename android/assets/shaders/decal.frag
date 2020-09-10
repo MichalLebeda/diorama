@@ -7,6 +7,7 @@ varying vec2 v_texCoords;
 varying vec4 v_position;
 
 uniform vec3 u_camera_pos;
+uniform vec4 u_background_color;
 uniform sampler2D u_texture;
 void main(){
     vec4 texel = texture2D(u_texture, v_texCoords);
@@ -18,7 +19,6 @@ void main(){
 
     float distance = distance(u_camera_pos.xy, v_position.xy);
     if (distance>20.0){
-        //TODO: mix colors not alpha (for overlaping decals)
-        gl_FragColor.a = mix(gl_FragColor.a, 0.0, pow((distance-20.0)/40.0, 2.0));
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, u_background_color.rgb, clamp(pow((distance-20.0)/40.0, 2.0), 0.0, 1.0));
     }
 }

@@ -2,11 +2,13 @@ package com.badlogic.gdx.graphics.g3d.decals;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -79,7 +81,7 @@ public class MinimalisticDecalBatch implements Disposable {
         mesh.dispose();
     }
 
-    public void render(Camera camera) {
+    public void render(Camera camera, Color backgroundColor) {
         beforeGroups();
 
 
@@ -89,6 +91,7 @@ public class MinimalisticDecalBatch implements Disposable {
         shaderProgram.setUniformMatrix("u_projectionViewMatrix", camera.combined);
         shaderProgram.setUniformi("u_texture", 0);
         shaderProgram.setUniformf("u_camera_pos",camera.position);
+        shaderProgram.setUniformf("u_background_color",backgroundColor);
         // batch vertices
         DecalMaterial lastMaterial = null;
         int idx = 0;
@@ -102,6 +105,7 @@ public class MinimalisticDecalBatch implements Disposable {
                 lastMaterial = decal.material;
             }
 
+//            decal.lookAt(camera.position, Vector3.Z);
             decal.update();
             System.arraycopy(decal.vertices, 0, vertices, idx, decal.vertices.length);
             idx += decal.vertices.length;

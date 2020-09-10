@@ -41,10 +41,10 @@ public class Cursor {
 
         switch (editor.getMode()) {
             case DELETE:
-                if (decal.getTextureRegion() != defaultRegion) {
-                    updateRegion(defaultRegion);
-                }
-                decalBatch.add(decal);
+//                if (decal.getTextureRegion() != defaultRegion) {
+//                    updateRegion(defaultRegion);
+//                }
+//                decalBatch.add(decal);
                 break;
             case ITEM:
                 TextureRegion selectedPrototypeObjectRegion = editor.getPrototypeObjectRegion();

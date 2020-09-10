@@ -119,7 +119,7 @@ public class EditorScreen extends BaseLevelScreen {
             cursor.draw(spriteBatch, decalBatch);
         }
         spriteBatch.end();
-        decalBatch.render(camera);
+        decalBatch.render(camera, backgroundColor);
 
         hud.setDirty(level.isDirty());
         hud.act();
@@ -294,7 +294,7 @@ public class EditorScreen extends BaseLevelScreen {
 
     @Override
     public boolean keyUp(int keycode) {
-        switch (keycode){
+        switch (keycode) {
             case Input.Keys.SHIFT_LEFT:
                 dragging = false;
                 return true;
@@ -385,7 +385,7 @@ public class EditorScreen extends BaseLevelScreen {
     public GameObject findDecalByScreenCoordinates(int screenX, int screenY) {
         Ray ray = camera.getPickRay(screenX, screenY);
 
-        return level.findIntersectingWithRay(ray);
+        return level.findIntersectingWithRay(ray, camera.position);
     }
 
     private void moveCursorTo(Vector3 screenCoordinates) {

@@ -62,7 +62,7 @@ public class Editor {
     }
 
     public enum Mode {
-        ITEM, TILE, TILE_BUCKET, DELETE;
+        ITEM, DELETE, TILE, TILE_BUCKET;
 
         public Mode getNextMode() {
             return Mode.values()[(this.ordinal() + 1) % (Mode.values().length)];

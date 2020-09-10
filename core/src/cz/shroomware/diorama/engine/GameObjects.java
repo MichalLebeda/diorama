@@ -1,6 +1,7 @@
 package cz.shroomware.diorama.engine;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import cz.shroomware.diorama.editor.history.actions.DeleteGameObjectAction;
 import cz.shroomware.diorama.editor.history.History;
@@ -61,20 +63,29 @@ public class GameObjects {
         history.addAction(new DeleteGameObjectAction(gameObject, this));
     }
 
-    public GameObject findIntersectingWithRay(Ray ray) {
+    public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
         Vector3 intersection = new Vector3();
         BoundingBox boundingBox = new BoundingBox();
 
-        //test ray against every game object we have, TODO: improve
+
+        float minDist = Float.MAX_VALUE;
+        GameObject candidate = null;
+        //test ray against every game object we have
         for (GameObject gameObject : gameObjects) {
             gameObject.sizeBoundingBox(boundingBox);
+            //TODO: IF DECAL WAS ROTATED BY NON MULTIPLE OF 90, PASSED POSITION WILL FAIL COS BOUNDS WILL BE NON PLANAR
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-
-                return gameObject;
+                if(gameObject.isPixelOpaque(intersection.cpy())){
+                    float currentObjectDist = cameraPos.cpy().add(intersection.cpy().scl(-1)).len();
+                    if(currentObjectDist<minDist){
+                        minDist = currentObjectDist;
+                       candidate = gameObject;
+                    }
+                }
             }
         }
 
-        return null;
+        return candidate;
     }
 
     public void save(OutputStream outputStream) {
