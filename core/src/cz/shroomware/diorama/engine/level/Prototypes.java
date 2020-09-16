@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.engine;
+package cz.shroomware.diorama.engine.level;
 
 import com.badlogic.gdx.utils.Array;
 

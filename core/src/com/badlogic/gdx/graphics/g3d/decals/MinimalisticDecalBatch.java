@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -25,7 +24,7 @@ public class MinimalisticDecalBatch implements Disposable {
     private Mesh mesh;
     private Array<Decal> decals;
 
-    public MinimalisticDecalBatch(ShaderProgram shaderProgram){
+    public MinimalisticDecalBatch(ShaderProgram shaderProgram) {
         initialize(DEFAULT_SIZE);
         decals = new Array<>();
         this.shaderProgram = shaderProgram;
@@ -53,7 +52,7 @@ public class MinimalisticDecalBatch implements Disposable {
     }
 
     private void compileShader() {
-        String vertexShader = Gdx.files.internal("shaders/decal.vert").readString();
+        String vertexShader = Gdx.files.internal("shaders/decal_noise.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/decal.frag").readString();
 
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
@@ -81,7 +80,7 @@ public class MinimalisticDecalBatch implements Disposable {
         mesh.dispose();
     }
 
-    public void render(Camera camera, Color backgroundColor) {
+    public void render(Camera camera, Color backgroundColor,float time) {
         beforeGroups();
 
 
@@ -90,8 +89,9 @@ public class MinimalisticDecalBatch implements Disposable {
         shaderProgram.bind();
         shaderProgram.setUniformMatrix("u_projectionViewMatrix", camera.combined);
         shaderProgram.setUniformi("u_texture", 0);
-        shaderProgram.setUniformf("u_camera_pos",camera.position);
-        shaderProgram.setUniformf("u_background_color",backgroundColor);
+        shaderProgram.setUniformf("u_camera_pos", camera.position);
+        shaderProgram.setUniformf("u_background_color", backgroundColor);
+        shaderProgram.setUniformf("time", time);
         // batch vertices
         DecalMaterial lastMaterial = null;
         int idx = 0;

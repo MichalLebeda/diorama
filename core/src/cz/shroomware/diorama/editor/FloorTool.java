@@ -6,22 +6,22 @@ import com.badlogic.gdx.utils.Array;
 import cz.shroomware.diorama.editor.history.History;
 import cz.shroomware.diorama.editor.history.actions.BucketTileAction;
 import cz.shroomware.diorama.editor.history.actions.PlaceTileAction;
-import cz.shroomware.diorama.engine.Ground;
-import cz.shroomware.diorama.engine.Tile;
+import cz.shroomware.diorama.engine.level.Floor;
+import cz.shroomware.diorama.engine.level.Tile;
 
-public class GroundTool {
-    Ground ground;
+public class FloorTool {
+    Floor floor;
     History history;
 
-    public GroundTool(Ground ground, History history) {
-        this.ground = ground;
+    public FloorTool(Floor floor, History history) {
+        this.floor = floor;
         this.history = history;
     }
 
     public void setTileRegion(float x, float y, TextureRegion region) {
-        Tile tile = ground.getTileAtWorld(x, y);
+        Tile tile = floor.getTileAtWorld(x, y);
         TextureRegion tileRegion = tile.getRegion();
-        if (ground.setTileRegionAtWorld(x, y, region)) {
+        if (floor.setTileRegionAtWorld(x, y, region)) {
             history.addAction(new PlaceTileAction(tile, tileRegion, region));
         }
     }
@@ -32,17 +32,17 @@ public class GroundTool {
 
     private boolean floodFill(int xIndex, int yIndex, TextureRegion replacement) {
         TextureRegion toReplace;
-        if (!ground.isInBounds(xIndex, yIndex)) {
+        if (!floor.isInBounds(xIndex, yIndex)) {
             return false;
         }
 
-        toReplace = ground.getTileAtIndex(xIndex, yIndex).getRegion();
+        toReplace = floor.getTileAtIndex(xIndex, yIndex).getRegion();
 
         if (toReplace == replacement) {
             return false;
         }
 
-        Tile tile = ground.getTileAtIndex(xIndex, yIndex);
+        Tile tile = floor.getTileAtIndex(xIndex, yIndex);
 
         Array<Tile> queue = new Array<>();
 
@@ -80,8 +80,8 @@ public class GroundTool {
         int x = tile.getXIndex() + xOffset;
         int y = tile.getYIndex() + yOffset;
 
-        if (ground.isInBounds(x, y)) {
-            tile = ground.getTileAtIndex(x, y);
+        if (floor.isInBounds(x, y)) {
+            tile = floor.getTileAtIndex(x, y);
             if (tile.getRegion() == toReplace) {
                 bucketTileAction.add(tile, toReplace, replacement);
                 tile.setRegion(replacement);

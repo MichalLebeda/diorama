@@ -1,7 +1,6 @@
-package cz.shroomware.diorama.engine;
+package cz.shroomware.diorama.engine.level;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
@@ -14,11 +13,6 @@ import com.badlogic.gdx.utils.Array;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-
-import cz.shroomware.diorama.editor.history.actions.DeleteGameObjectAction;
-import cz.shroomware.diorama.editor.history.History;
-import cz.shroomware.diorama.editor.history.actions.PlaceGameObjectAction;
 
 public class GameObjects {
     protected Array<GameObject> gameObjects = new Array<>();
@@ -91,7 +85,7 @@ public class GameObjects {
         return dirty;
     }
 
-    public void load(BufferedReader bufferedReader,Prototypes gameObjectPrototypes) {
+    public void load(BufferedReader bufferedReader, Prototypes gameObjectPrototypes) {
         gameObjects.clear();
 
         String line = null;

@@ -3,7 +3,7 @@ package cz.shroomware.diorama.editor.history.actions;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import cz.shroomware.diorama.engine.Tile;
+import cz.shroomware.diorama.engine.level.Tile;
 
 public class PlaceTileAction implements HistoryAction {
     Tile tile;

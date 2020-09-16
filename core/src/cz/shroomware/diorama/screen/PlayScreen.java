@@ -3,13 +3,14 @@ package cz.shroomware.diorama.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.DioramaGame;
-import cz.shroomware.diorama.engine.GameObject;
-import cz.shroomware.diorama.engine.GameObjectPrototype;
-import cz.shroomware.diorama.engine.Level;
+import cz.shroomware.diorama.engine.level.GameObject;
+import cz.shroomware.diorama.engine.level.GameObjectPrototype;
+import cz.shroomware.diorama.engine.level.Level;
 
 public class PlayScreen extends BaseScreen implements InputProcessor {
     protected static final float SPEED = 0.1f;
@@ -51,17 +52,18 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
             player.translate(SPEED, 0, 0);
         }
 
-        camera.position.set(player.getPosition().cpy().add(0,-6,2.5f));
+        camera.position.set(player.getPosition().cpy().add(0, -6, 2.5f));
         camera.lookAt(player.getPosition());
         camera.update();
         spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
+        spriteBatch.getShader().setUniformf("u_background_color", Color.RED);
         level.draw(spriteBatch, decalBatch, delta);
         spriteBatch.end();
 
-        decalBatch.render(camera,backgroundColor);
+        decalBatch.render(camera, backgroundColor,0);
     }
 
     @Override

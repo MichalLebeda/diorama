@@ -8,12 +8,12 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.engine.Level;
+import cz.shroomware.diorama.engine.level.Level;
 
 public class Cursor {
     Decal decal;
     Editor editor;
-    cz.shroomware.diorama.engine.Level level;
+    Level level;
     TextureRegion defaultRegion;
     boolean itemPlacingAllowed = true;
     boolean visible = true;

@@ -3,10 +3,10 @@ package cz.shroomware.diorama.editor;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import cz.shroomware.diorama.editor.history.History;
-import cz.shroomware.diorama.engine.GameObjectPrototype;
+import cz.shroomware.diorama.engine.level.GameObjectPrototype;
 
 public class Editor {
-    protected cz.shroomware.diorama.engine.GameObjectPrototype currentlySelectedPrototype;
+    protected GameObjectPrototype currentlySelectedPrototype;
     Mode mode = Mode.ITEM;
     History history = new History();
     String filename;
@@ -18,7 +18,7 @@ public class Editor {
         this.filename = filename;
     }
 
-    public cz.shroomware.diorama.engine.GameObjectPrototype getCurrentlySelectedPrototype() {
+    public GameObjectPrototype getCurrentlySelectedPrototype() {
         return currentlySelectedPrototype;
     }
 

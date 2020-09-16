@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import cz.shroomware.diorama.engine.Level;
+import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.screen.ProjectSelectionScreen;
 import cz.shroomware.diorama.screen.EditorScreen;
 import cz.shroomware.diorama.screen.PlayScreen;
@@ -34,13 +34,13 @@ public class DioramaGame extends Game {
         skin.getFont("default-font").getData().setScale(0.32f);
         skin.getFont("default-font").setUseIntegerPositions(false);
 
-//        ShaderProgram.pedantic = false;
+        ShaderProgram.pedantic = false;
         dfShader = new ShaderProgram(Gdx.files.internal("shaders/font.vert"), Gdx.files.internal("shaders/font.frag"));
         if (!dfShader.isCompiled()) {
             Gdx.app.error("fontShader", "compilation failed:\n" + dfShader.getLog());
         }
 
-        spriteBatchShader = new ShaderProgram(Gdx.files.internal("shaders/sprite.vert"), Gdx.files.internal("shaders/sprite.frag"));
+        spriteBatchShader = new ShaderProgram(Gdx.files.internal("shaders/sprite_noise.vert"), Gdx.files.internal("shaders/sprite_noise.frag"));
         if (!spriteBatchShader.isCompiled()) {
             Gdx.app.error("spriteBatchShader", "compilation failed:\n" + dfShader.getLog());
         }

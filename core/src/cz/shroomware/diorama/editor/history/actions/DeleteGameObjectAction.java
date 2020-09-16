@@ -1,7 +1,7 @@
 package cz.shroomware.diorama.editor.history.actions;
 
-import cz.shroomware.diorama.engine.GameObject;
-import cz.shroomware.diorama.engine.GameObjects;
+import cz.shroomware.diorama.engine.level.GameObject;
+import cz.shroomware.diorama.engine.level.GameObjects;
 
 public class DeleteGameObjectAction implements HistoryAction {
     GameObjects gameObjects;

@@ -19,9 +19,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Editor;
-import cz.shroomware.diorama.engine.GameObjectPrototype;
-import cz.shroomware.diorama.engine.Level;
-import cz.shroomware.diorama.engine.Prototypes;
+import cz.shroomware.diorama.engine.level.GameObjectPrototype;
+import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.Prototypes;
 
 public class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;

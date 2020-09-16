@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.engine.Level;
+import cz.shroomware.diorama.engine.level.Level;
 
 public class BaseScreen implements Screen, InputProcessor {
     protected DioramaGame game;
@@ -30,7 +30,7 @@ public class BaseScreen implements Screen, InputProcessor {
 
     protected void updateBackgorundColor(Level level) {
         // Use dominant floor color as background
-        Pixmap pixmap = Utils.extractPixmapFromTextureRegion(level.getGround().getTileAtIndex(0, 0));
+        Pixmap pixmap = Utils.extractPixmapFromTextureRegion(level.getFloor().getTileAtIndex(0, 0));
         backgroundColor = Utils.getDominantColor(pixmap);
 //        backgroundColor.mul(0.9f);
         pixmap.dispose();

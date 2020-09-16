@@ -95,7 +95,7 @@ floor
   orig: 512, 245
   offset: 0, 0
   index: -1
-ground
+floor
   rotate: false
   xy: 1072, 1060
   size: 512, 245

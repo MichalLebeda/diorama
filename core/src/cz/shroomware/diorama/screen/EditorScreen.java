@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -25,11 +26,11 @@ import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Cursor;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.editor.GameObjectsTool;
-import cz.shroomware.diorama.editor.GroundTool;
-import cz.shroomware.diorama.engine.GameObject;
-import cz.shroomware.diorama.engine.GameObjectPrototype;
-import cz.shroomware.diorama.engine.Level;
-import cz.shroomware.diorama.engine.Prototypes;
+import cz.shroomware.diorama.editor.FloorTool;
+import cz.shroomware.diorama.engine.level.GameObject;
+import cz.shroomware.diorama.engine.level.GameObjectPrototype;
+import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.ui.Hud;
 
 public class EditorScreen extends BaseScreen {
@@ -39,7 +40,7 @@ public class EditorScreen extends BaseScreen {
     protected static final float TRANSLATION_LIMIT = 3;
     protected static final float MAX_CAM_DIST_FROM_GRID = 8;
     protected Editor editor;
-    protected GroundTool groundTool;
+    protected FloorTool floorTool;
     protected GameObjectsTool gameObjectsTool;
     protected InputMultiplexer inputMultiplexer;
     protected TextureAtlas atlas;
@@ -56,6 +57,7 @@ public class EditorScreen extends BaseScreen {
     protected boolean preventSave = false; //TODO: this is a workaround for not saving player from preview etc.
     boolean dragging = false;
     Level level;
+    float time = 0;
 
     public EditorScreen(DioramaGame game, String filename) {
         super(game);
@@ -72,7 +74,7 @@ public class EditorScreen extends BaseScreen {
         updateBackgorundColor(level);
         initCamera(level);
 
-        groundTool = new GroundTool(level.getGround(), editor.getHistory());
+        floorTool = new FloorTool(level.getFloor(), editor.getHistory());
         gameObjectsTool = new GameObjectsTool(level.getGameObjects(), editor.getHistory());
 
         cursor = new Cursor(editor, level, defaultCursorRegion);
@@ -109,14 +111,19 @@ public class EditorScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
+        time += delta;
         super.render(delta);
 
         camera.update();
         spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glDepthMask(true);
 
-        game.getSpriteBatchShader().setUniformf("u_camera_pos", camera.position);
+        spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
+        spriteBatch.getShader().setUniformf("u_background_color", backgroundColor);
+        spriteBatch.getShader().setUniformf("time", time / 10f);
         level.draw(spriteBatch, decalBatch, delta);
 
         if (editor.getMode() == Editor.Mode.DELETE) {
@@ -131,7 +138,7 @@ public class EditorScreen extends BaseScreen {
             cursor.draw(spriteBatch, decalBatch);
         }
         spriteBatch.end();
-        decalBatch.render(camera, backgroundColor);
+        decalBatch.render(camera, backgroundColor, time / 10f);
 
         hud.setDirty(level.isDirty());
         hud.act();
@@ -226,7 +233,7 @@ public class EditorScreen extends BaseScreen {
                             new Plane(Vector3.Z, Vector3.X),
                             intersection);
 
-                    groundTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
+                    floorTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
                 }
             } else if (editor.isMode(Editor.Mode.TILE_BUCKET)) {
                 if (editor.getCurrentlySelectedPrototype() != null) {
@@ -237,7 +244,7 @@ public class EditorScreen extends BaseScreen {
                             new Plane(Vector3.Z, Vector3.X),
                             intersection);
 
-                    groundTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
+                    floorTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
                 }
             }
         }

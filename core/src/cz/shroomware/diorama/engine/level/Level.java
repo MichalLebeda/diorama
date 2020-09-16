@@ -1,6 +1,8 @@
-package cz.shroomware.diorama.engine;
+package cz.shroomware.diorama.engine.level;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
@@ -17,14 +19,14 @@ import cz.shroomware.diorama.Utils;
 
 public class Level {
     protected String filename;
-    protected Ground ground;
+    protected Floor floor;
     protected GameObjects gameObjects;
 
     //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
     //TODO ZBAVIT SE HISTORIE AT JE TO HEZKY ROZDELENY
     public Level(String filename, Prototypes gameObjectPrototypes, TextureAtlas atlas) {
         this.filename = filename;
-        ground = new Ground(atlas.findRegion("floor"));
+        floor = new Floor(atlas.findRegion("floor"));
         gameObjects = new GameObjects();
         loadIfExists(gameObjectPrototypes, atlas);
     }
@@ -36,7 +38,7 @@ public class Level {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-            ground.load(bufferedReader, atlas);
+            floor.load(bufferedReader, atlas);
             gameObjects.load(bufferedReader, gameObjectPrototypes);
 
             try {
@@ -58,7 +60,7 @@ public class Level {
     public boolean save(boolean force) {
         if (isDirty() || force) {
             OutputStream outputStream = Utils.getFileHandle(filename).write(false);
-            ground.save(outputStream);
+            floor.save(outputStream);
             gameObjects.save(outputStream);
             return true;
         }
@@ -75,22 +77,28 @@ public class Level {
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
-        ground.draw(spriteBatch, delta);
+        floor.draw(spriteBatch, delta);
+
+        spriteBatch.flush();
+        //TODO: pouzit decaly na vsechno aby se tomuhle zamezilo (stiny na podlaze prekryv atd)
+//        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glDepthMask(false);
         gameObjects.drawShadows(spriteBatch);
 
         gameObjects.drawObjects(decalBatch);
     }
 
     public boolean isInBounds(float x, float y) {
-        return ground.isInBounds(x, y);
+        return floor.isInBounds(x, y);
     }
 
     public int getSize() {
-        return ground.getSize();
+        return floor.getSize();
     }
 
     public boolean isDirty() {
-        return gameObjects.isDirty() || ground.isDirty();
+        return gameObjects.isDirty() || floor.isDirty();
     }
 
 //    public void addObject(GameObject object) {
@@ -105,8 +113,8 @@ public class Level {
         return gameObjects.findIntersectingWithRay(ray, cameraPos);
     }
 
-    public Ground getGround() {
-        return ground;
+    public Floor getFloor() {
+        return floor;
     }
 
     public GameObjects getGameObjects() {

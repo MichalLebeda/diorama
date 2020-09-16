@@ -4,7 +4,7 @@ package cz.shroomware.diorama.editor.history.actions;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
-import cz.shroomware.diorama.engine.Tile;
+import cz.shroomware.diorama.engine.level.Tile;
 
 public class BucketTileAction implements HistoryAction{
     Array<PlaceTileAction> affectedTilesActions = new Array<>();

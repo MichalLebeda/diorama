@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.engine;
+package cz.shroomware.diorama.engine.level;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -8,12 +8,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class Ground {
+public class Floor {
     protected static final int GRID_SIZE = 100;
     protected Tile[][] grid = new Tile[GRID_SIZE][GRID_SIZE];
     protected boolean dirty = false;
 
-    public Ground(TextureRegion region) {
+    public Floor(TextureRegion region) {
         for (int x = 0; x < GRID_SIZE; x++) {
             for (int y = 0; y < GRID_SIZE; y++) {
                 Tile sprite = new Tile(x, y, region);
