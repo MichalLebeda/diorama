@@ -9,32 +9,35 @@ import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
+import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
 
 public class Prototypes {
     //TODO RENAME INSTANCES, THINK ABOUT THIS OBJECT
     protected Array<Prototype> gameObjectPrototypes = new Array<>();
 
-    public Prototypes(Resources resources){
+    public Prototypes(Resources resources) {
 
-            Array<String> blacklist = new Array<>();
-            blacklist.add("cursor");
-            blacklist.add("selector_background");
+        addGameObjectPrototype(new WallPrototype(resources));
 
-            //TODO zjistit proc se neanimovane nenacitaji
-            Array<TextureAtlas.AtlasRegion> regions = resources.getObjectAtlas().getRegions();
-            for (TextureAtlas.AtlasRegion region : regions) {
-                if (blacklist.contains(region.name, false)) {
-                    continue;
-                }
+        Array<String> blacklist = new Array<>();
+        blacklist.add("cursor");
+        blacklist.add("selector_background");
 
-                Array<TextureAtlas.AtlasRegion> atlasRegions = resources.getObjectAtlas().findRegions(region.name);
-                if (atlasRegions.size > 1) {
-                    Array<ObjectShadowPair> pairs = new Array<ObjectShadowPair>(ObjectShadowPair.class);
+        //TODO zjistit proc se neanimovane nenacitaji
+        Array<TextureAtlas.AtlasRegion> regions = resources.getObjectAtlas().getRegions();
+        for (TextureAtlas.AtlasRegion region : regions) {
+            if (blacklist.contains(region.name, false)) {
+                continue;
+            }
 
-                    int i = 0;
-                    for (TextureAtlas.AtlasRegion atlasRegion : atlasRegions) {
-                        Array<TextureAtlas.AtlasRegion> shadowRegions = resources.getShadowAtlas().findRegions(atlasRegion.name);
-                        if (i < shadowRegions.size) {
+            Array<TextureAtlas.AtlasRegion> atlasRegions = resources.getObjectAtlas().findRegions(region.name);
+            if (atlasRegions.size > 1) {
+                Array<ObjectShadowPair> pairs = new Array<ObjectShadowPair>(ObjectShadowPair.class);
+
+                int i = 0;
+                for (TextureAtlas.AtlasRegion atlasRegion : atlasRegions) {
+                    Array<TextureAtlas.AtlasRegion> shadowRegions = resources.getShadowAtlas().findRegions(atlasRegion.name);
+                    if (i < shadowRegions.size) {
                             pairs.add(new ObjectShadowPair(atlasRegion, shadowRegions.get(i)));
                         } else {
                             pairs.add(new ObjectShadowPair(atlasRegion, null));

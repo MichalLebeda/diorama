@@ -1,7 +1,5 @@
 package cz.shroomware.diorama.desktop;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,7 +19,8 @@ public class DesktopLauncher {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setWindowedMode(1100, 680);
 //        config.setWindowedMode(1920, 1080);
-        config.setWindowSizeLimits(640,560,16000,9000);
+        config.setBackBufferConfig(8, 8, 8, 8, 8, 8, 3);
+        config.setWindowSizeLimits(640, 560, 16000, 9000);
         config.setTitle("Editor");
         new Lwjgl3Application(new DioramaGame(), config);
     }

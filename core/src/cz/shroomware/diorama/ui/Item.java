@@ -46,7 +46,9 @@ public class Item extends HorizontalGroup {
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                editor.setCurrentlySelectedPrototype(prototype);
+                if (prototype.dependenciesFulfilled()) {
+                    editor.setCurrentlySelectedPrototype(prototype);
+                }
                 event.stop();
             }
         });
