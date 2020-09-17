@@ -110,6 +110,10 @@ public class Floor {
         dirty = false;
     }
 
+    public void setDirty() {
+        dirty = true;
+    }
+
     public void save(OutputStream outputStream) {
         int width = getSize();
         int height = getSize();

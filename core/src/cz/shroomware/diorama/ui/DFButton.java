@@ -15,7 +15,7 @@ public class DFButton extends Stack {
         DFLabel label = new DFLabel(text, game);
         label.setAlignment(Align.center);
 
-        Button button = new Button(game.getSkin());
+        Button button = new Button(game.getEditorResources().getSkin());
         button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

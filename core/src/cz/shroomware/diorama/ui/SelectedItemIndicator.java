@@ -55,7 +55,7 @@ public class SelectedItemIndicator extends Actor {
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
 
-        TextureRegion selectedPrototypeObjectRegion = editor.getPrototypeObjectRegion();
+        TextureRegion selectedPrototypeObjectRegion = editor.getPrototypeIcon();
         if (region != selectedPrototypeObjectRegion) {
             region = selectedPrototypeObjectRegion;
             setItemRegion(region);

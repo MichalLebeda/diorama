@@ -1,6 +1,7 @@
 package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
@@ -9,8 +10,10 @@ import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.object.SingleRegionGameObject;
+import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
-public class Cursor {
+public class Cursor extends SingleRegionGameObject {
     Decal decal;
     Editor editor;
     Level level;
@@ -18,7 +21,8 @@ public class Cursor {
     boolean itemPlacingAllowed = true;
     boolean visible = true;
 
-    public Cursor(Editor editor, Level level, TextureRegion defaultRegion) {
+    public Cursor(Editor editor, Level level, EditorResources resources, TextureAtlas.AtlasRegion defaultRegion) {
+        super(Vector3.Zero, new SingleRegionPrototype(resources, defaultRegion));
         this.editor = editor;
         this.level = level;
         this.defaultRegion = defaultRegion;
@@ -47,7 +51,7 @@ public class Cursor {
 //                decalBatch.add(decal);
                 break;
             case ITEM:
-                TextureRegion selectedPrototypeObjectRegion = editor.getPrototypeObjectRegion();
+                TextureRegion selectedPrototypeObjectRegion = editor.getPrototypeIcon();
                 if (selectedPrototypeObjectRegion == null) {
                     if (decal.getTextureRegion() != defaultRegion) {
                         updateRegion(defaultRegion);
@@ -58,10 +62,10 @@ public class Cursor {
                 decalBatch.add(decal);
                 break;
             case TILE:
-                spriteBatch.draw(defaultRegion,(int)getPosition().x,(int)getPosition().y,1,1);
+                spriteBatch.draw(defaultRegion, (int) getPosition().x, (int) getPosition().y, 1, 1);
                 break;
             case TILE_BUCKET:
-                spriteBatch.draw(defaultRegion,(int)getPosition().x,(int)getPosition().y,1,1);
+                spriteBatch.draw(defaultRegion, (int) getPosition().x, (int) getPosition().y, 1, 1);
                 break;
         }
     }

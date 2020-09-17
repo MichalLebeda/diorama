@@ -19,7 +19,7 @@ public class BackgroundLabel extends DFLabel {
 
     public BackgroundLabel(CharSequence text, DioramaGame game) {
         super(text, game);
-        background = game.getSkin().getDrawable(DARK_BACKGROUND_DRAWABLE);
+        background = game.getEditorResources().getSkin().getDrawable(DARK_BACKGROUND_DRAWABLE);
     }
 
     public float getXWithPadding() {

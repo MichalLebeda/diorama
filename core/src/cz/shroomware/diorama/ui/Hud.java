@@ -19,9 +19,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Editor;
-import cz.shroomware.diorama.engine.level.GameObjectPrototype;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
+import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 public class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
@@ -43,7 +43,7 @@ public class Hud extends Stage {
         setViewport(new ScreenViewport());
         getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
-        selectedItemIndicator = new SelectedItemIndicator(editor, game.getSkin());
+        selectedItemIndicator = new SelectedItemIndicator(editor, game.getEditorResources().getSkin());
         addActor(selectedItemIndicator);
 
         final VerticalGroup itemGroup = new VerticalGroup();
@@ -51,7 +51,7 @@ public class Hud extends Stage {
         itemGroup.pad(10);
         itemGroup.space(10);
         for (int i = 0; i < prototypes.getSize(); i++) {
-            GameObjectPrototype prototype = prototypes.getGameObjectPrototype(i);
+            Prototype prototype = prototypes.getGameObjectPrototype(i);
             itemGroup.addActor(new Item(game, editor, prototype) {
                 @Override
                 public float getPrefWidth() {
@@ -60,11 +60,11 @@ public class Hud extends Stage {
             });
         }
 
-        scrollPane = new ScrollPane(itemGroup, game.getSkin());
+        scrollPane = new ScrollPane(itemGroup, game.getEditorResources().getSkin());
         scrollPane.pack();
         addActor(scrollPane);
 
-        selectedModeIndicator = new SelectedModeIndicator(editor, game.getSkin());
+        selectedModeIndicator = new SelectedModeIndicator(editor, game.getEditorResources().getSkin());
         addActor(selectedModeIndicator);
 
         modeIndicator = new ModeIndicator(
@@ -96,7 +96,7 @@ public class Hud extends Stage {
         unsavedChangesLabel.setVisible(false);
         addActor(unsavedChangesLabel);
 
-        colorIndicator = new Image(game.getUiAtlas().findRegion("white")) {
+        colorIndicator = new Image(game.getEditorResources().getUiAtlas().findRegion("white")) {
             @Override
             public float getMinHeight() {
                 return 100;

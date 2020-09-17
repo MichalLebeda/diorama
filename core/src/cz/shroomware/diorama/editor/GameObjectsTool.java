@@ -3,8 +3,8 @@ package cz.shroomware.diorama.editor;
 import cz.shroomware.diorama.editor.history.History;
 import cz.shroomware.diorama.editor.history.actions.DeleteGameObjectAction;
 import cz.shroomware.diorama.editor.history.actions.PlaceGameObjectAction;
-import cz.shroomware.diorama.engine.level.GameObject;
-import cz.shroomware.diorama.engine.level.GameObjects;
+import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.object.GameObjects;
 
 public class GameObjectsTool {
     GameObjects gameObjects;

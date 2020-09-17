@@ -1,7 +1,7 @@
 package cz.shroomware.diorama.editor.history.actions;
 
-import cz.shroomware.diorama.engine.level.GameObject;
-import cz.shroomware.diorama.engine.level.GameObjects;
+import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.object.GameObjects;
 
 public class PlaceGameObjectAction implements HistoryAction {
     GameObjects gameObjects;

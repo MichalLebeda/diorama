@@ -10,8 +10,8 @@ public class DFLabel extends Label {
     ShaderProgram dfShader;
 
     public DFLabel(CharSequence text, DioramaGame game) {
-        super(text, game.getSkin());
-        dfShader = game.getDFShader();
+        super(text, game.getEditorResources().getSkin());
+        dfShader = game.getEditorResources().getDfShader();
         setFontScale(0.32f);
         pack();
     }

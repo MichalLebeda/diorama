@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.ui;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
@@ -10,31 +11,32 @@ import com.badlogic.gdx.utils.Align;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
-import cz.shroomware.diorama.engine.level.GameObjectPrototype;
+import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 public class Item extends HorizontalGroup {
     static final int ITEM_SIZE = 100;
-    GameObjectPrototype prototype;
+    Prototype prototype;
 
-    public Item(DioramaGame game, final Editor editor, final GameObjectPrototype prototype) {
+    public Item(DioramaGame game, final Editor editor, final Prototype prototype) {
         this.prototype = prototype;
         space(20);
         align(Align.right);
-        DFLabel label = new DFLabel(prototype.getObjectRegion().name, game);
+        DFLabel label = new DFLabel(prototype.getName(), game);
         label.setFontScale(0.3f);
         addActor(label);
 
-        Image image = new Image(prototype.getObjectRegion());
+        TextureRegion iconRegion = prototype.getIconRegion();
+        Image image = new Image(iconRegion);
 
         image.setSize(ITEM_SIZE, ITEM_SIZE);
 
         Drawable drawable = image.getDrawable();
-        if (prototype.getObjectRegion().getRegionWidth() > prototype.getObjectRegion().getRegionHeight()) {
+        if (iconRegion.getRegionWidth() > iconRegion.getRegionHeight()) {
             drawable.setMinWidth(ITEM_SIZE);
-            drawable.setMinHeight((float) prototype.getObjectRegion().getRegionHeight() / (float) prototype.getObjectRegion().getRegionWidth() * ITEM_SIZE);
+            drawable.setMinHeight((float) iconRegion.getRegionHeight() / (float) iconRegion.getRegionWidth() * ITEM_SIZE);
         } else {
             drawable.setMinHeight(ITEM_SIZE);
-            drawable.setMinWidth((float) prototype.getObjectRegion().getRegionWidth() / (float) prototype.getObjectRegion().getRegionHeight() * ITEM_SIZE);
+            drawable.setMinWidth((float) iconRegion.getRegionWidth() / (float) prototype.getIconRegion().getRegionHeight() * ITEM_SIZE);
 
 //            padLeft((drawable.getMinHeight() - drawable.getMinWidth()) / 2);
             padRight((drawable.getMinHeight() - drawable.getMinWidth()) / 2);

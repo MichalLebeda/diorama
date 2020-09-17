@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.engine.level;
+package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -14,6 +14,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import cz.shroomware.diorama.engine.level.Prototypes;
+import cz.shroomware.diorama.engine.level.prototype.Prototype;
+
 public class GameObjects {
     protected Array<GameObject> gameObjects = new Array<>();
     protected boolean dirty = false;
@@ -24,9 +27,9 @@ public class GameObjects {
         }
     }
 
-    public void drawObjects(MinimalisticDecalBatch decalBatch) {
+    public void drawObjects(MinimalisticDecalBatch decalBatch, float delta) {
         for (GameObject object : gameObjects) {
-            object.drawDecal(decalBatch);
+            object.drawDecal(decalBatch, delta);
         }
     }
 
@@ -52,11 +55,11 @@ public class GameObjects {
             gameObject.sizeBoundingBox(boundingBox);
             //TODO: IF DECAL WAS ROTATED BY NON MULTIPLE OF 90, PASSED POSITION WILL FAIL COS BOUNDS WILL BE NON PLANAR
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                if(gameObject.isPixelOpaque(intersection.cpy())){
+                if (gameObject.isPixelOpaque(intersection.cpy())) {
                     float currentObjectDist = cameraPos.cpy().add(intersection.cpy().scl(-1)).len();
-                    if(currentObjectDist<minDist){
+                    if (currentObjectDist < minDist) {
                         minDist = currentObjectDist;
-                       candidate = gameObject;
+                        candidate = gameObject;
                     }
                 }
             }
@@ -105,8 +108,8 @@ public class GameObjects {
 //                        Float.parseFloat(attributes[2]),
 //                        Float.parseFloat(attributes[3]));
 
-                for (int i =0;i<gameObjectPrototypes.getSize();i++) {
-                    GameObjectPrototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
+                for (int i = 0; i < gameObjectPrototypes.getSize(); i++) {
+                    Prototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
                     if (attributes[0].equals(prototype.getName())) {
                         Gdx.app.error("LINE 2", prototype.getName());
                         Quaternion quaternion = new Quaternion(
@@ -121,6 +124,7 @@ public class GameObjects {
 //                        GameObject object = prototype.createAt(position, quaternion);
                         object.setRotation(quaternion);
                         add(object);
+                        break;
                     }
                 }
             }

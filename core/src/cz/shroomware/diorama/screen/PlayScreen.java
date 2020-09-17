@@ -8,9 +8,10 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.DioramaGame;
-import cz.shroomware.diorama.engine.level.GameObject;
-import cz.shroomware.diorama.engine.level.GameObjectPrototype;
 import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.object.SingleRegionGameObject;
+import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
 public class PlayScreen extends BaseScreen implements InputProcessor {
     protected static final float SPEED = 0.1f;
@@ -24,9 +25,10 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
         updateBackgorundColor(level);
         initCamera(level);
 
-        player = new GameObject(new Vector3(level.getSize() / 2.f, 4, 0.5f),
+        player = new SingleRegionGameObject(new Vector3(level.getSize() / 2.f, 4, 0.5f),
                 new Quaternion().setFromAxis(Vector3.X, 90),
-                new GameObjectPrototype(game.getAtlas().findRegion("dwarf")));
+                //TODO ZMENIT NA nejakej specialni
+                new SingleRegionPrototype(game.getEditorResources().getObjectAtlas().findRegion("dwarf")));
         level.getGameObjects().add(player);
     }
 
@@ -63,7 +65,7 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
         level.draw(spriteBatch, decalBatch, delta);
         spriteBatch.end();
 
-        decalBatch.render(camera, backgroundColor,0);
+        decalBatch.render(camera, backgroundColor, 0);
     }
 
     @Override

@@ -8,42 +8,48 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.Level;
-import cz.shroomware.diorama.screen.ProjectSelectionScreen;
 import cz.shroomware.diorama.screen.EditorScreen;
 import cz.shroomware.diorama.screen.PlayScreen;
+import cz.shroomware.diorama.screen.ProjectSelectionScreen;
 
 public class DioramaGame extends Game {
     EditorScreen editorScreen;
     ProjectSelectionScreen projectSelectionScreen;
-    TextureAtlas atlas;
-    TextureAtlas shadowsAtlas;
-    TextureAtlas uiAtlas;
-    TextureRegion darkBackground;
-    Skin skin;
-    ShaderProgram dfShader;
-    ShaderProgram spriteBatchShader;
+    EditorResources editorResources;
 
     @Override
     public void create() {
-        atlas = new TextureAtlas(Gdx.files.internal("atlas/auto.atlas"));
-        shadowsAtlas = new TextureAtlas(Gdx.files.internal("atlas/shadows.atlas"));
-        uiAtlas = new TextureAtlas(Gdx.files.internal("atlas/ui.atlas"));
-        darkBackground = uiAtlas.findRegion("black");
-        skin = new Skin(Gdx.files.internal("skin/uiskin.json"), uiAtlas);
+        TextureAtlas objectAtlas = new TextureAtlas(Gdx.files.internal("atlas/auto.atlas"));
+        TextureAtlas shadowsAtlas = new TextureAtlas(Gdx.files.internal("atlas/shadows.atlas"));
+        TextureAtlas uiAtlas = new TextureAtlas(Gdx.files.internal("atlas/ui.atlas"));
+
+        TextureRegion darkBackground = uiAtlas.findRegion("black");
+
+        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"), uiAtlas);
         skin.getFont("default-font").getData().setScale(0.32f);
         skin.getFont("default-font").setUseIntegerPositions(false);
 
         ShaderProgram.pedantic = false;
-        dfShader = new ShaderProgram(Gdx.files.internal("shaders/font.vert"), Gdx.files.internal("shaders/font.frag"));
+        ShaderProgram dfShader = new ShaderProgram(Gdx.files.internal("shaders/font.vert"), Gdx.files.internal("shaders/font.frag"));
         if (!dfShader.isCompiled()) {
             Gdx.app.error("fontShader", "compilation failed:\n" + dfShader.getLog());
         }
 
-        spriteBatchShader = new ShaderProgram(Gdx.files.internal("shaders/sprite_noise.vert"), Gdx.files.internal("shaders/sprite_noise.frag"));
+        ShaderProgram spriteBatchShader = new ShaderProgram(Gdx.files.internal("shaders/sprite.vert"), Gdx.files.internal("shaders/sprite.frag"));
         if (!spriteBatchShader.isCompiled()) {
             Gdx.app.error("spriteBatchShader", "compilation failed:\n" + dfShader.getLog());
         }
+
+        editorResources = new EditorResources();
+        editorResources.setObjectAtlas(objectAtlas);
+        editorResources.setShadowAtlas(shadowsAtlas);
+        editorResources.setUiAtlas(uiAtlas);
+        editorResources.setDarkBackgroundRegion(darkBackground);
+        editorResources.setSkin(skin);
+        editorResources.setDfShader(dfShader);
+        editorResources.setSpriteBatchShader(spriteBatchShader);
 
         projectSelectionScreen = new ProjectSelectionScreen(this);
         setScreen(projectSelectionScreen);
@@ -54,16 +60,31 @@ public class DioramaGame extends Game {
 
     @Override
     public void render() {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F11)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F11)) {
             toggleFullscreen();
         }
         super.render();
     }
 
-    public void toggleFullscreen(){
-        if(Gdx.graphics.isFullscreen()){
-            Gdx.graphics.setWindowedMode(lastWindowedWidth,lastWindowedHeight);
-        }else {
+    @Override
+    public void dispose() {
+        getScreen().hide();
+
+        if (editorScreen != null) {
+            editorScreen.dispose();
+        }
+
+        projectSelectionScreen.dispose();
+    }
+
+    public EditorResources getEditorResources() {
+        return editorResources;
+    }
+
+    public void toggleFullscreen() {
+        if (Gdx.graphics.isFullscreen()) {
+            Gdx.graphics.setWindowedMode(lastWindowedWidth, lastWindowedHeight);
+        } else {
             lastWindowedWidth = Gdx.graphics.getWidth();
             lastWindowedHeight = Gdx.graphics.getHeight();
             Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -81,50 +102,11 @@ public class DioramaGame extends Game {
         }
     }
 
-    public void openGamePreview(Level level){
-        setScreen(new PlayScreen(this,level));
+    public void openGamePreview(Level level) {
+        setScreen(new PlayScreen(this, level));
     }
 
     public void openSelection() {
         setScreen(projectSelectionScreen);
-    }
-
-    public TextureRegion getDarkBackground() {
-        return darkBackground;
-    }
-
-    public Skin getSkin() {
-        return skin;
-    }
-
-    public ShaderProgram getDFShader() {
-        return dfShader;
-    }
-
-    public ShaderProgram getSpriteBatchShader(){
-        return spriteBatchShader;
-    }
-
-    public TextureAtlas getAtlas() {
-        return atlas;
-    }
-
-    public TextureAtlas getShadowsAtlas() {
-        return shadowsAtlas;
-    }
-
-    public TextureAtlas getUiAtlas() {
-        return uiAtlas;
-    }
-
-    @Override
-    public void dispose() {
-        getScreen().hide();
-
-        if (editorScreen != null) {
-            editorScreen.dispose();
-        }
-
-        projectSelectionScreen.dispose();
     }
 }

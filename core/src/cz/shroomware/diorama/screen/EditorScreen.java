@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Plane;
@@ -25,27 +25,31 @@ import java.util.Date;
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Cursor;
 import cz.shroomware.diorama.editor.Editor;
-import cz.shroomware.diorama.editor.GameObjectsTool;
+import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.FloorTool;
-import cz.shroomware.diorama.engine.level.GameObject;
-import cz.shroomware.diorama.engine.level.GameObjectPrototype;
+import cz.shroomware.diorama.editor.GameObjectsTool;
+import cz.shroomware.diorama.engine.ObjectShadowPair;
+import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
+import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
+import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 import cz.shroomware.diorama.ui.Hud;
 
 public class EditorScreen extends BaseScreen {
     protected static final float PAN_PER_PIXEL = 0.02f;
     protected static final float SCROLL_RATIO = 0.4f;
     protected static final float DEGREES_PER_PIXEL = 0.2f;
-    protected static final float TRANSLATION_LIMIT = 3;
+    protected static final float TRANSLATION_LIMIT = 1.4f;
     protected static final float MAX_CAM_DIST_FROM_GRID = 8;
     protected Editor editor;
     protected FloorTool floorTool;
+    protected EditorResources resources;
     protected GameObjectsTool gameObjectsTool;
     protected InputMultiplexer inputMultiplexer;
-    protected TextureAtlas atlas;
-    protected TextureAtlas shadowsAtlas;
-    protected TextureRegion defaultCursorRegion;
+    protected TextureAtlas shadowAtlas;
+    protected TextureAtlas.AtlasRegion defaultCursorRegion;
     protected Cursor cursor;
     protected Hud hud;
     protected Prototypes gameObjectPrototypes;
@@ -63,44 +67,26 @@ public class EditorScreen extends BaseScreen {
         super(game);
         editor = new Editor(filename);
 
-        atlas = game.getAtlas();
-        defaultCursorRegion = atlas.findRegion("cursor");
-        shadowsAtlas = game.getShadowsAtlas();
+        resources = game.getEditorResources();
+        defaultCursorRegion = resources.getObjectAtlas().findRegion("cursor");
+        shadowAtlas = resources.getShadowAtlas();
 
-        gameObjectPrototypes = new Prototypes();
-        loadPrototypes();
+        gameObjectPrototypes = new Prototypes(resources);
 
-        level = new Level(filename, gameObjectPrototypes, atlas);
+        level = new Level(filename, gameObjectPrototypes, resources);
         updateBackgorundColor(level);
         initCamera(level);
 
         floorTool = new FloorTool(level.getFloor(), editor.getHistory());
         gameObjectsTool = new GameObjectsTool(level.getGameObjects(), editor.getHistory());
 
-        cursor = new Cursor(editor, level, defaultCursorRegion);
+        cursor = new Cursor(editor, level, resources, defaultCursorRegion);
 
         hud = new Hud(game, gameObjectPrototypes, editor, level);
 
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(this);
         inputMultiplexer.addProcessor(hud);
-    }
-
-    private void loadPrototypes() {
-        Array<String> blacklist = new Array<>();
-        blacklist.add("cursor");
-        blacklist.add("selector_background");
-
-        Array<TextureAtlas.AtlasRegion> regions = atlas.getRegions();
-        TextureAtlas.AtlasRegion shadowRegion;
-        for (TextureAtlas.AtlasRegion region : regions) {
-            if (blacklist.contains(region.name, false)) {
-                continue;
-            }
-
-            shadowRegion = shadowsAtlas.findRegion(region.name);
-            gameObjectPrototypes.addGameObjectProtoype(new GameObjectPrototype(region, shadowRegion));
-        }
     }
 
     @Override
@@ -233,7 +219,7 @@ public class EditorScreen extends BaseScreen {
                             new Plane(Vector3.Z, Vector3.X),
                             intersection);
 
-                    floorTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
+                    floorTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeIcon());
                 }
             } else if (editor.isMode(Editor.Mode.TILE_BUCKET)) {
                 if (editor.getCurrentlySelectedPrototype() != null) {
@@ -244,7 +230,7 @@ public class EditorScreen extends BaseScreen {
                             new Plane(Vector3.Z, Vector3.X),
                             intersection);
 
-                    floorTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeObjectRegion());
+                    floorTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeIcon());
                 }
             }
         }
@@ -291,7 +277,7 @@ public class EditorScreen extends BaseScreen {
                 }
                 return true;
             case Input.Keys.L:
-                if (level.loadIfExists(gameObjectPrototypes, atlas)) {
+                if (level.loadIfExists(gameObjectPrototypes, resources.getObjectAtlas())) {
                     hud.showMessage("Loaded " + level.getFilename());
                 } else {
                     hud.showMessage("FAILED to load " + level.getFilename());

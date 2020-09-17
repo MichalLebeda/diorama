@@ -52,7 +52,7 @@ public class MinimalisticDecalBatch implements Disposable {
     }
 
     private void compileShader() {
-        String vertexShader = Gdx.files.internal("shaders/decal_noise.vert").readString();
+        String vertexShader = Gdx.files.internal("shaders/decal.vert").readString();
         String fragmentShader = Gdx.files.internal("shaders/decal.frag").readString();
 
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
@@ -82,7 +82,6 @@ public class MinimalisticDecalBatch implements Disposable {
 
     public void render(Camera camera, Color backgroundColor,float time) {
         beforeGroups();
-
 
         ShaderProgram shaderProgram = this.shaderProgram;
 

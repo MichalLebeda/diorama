@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.engine.level;
+package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -17,40 +17,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.editor.Cursor;
+import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class GameObject {
-    GameObjectPrototype prototype;
-    Decal decal;
-    Sprite shadowSprite;
-    boolean selected = false;
+    protected Prototype prototype;
+    protected Decal decal;
+    protected Sprite shadowSprite;
+    protected boolean selected = false;
 
-    public GameObject(Cursor cursor, GameObjectPrototype prototype) {
-        this(cursor.getPosition(), prototype);
-        decal.setRotation(cursor.getRotation());
-    }
-
-    public GameObject(Vector3 position, Quaternion quaternion, GameObjectPrototype prototype) {
-        this(position, prototype);
-        setRotation(quaternion);
-    }
-
-    protected GameObject(Vector3 position, GameObjectPrototype prototype) {
+    protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
         this.prototype = prototype;
-        TextureRegion decalRegion = prototype.getObjectRegion();
-        decal = Decal.newDecal(decalRegion, true);
-        decal.setPosition(position);
-        decal.setWidth(decalRegion.getRegionWidth() / PIXELS_PER_METER);
-        decal.setHeight(decalRegion.getRegionHeight() / PIXELS_PER_METER);
 
-        TextureRegion shadowRegion = prototype.getShadowRegion();
-        if (shadowRegion != null) {
-            shadowSprite = new Sprite(shadowRegion);
-            shadowSprite.setSize(decal.getWidth() * Utils.SHADOW_SCALE, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * Utils.SHADOW_SCALE));
-            shadowSprite.setPosition(decal.getPosition().x - shadowSprite.getWidth() / 2, decal.getPosition().y - shadowSprite.getHeight() - 0.01f / PIXELS_PER_METER);
-        }
+        decal = Decal.newDecal(region, true);
+        decal.setPosition(position);
+        decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
+        decal.setHeight(region.getRegionHeight() / PIXELS_PER_METER);
     }
 
     public void sizeBoundingBox(BoundingBox boundingBox) {
@@ -66,18 +49,19 @@ public class GameObject {
         boundingBox.set(min, max);
     }
 
-    public void drawDecal(MinimalisticDecalBatch decalBatch) {
+    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
         decalBatch.add(decal);
     }
 
     public void drawShadow(Batch spriteBatch) {
         if (shadowSprite != null) {
+            //TODO update shadow sprite
             shadowSprite.draw(spriteBatch);
         }
     }
 
     public void save(OutputStream outputStream) throws IOException {
-        outputStream.write((prototype.getObjectRegion().name + " ").getBytes());
+        outputStream.write((prototype.getName() + " ").getBytes());
         outputStream.write((decal.getPosition().x + " ").getBytes());
         outputStream.write((decal.getPosition().y + " ").getBytes());
         outputStream.write((decal.getPosition().z + " ").getBytes());
@@ -98,6 +82,14 @@ public class GameObject {
         } else {
             decal.setColor(Color.WHITE);
         }
+    }
+
+    public Quaternion getRotation() {
+        return decal.getRotation();
+    }
+
+    public void setRotation(Quaternion quaternion) {
+        decal.setRotation(quaternion);
     }
 
     //TODO: IF DECAL WAS ROTATED BY NON MULTIPLE OF 90, PASSED POSITION WILL FAIL COS BOUNDS WILL BE NON PLANAR
@@ -155,10 +147,6 @@ public class GameObject {
 
     public void setRotation(float yaw, float pitch, float roll) {
         decal.setRotation(yaw, pitch, roll);
-    }
-
-    public void setRotation(Quaternion quaternion) {
-        decal.setRotation(quaternion);
     }
 
     public void translate(Vector3 translation) {

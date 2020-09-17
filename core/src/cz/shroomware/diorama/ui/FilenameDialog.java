@@ -12,10 +12,10 @@ public class FilenameDialog extends Dialog {
     TextField textField;
 
     public FilenameDialog(final DioramaGame game, final ProjectSelectionScreen projectSelectionScreen) {
-        super("", game.getSkin());
+        super("", game.getEditorResources().getSkin());
         getTitleTable().setVisible(false);
         getContentTable().add(new DFLabel("New Project Name:", game));
-        textField = new TextField("", game.getSkin());
+        textField = new TextField("", game.getEditorResources().getSkin());
         textField.setWidth(300);
         getContentTable().add(textField).fill().expand();
 

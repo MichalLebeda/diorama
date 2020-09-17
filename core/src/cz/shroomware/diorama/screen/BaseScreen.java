@@ -24,7 +24,7 @@ public class BaseScreen implements Screen, InputProcessor {
     BaseScreen(DioramaGame game) {
         this.game = game;
         spriteBatch = new SpriteBatch();
-        spriteBatch.setShader(game.getSpriteBatchShader());
+        spriteBatch.setShader(game.getEditorResources().getSpriteBatchShader());
         decalBatch = new MinimalisticDecalBatch();
     }
 

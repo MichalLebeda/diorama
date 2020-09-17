@@ -68,7 +68,7 @@ public class ProjectSelectionScreen implements Screen {
 
     public void refreshList() {
         verticalGroup.clear();
-        final Drawable darkBackground = game.getSkin().getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
+        final Drawable darkBackground = game.getEditorResources().getSkin().getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
 
         FileHandle[] fileHandles = Gdx.files.external(Utils.PROJECT_FOLDER).list();
         for (final FileHandle fileHandle : fileHandles) {
@@ -93,12 +93,12 @@ public class ProjectSelectionScreen implements Screen {
                     game.openEditor(fileHandle.name());
                 }
             });
-            final Button button = new Button(game.getSkin()) {
+            final Button button = new Button(game.getEditorResources().getSkin()) {
                 @Override
                 public void draw(Batch batch, float parentAlpha) {
                     super.draw(batch, parentAlpha);
 
-                    TextureRegion crossRegion = game.getUiAtlas().findRegion("cross");
+                    TextureRegion crossRegion = game.getEditorResources().getUiAtlas().findRegion("cross");
                     float PAD = 30;
                     batch.draw(crossRegion, getX() + PAD,
                             getY() + PAD,
@@ -110,7 +110,7 @@ public class ProjectSelectionScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     // TODO: use custom dialog for DF font support
-                    Dialog dialog = new Dialog("Are you sure", game.getSkin()) {
+                    Dialog dialog = new Dialog("Are you sure", game.getEditorResources().getSkin()) {
                         @Override
                         protected void result(Object object) {
                             super.result(object);

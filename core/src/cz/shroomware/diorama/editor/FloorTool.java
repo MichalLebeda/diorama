@@ -23,6 +23,7 @@ public class FloorTool {
         TextureRegion tileRegion = tile.getRegion();
         if (floor.setTileRegionAtWorld(x, y, region)) {
             history.addAction(new PlaceTileAction(tile, tileRegion, region));
+            floor.setDirty();
         }
     }
 
@@ -51,6 +52,7 @@ public class FloorTool {
             bucketTileAction.add(tile, toReplace, replacement);
 
             tile.setRegion(replacement);
+            floor.setDirty();
 
             queue.add(tile);
 
