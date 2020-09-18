@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
@@ -60,11 +61,12 @@ public class GameObject {
     }
 
     public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
-        if (!selected && tileAttachedTo != null) {
-            decal.setColor(Color.ORANGE);
-
-        }
-
+        //TODO: remove
+//        if (!selected && tileAttachedTo != null) {
+//            decal.setColor(Color.ORANGE);
+//
+//        }
+//
         decalBatch.add(decal);
     }
 
@@ -186,5 +188,9 @@ public class GameObject {
 
     public Prototype getPrototype() {
         return prototype;
+    }
+
+    public void updateSurroundings(Floor floor) {
+
     }
 }

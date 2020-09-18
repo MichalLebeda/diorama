@@ -10,11 +10,17 @@ import cz.shroomware.diorama.engine.level.object.WallObject;
 public class WallPrototype extends Prototype {
     Resources resources;
     TextureRegion region;
+    TextureRegion regionConnectedLeft;
+    TextureRegion regionConnectedRight;
+    TextureRegion regionConnectedBoth;
     TextureRegion top;
 
     public WallPrototype(Resources resources) {
         this.resources = resources;
         this.region = resources.getObjectAtlas().findRegion("wall");
+        this.regionConnectedLeft = resources.getObjectAtlas().findRegion("wall_left");
+        this.regionConnectedRight = resources.getObjectAtlas().findRegion("wall_right");
+        this.regionConnectedBoth = resources.getObjectAtlas().findRegion("wall_both");
         this.top = resources.getObjectAtlas().findRegion("wall_top");
     }
 
@@ -44,7 +50,11 @@ public class WallPrototype extends Prototype {
 
     @Override
     public boolean dependenciesFulfilled() {
-        return region != null && top != null;
+        return region != null &&
+                top != null &&
+                regionConnectedLeft != null &&
+                regionConnectedRight != null &&
+                regionConnectedBoth != null;
     }
 
     @Override
@@ -70,5 +80,21 @@ public class WallPrototype extends Prototype {
 
     public TextureRegion getTop() {
         return top;
+    }
+
+    public TextureRegion getRegion() {
+        return region;
+    }
+
+    public TextureRegion getRegionConnectedLeft() {
+        return regionConnectedLeft;
+    }
+
+    public TextureRegion getRegionConnectedRight() {
+        return regionConnectedRight;
+    }
+
+    public TextureRegion getRegionConnectedBoth() {
+        return regionConnectedBoth;
     }
 }

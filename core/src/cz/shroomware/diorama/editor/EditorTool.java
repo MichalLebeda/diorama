@@ -113,7 +113,6 @@ public class EditorTool {
             gameObjects.add(gameObject);
         }
 
-
         if (useHistory) {
             editor.getHistory().addAction(new PlaceGameObjectAction(gameObject, this));
         }
@@ -142,6 +141,8 @@ public class EditorTool {
             tile.attachObject(object);
             object.attachToTile(tile);
             gameObjects.add(object);
+
+            floor.updateSurroundings();
         }
     }
 }

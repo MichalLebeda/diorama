@@ -1,27 +1,34 @@
 package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
+import cz.shroomware.diorama.engine.level.Floor;
+import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class WallObject extends GameObject {
     Decal left, right, front, back;
+    TextureRegion region;
+    TextureRegion regionConnectedLeft;
+    TextureRegion regionConnectedRight;
+    TextureRegion regionConnectedBoth;
 
     public WallObject(Vector3 position, WallPrototype prototype) {
         super(position, prototype.getTop(), prototype);
-        decal.setRotationX(0);
-//        decal.setZ(0);
-        decal.setZ(prototype.getLeftRegion().getRegionHeight() / PIXELS_PER_METER);
-//        decal.translate(0, 0, prototype.getLeftRegion().getRegionHeight() / PIXELS_PER_METER / 2f);
+        region = prototype.getRegion();
+        regionConnectedLeft = prototype.getRegionConnectedLeft();
+        regionConnectedRight = prototype.getRegionConnectedRight();
+        regionConnectedBoth = prototype.getRegionConnectedBoth();
 
-        float centerY = 0.5f;
-        ;// decal.getZ() / 2f;
+        decal.setRotationX(0);
+        decal.setZ(prototype.getLeftRegion().getRegionHeight() / PIXELS_PER_METER);
 
         left = Decal.newDecal(prototype.getLeftRegion(), true);
         left.setPosition(position.cpy().add(-0.5f, 0, 0));
@@ -92,9 +99,55 @@ public class WallObject extends GameObject {
     @Override
     public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
         super.drawDecal(decalBatch, delta);
-//        decalBatch.add(left);
-//        decalBatch.add(right);
+        decalBatch.add(left);
+        decalBatch.add(right);
         decalBatch.add(front);
         decalBatch.add(back);
+    }
+
+    public void updateSurroundings(Floor floor) {
+        Tile tile;
+
+        tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
+        if (tile != null && tile.hasAttachedObject()) {
+            tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
+            if (tile != null && tile.hasAttachedObject()) {
+                front.setTextureRegion(regionConnectedBoth);
+                back.setTextureRegion(regionConnectedBoth);
+            } else {
+                front.setTextureRegion(regionConnectedLeft);
+                back.setTextureRegion(regionConnectedLeft);
+            }
+        } else {
+            tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
+            if (tile != null && tile.hasAttachedObject()) {
+                front.setTextureRegion(regionConnectedRight);
+                back.setTextureRegion(regionConnectedRight);
+            } else {
+                front.setTextureRegion(region);
+                back.setTextureRegion(region);
+            }
+        }
+
+        tile = floor.getTileByOffset(tileAttachedTo, 0, -1);
+        if (tile != null && tile.hasAttachedObject()) {
+            tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
+            if (tile != null && tile.hasAttachedObject()) {
+                left.setTextureRegion(regionConnectedBoth);
+                right.setTextureRegion(regionConnectedBoth);
+            } else {
+                left.setTextureRegion(regionConnectedLeft);
+                right.setTextureRegion(regionConnectedLeft);
+            }
+        } else {
+            tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
+            if (tile != null && tile.hasAttachedObject()) {
+                left.setTextureRegion(regionConnectedRight);
+                right.setTextureRegion(regionConnectedRight);
+            } else {
+                left.setTextureRegion(region);
+                right.setTextureRegion(region);
+            }
+        }
     }
 }

@@ -10,12 +10,13 @@ import cz.shroomware.diorama.engine.level.object.GameObject;
 public abstract class Prototype {
 
     public Prototype() {
+
     }
 
     public abstract TextureRegion getIconRegion();
 
 //    public abstract TextureRegion getObjectRegion();
-//
+
 //    public abstract TextureRegion getShadowRegion();
 
 //    public abstract boolean hasShadow();

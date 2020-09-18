@@ -42,6 +42,10 @@ public class Tile extends Sprite {
         return attachedGameObject;
     }
 
+    public boolean hasAttachedObject() {
+        return attachedGameObject != null;
+    }
+
     @Override
     public void draw(Batch batch, float alphaModulation) {
         Gdx.app.error("Tile", "draw(Batch batch, float alphaModulation): use draw public void draw(DecalBatch decalBatch, SpriteBatch spriteBatch, float delta)");

@@ -20,77 +20,77 @@ big_rock_a
   index: -1
 big_rock_b
   rotate: false
-  xy: 863, 84
+  xy: 695, 67
   size: 12, 14
   orig: 12, 14
   offset: 0, 0
   index: -1
 big_rock_c
   rotate: false
-  xy: 582, 48
+  xy: 695, 49
   size: 12, 14
   orig: 12, 14
   offset: 0, 0
   index: -1
 boar
   rotate: false
-  xy: 648, 71
+  xy: 422, 17
   size: 16, 14
   orig: 16, 14
   offset: 0, 0
   index: 0
 boar
   rotate: false
-  xy: 709, 74
+  xy: 382, 3
   size: 16, 14
   orig: 16, 14
   offset: 0, 0
   index: 1
 boar
   rotate: false
-  xy: 763, 84
+  xy: 402, 3
   size: 16, 14
   orig: 16, 14
   offset: 0, 0
   index: 2
 boar
   rotate: false
-  xy: 783, 84
+  xy: 675, 67
   size: 16, 14
   orig: 16, 14
   offset: 0, 0
   index: 3
 boar_back
   rotate: false
-  xy: 803, 84
+  xy: 655, 49
   size: 16, 14
   orig: 16, 14
   offset: 0, 0
   index: 0
 boar_back
   rotate: false
-  xy: 823, 84
+  xy: 675, 49
   size: 16, 14
   orig: 16, 14
   offset: 0, 0
   index: 1
 boar_back
   rotate: false
-  xy: 843, 84
+  xy: 635, 41
   size: 16, 14
   orig: 16, 14
   offset: 0, 0
   index: 2
 boar_back
   rotate: false
-  xy: 457, 2
+  xy: 655, 31
   size: 16, 14
   orig: 16, 14
   offset: 0, 0
   index: 3
 bush
   rotate: false
-  xy: 182, 2
+  xy: 616, 46
   size: 5, 8
   orig: 5, 8
   offset: 0, 0
@@ -111,14 +111,14 @@ cursor
   index: -1
 desert_bush
   rotate: false
-  xy: 754, 85
+  xy: 625, 48
   size: 5, 6
   orig: 5, 6
   offset: 0, 0
   index: -1
 desert_tree
   rotate: false
-  xy: 542, 46
+  xy: 675, 29
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -146,203 +146,203 @@ dwarf
   index: 0
 dwarf
   rotate: false
-  xy: 615, 72
-  size: 16, 18
-  orig: 16, 18
-  offset: 0, 0
-  index: 1
-dwarf
-  rotate: false
   xy: 923, 108
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
-  index: 2
+  index: 1
 dwarf
   rotate: false
   xy: 943, 108
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
-  index: 3
+  index: 2
 dwarf
   rotate: false
   xy: 963, 108
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
-  index: 4
+  index: 3
 dwarf
   rotate: false
   xy: 983, 108
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
-  index: 5
+  index: 4
 dwarf
   rotate: false
   xy: 1003, 108
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
+  index: 5
+dwarf
+  rotate: false
+  xy: 142, 11
+  size: 16, 18
+  orig: 16, 18
+  offset: 0, 0
   index: 6
 dwarf
   rotate: false
-  xy: 382, 35
+  xy: 162, 14
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 7
 dwarf
   rotate: false
-  xy: 402, 35
-  size: 16, 18
-  orig: 16, 18
-  offset: 0, 0
-  index: 8
-dwarf_back
-  rotate: false
-  xy: 363, 4
-  size: 16, 18
-  orig: 16, 18
-  offset: 0, 0
-  index: 0
-dwarf_back
-  rotate: false
-  xy: 142, 11
-  size: 16, 18
-  orig: 16, 18
-  offset: 0, 0
-  index: 1
-dwarf_back
-  rotate: false
-  xy: 162, 14
-  size: 16, 18
-  orig: 16, 18
-  offset: 0, 0
-  index: 2
-dwarf_back
-  rotate: false
   xy: 182, 14
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
-  index: 3
+  index: 8
 dwarf_back
   rotate: false
   xy: 202, 14
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
-  index: 4
-dwarf_back
-  rotate: false
-  xy: 383, 13
-  size: 16, 18
-  orig: 16, 18
-  offset: 0, 0
-  index: 5
-dwarf_back
-  rotate: false
-  xy: 403, 13
-  size: 16, 18
-  orig: 16, 18
-  offset: 0, 0
-  index: 6
+  index: 0
 dwarf_back
   rotate: false
   xy: 422, 35
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
+  index: 1
+dwarf_back
+  rotate: false
+  xy: 635, 59
+  size: 16, 18
+  orig: 16, 18
+  offset: 0, 0
+  index: 2
+dwarf_back
+  rotate: false
+  xy: 655, 67
+  size: 16, 18
+  orig: 16, 18
+  offset: 0, 0
+  index: 3
+dwarf_back
+  rotate: false
+  xy: 711, 70
+  size: 16, 18
+  orig: 16, 18
+  offset: 0, 0
+  index: 4
+dwarf_back
+  rotate: false
+  xy: 711, 48
+  size: 16, 18
+  orig: 16, 18
+  offset: 0, 0
+  index: 5
+dwarf_back
+  rotate: false
+  xy: 711, 26
+  size: 16, 18
+  orig: 16, 18
+  offset: 0, 0
+  index: 6
+dwarf_back
+  rotate: false
+  xy: 763, 80
+  size: 16, 18
+  orig: 16, 18
+  offset: 0, 0
   index: 7
 dwarf_back
   rotate: false
-  xy: 423, 13
+  xy: 783, 80
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 8
 dwarf_back_throwing
   rotate: false
-  xy: 879, 86
+  xy: 803, 80
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 0
 dwarf_back_throwing
   rotate: false
-  xy: 899, 86
+  xy: 823, 80
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 1
 dwarf_back_throwing
   rotate: false
-  xy: 919, 86
+  xy: 843, 80
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 2
 dwarf_back_throwing
   rotate: false
-  xy: 939, 86
+  xy: 863, 80
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 3
 dwarf_back_throwing
   rotate: false
-  xy: 959, 86
+  xy: 883, 86
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 4
 dwarf_back_throwing
   rotate: false
-  xy: 979, 86
+  xy: 903, 86
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 5
 dwarf_throwing
   rotate: false
-  xy: 999, 86
+  xy: 923, 86
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 0
 dwarf_throwing
   rotate: false
-  xy: 442, 40
+  xy: 943, 86
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 1
 dwarf_throwing
   rotate: false
-  xy: 462, 44
+  xy: 963, 86
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 2
 dwarf_throwing
   rotate: false
-  xy: 482, 44
+  xy: 983, 86
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 3
 dwarf_throwing
   rotate: false
-  xy: 502, 44
+  xy: 1003, 86
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
   index: 4
 dwarf_throwing
   rotate: false
-  xy: 522, 44
+  xy: 442, 40
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
@@ -356,147 +356,147 @@ fisherman
   index: -1
 floor
   rotate: false
-  xy: 562, 46
+  xy: 442, 20
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 flower_a
   rotate: false
-  xy: 517, 8
+  xy: 363, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 0
 flower_a
   rotate: false
-  xy: 517, 8
+  xy: 363, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 4
 flower_a
   rotate: false
-  xy: 599, 34
+  xy: 562, 50
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 1
 flower_a
   rotate: false
-  xy: 536, 8
+  xy: 542, 30
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 2
 flower_a
   rotate: false
-  xy: 555, 10
+  xy: 581, 50
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 3
 flower_b
   rotate: false
-  xy: 574, 10
+  xy: 883, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 0
 flower_b
   rotate: false
-  xy: 574, 10
+  xy: 883, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 4
 flower_b
   rotate: false
-  xy: 574, 10
+  xy: 883, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 2
 flower_b
   rotate: false
-  xy: 615, 56
+  xy: 902, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 1
 flower_b
   rotate: false
-  xy: 618, 40
+  xy: 921, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 3
 flower_c
   rotate: false
-  xy: 618, 24
+  xy: 940, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 0
 flower_c
   rotate: false
-  xy: 599, 18
+  xy: 959, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 1
 flower_c
   rotate: false
-  xy: 593, 2
+  xy: 978, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 2
 flower_c
   rotate: false
-  xy: 612, 2
+  xy: 997, 70
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 3
 flower_c
   rotate: false
-  xy: 668, 69
+  xy: 462, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 4
 flower_d
   rotate: false
-  xy: 687, 69
+  xy: 481, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 0
 flower_d
   rotate: false
-  xy: 687, 69
+  xy: 481, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 4
 flower_d
   rotate: false
-  xy: 735, 79
+  xy: 500, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 1
 flower_d
   rotate: false
-  xy: 735, 79
+  xy: 500, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 3
 flower_d
   rotate: false
-  xy: 879, 70
+  xy: 519, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
@@ -517,7 +517,7 @@ ground
   index: -1
 hut
   rotate: false
-  xy: 443, 20
+  xy: 462, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -545,14 +545,14 @@ knob
   index: -1
 planks
   rotate: false
-  xy: 463, 24
+  xy: 482, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 reed
   rotate: false
-  xy: 483, 24
+  xy: 462, 26
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -580,77 +580,77 @@ rock_b
   index: -1
 rooter
   rotate: false
-  xy: 503, 24
+  xy: 502, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 selector_background
   rotate: false
-  xy: 523, 24
+  xy: 482, 26
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 shroom_a
   rotate: false
-  xy: 423, 2
+  xy: 422, 6
   size: 13, 7
   orig: 13, 7
   offset: 0, 0
   index: 0
 shroom_a_1_extra
   rotate: false
-  xy: 440, 2
+  xy: 711, 15
   size: 13, 7
   orig: 13, 7
   offset: 0, 0
   index: -1
 shroom_b
   rotate: false
-  xy: 383, 2
+  xy: 182, 3
   size: 16, 7
   orig: 16, 7
   offset: 0, 0
   index: 0
 shroom_b_1_extra
   rotate: false
-  xy: 403, 2
+  xy: 202, 3
   size: 16, 7
   orig: 16, 7
   offset: 0, 0
   index: -1
 shroom_c
   rotate: false
-  xy: 191, 3
+  xy: 695, 20
   size: 12, 7
   orig: 12, 7
   offset: 0, 0
   index: 0
 shroom_c_1_extra
   rotate: false
-  xy: 898, 75
+  xy: 600, 46
   size: 12, 7
   orig: 12, 7
   offset: 0, 0
   index: -1
 shroom_d
   rotate: false
-  xy: 598, 50
+  xy: 695, 31
   size: 12, 14
   orig: 12, 14
   offset: 0, 0
   index: 0
 shroom_d_1_extra
   rotate: false
-  xy: 583, 30
+  xy: 442, 2
   size: 12, 14
   orig: 12, 14
   offset: 0, 0
   index: -1
 small_rock
   rotate: false
-  xy: 555, 2
+  xy: 363, 2
   size: 10, 4
   orig: 10, 4
   offset: 0, 0
@@ -664,7 +664,7 @@ tepee
   index: -1
 tree
   rotate: false
-  xy: 543, 26
+  xy: 522, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -685,7 +685,7 @@ tree_a
   index: -1
 tree_b
   rotate: false
-  xy: 563, 26
+  xy: 502, 26
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -734,7 +734,7 @@ tree_g
   index: -1
 tree_h
   rotate: false
-  xy: 207, 3
+  xy: 600, 57
   size: 10, 7
   orig: 10, 7
   offset: 0, 0
@@ -760,16 +760,37 @@ wall
   orig: 16, 32
   offset: 0, 0
   index: -1
+wall_both
+  rotate: false
+  xy: 382, 21
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+wall_left
+  rotate: false
+  xy: 402, 21
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+wall_right
+  rotate: false
+  xy: 615, 58
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
 wall_top
   rotate: false
-  xy: 477, 4
+  xy: 542, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 water
   rotate: false
-  xy: 432, 57
+  xy: 377, 5
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
@@ -860,7 +881,7 @@ water_to_grass_top_right_small
   index: -1
 wave
   rotate: false
-  xy: 497, 4
+  xy: 522, 26
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -874,7 +895,7 @@ well
   index: -1
 white
   rotate: false
-  xy: 437, 57
+  xy: 432, 57
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

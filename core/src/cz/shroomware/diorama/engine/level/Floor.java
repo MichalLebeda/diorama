@@ -131,4 +131,22 @@ public class Floor {
 
         dirty = false;
     }
+
+    public Tile getTileByOffset(Tile tileToOffsetFrom, int xOffset, int yOffset) {
+        int xIndex = tileToOffsetFrom.getXIndex() + xOffset;
+        int yIndex = tileToOffsetFrom.getYIndex() + yOffset;
+
+        return getTileAtIndex(xIndex, yIndex);
+    }
+
+    public void updateSurroundings() {
+        for (int y = 0; y < getSize(); y++) {
+            for (int x = 0; x < getSize(); x++) {
+                Tile tile = getTileAtIndex(x, y);
+                if (tile.hasAttachedObject()) {
+                    tile.getAttachedGameObject().updateSurroundings(this);
+                }
+            }
+        }
+    }
 }
