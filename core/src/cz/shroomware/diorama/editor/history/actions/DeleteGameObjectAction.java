@@ -1,25 +1,25 @@
 package cz.shroomware.diorama.editor.history.actions;
 
+import cz.shroomware.diorama.editor.EditorTool;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.GameObjects;
 
 public class DeleteGameObjectAction implements HistoryAction {
-    GameObjects gameObjects;
+    EditorTool editorTool;
     GameObject object;
 
-    public DeleteGameObjectAction(GameObject object, GameObjects gameObjects) {
+    public DeleteGameObjectAction(GameObject object, EditorTool editorTool) {
         this.object = object;
-        this.gameObjects = gameObjects;
+        this.editorTool = editorTool;
     }
 
     @Override
     public void undo() {
-        gameObjects.add(object);
+        editorTool.addObject(object, false);
     }
 
     @Override
     public void redo() {
-        gameObjects.remove(object);
+        editorTool.removeObject(object, false);
     }
 
     @Override

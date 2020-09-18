@@ -14,7 +14,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Prototypes;
+import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 public class GameObjects {
@@ -88,7 +90,7 @@ public class GameObjects {
         return dirty;
     }
 
-    public void load(BufferedReader bufferedReader, Prototypes gameObjectPrototypes) {
+    public void load(BufferedReader bufferedReader, Prototypes gameObjectPrototypes, Floor floor) {
         gameObjects.clear();
 
         String line = null;
@@ -103,10 +105,10 @@ public class GameObjects {
                 if (attributes.length != 8) {
                     continue;
                 }
-//                position.set(
-//                        Float.parseFloat(attributes[1]),
-//                        Float.parseFloat(attributes[2]),
-//                        Float.parseFloat(attributes[3]));
+                position.set(
+                        Float.parseFloat(attributes[1]),
+                        Float.parseFloat(attributes[2]),
+                        Float.parseFloat(attributes[3]));
 
                 for (int i = 0; i < gameObjectPrototypes.getSize(); i++) {
                     Prototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
@@ -118,11 +120,17 @@ public class GameObjects {
                                 Float.parseFloat(attributes[6]),
                                 Float.parseFloat(attributes[7]));
                         GameObject object = prototype.createAt(
-                                Float.parseFloat(attributes[1]),
-                                Float.parseFloat(attributes[2]),
+                                //TODO add Z
+                                position.x, position.y,
                                 quaternion);
 //                        GameObject object = prototype.createAt(position, quaternion);
                         object.setRotation(quaternion);
+                        if (prototype.isAttached()) {
+                            // There should always be a Tile for an attached object. Any exceptions are not our fault.
+                            Tile tile = floor.getTileAtWorld(position.x, position.y);
+                            tile.attachObject(object);
+                            object.attachToTile(tile);
+                        }
                         add(object);
                         break;
                     }

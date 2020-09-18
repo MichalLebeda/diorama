@@ -17,11 +17,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class GameObject {
+    protected Tile tileAttachedTo;
     protected Prototype prototype;
     protected Decal decal;
     protected Sprite shadowSprite;
@@ -34,6 +36,14 @@ public class GameObject {
         decal.setPosition(position);
         decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
         decal.setHeight(region.getRegionHeight() / PIXELS_PER_METER);
+    }
+
+    public void attachToTile(Tile tileAttachedTo) {
+        this.tileAttachedTo = tileAttachedTo;
+    }
+
+    public Tile getTileAttachedTo() {
+        return tileAttachedTo;
     }
 
     public void sizeBoundingBox(BoundingBox boundingBox) {
@@ -50,6 +60,11 @@ public class GameObject {
     }
 
     public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
+        if (!selected && tileAttachedTo != null) {
+            decal.setColor(Color.ORANGE);
+
+        }
+
         decalBatch.add(decal);
     }
 
@@ -93,7 +108,7 @@ public class GameObject {
     }
 
     //TODO: IF DECAL WAS ROTATED BY NON MULTIPLE OF 90, PASSED POSITION WILL FAIL COS BOUNDS WILL BE NON PLANAR
-    public boolean isPixelOpaque(Vector3 intersection) {
+    public boolean isPixelOpaque(Vector3 intersection, Decal decal) {
 //        decal.update();
         float[] vertices = decal.getVertices();
         Vector3 vecA = new Vector3(vertices[Decal.X2] - vertices[Decal.X1],
@@ -127,6 +142,10 @@ public class GameObject {
         Utils.pixel = color;
         pixmap.dispose();
         return ((color & 0x000000ff)) / 255f > 0.5f;
+    }
+
+    public boolean isPixelOpaque(Vector3 intersection) {
+        return isPixelOpaque(intersection, decal);
     }
 
     public String getName() {
@@ -163,5 +182,9 @@ public class GameObject {
 
     public float getWidth() {
         return decal.getWidth();
+    }
+
+    public Prototype getPrototype() {
+        return prototype;
     }
 }

@@ -27,7 +27,7 @@ public class Floor {
     public void draw(SpriteBatch spriteBatch, float delta) {
         for (int x = 0; x < GRID_SIZE; x++) {
             for (int y = 0; y < GRID_SIZE; y++) {
-                grid[x][y].draw(spriteBatch);
+                grid[x][y].draw(spriteBatch, delta);
             }
         }
     }

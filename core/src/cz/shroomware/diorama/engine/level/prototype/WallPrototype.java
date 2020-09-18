@@ -47,7 +47,16 @@ public class WallPrototype extends Prototype {
         return region != null && top != null;
     }
 
-    public TextureRegion getRegion() {
+    @Override
+    public boolean isAttached() {
+        return true;
+    }
+
+    public TextureRegion getFrontRegion() {
+        return region;
+    }
+
+    public TextureRegion getBackRegion() {
         return region;
     }
 

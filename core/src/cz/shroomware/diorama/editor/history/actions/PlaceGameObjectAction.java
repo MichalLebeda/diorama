@@ -1,25 +1,25 @@
 package cz.shroomware.diorama.editor.history.actions;
 
+import cz.shroomware.diorama.editor.EditorTool;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.GameObjects;
 
 public class PlaceGameObjectAction implements HistoryAction {
-    GameObjects gameObjects;
     GameObject object;
+    EditorTool editorTool;
 
-    public PlaceGameObjectAction(GameObject object, GameObjects gameObjects) {
+    public PlaceGameObjectAction(GameObject object, EditorTool editorTool) {
         this.object = object;
-        this.gameObjects = gameObjects;
+        this.editorTool = editorTool;
     }
 
     @Override
     public void undo() {
-        gameObjects.remove(object);
+        editorTool.removeObject(object, false);
     }
 
     @Override
     public void redo() {
-        gameObjects.add(object);
+        editorTool.addObject(object, false);
     }
 
     @Override

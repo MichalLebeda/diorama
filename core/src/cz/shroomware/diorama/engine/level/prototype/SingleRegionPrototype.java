@@ -52,6 +52,11 @@ public class SingleRegionPrototype extends Prototype {
     }
 
     @Override
+    public boolean isAttached() {
+        return false;
+    }
+
+    @Override
     public boolean dependenciesFulfilled() {
         return true;
     }

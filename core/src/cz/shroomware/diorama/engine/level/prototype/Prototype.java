@@ -28,6 +28,8 @@ public abstract class Prototype {
 
     public abstract boolean dependenciesFulfilled();
 
+    public abstract boolean isAttached();
+
     protected Vector3 onFloorCoords(float x, float y, TextureRegion region) {
         return new Vector3(x, y, region.getRegionHeight() / Utils.PIXELS_PER_METER / 2f);
     }

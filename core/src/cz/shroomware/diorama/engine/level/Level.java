@@ -41,7 +41,7 @@ public class Level {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             floor.load(bufferedReader, atlas);
-            gameObjects.load(bufferedReader, gameObjectPrototypes);
+            gameObjects.load(bufferedReader, gameObjectPrototypes, floor);
 
             try {
                 bufferedReader.close();

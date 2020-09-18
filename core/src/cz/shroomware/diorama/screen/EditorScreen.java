@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
@@ -15,7 +14,6 @@ import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -26,15 +24,10 @@ import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Cursor;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.editor.EditorResources;
-import cz.shroomware.diorama.editor.FloorTool;
-import cz.shroomware.diorama.editor.GameObjectsTool;
-import cz.shroomware.diorama.engine.ObjectShadowPair;
-import cz.shroomware.diorama.engine.RegionAnimation;
+import cz.shroomware.diorama.editor.EditorTool;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
-import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 import cz.shroomware.diorama.ui.Hud;
 
 public class EditorScreen extends BaseScreen {
@@ -44,9 +37,10 @@ public class EditorScreen extends BaseScreen {
     protected static final float TRANSLATION_LIMIT = 1.4f;
     protected static final float MAX_CAM_DIST_FROM_GRID = 8;
     protected Editor editor;
-    protected FloorTool floorTool;
+    protected EditorTool editorTool;
+    //    protected FloorTool floorTool;
+//    protected GameObjectsTool gameObjectsTool;
     protected EditorResources resources;
-    protected GameObjectsTool gameObjectsTool;
     protected InputMultiplexer inputMultiplexer;
     protected TextureAtlas shadowAtlas;
     protected TextureAtlas.AtlasRegion defaultCursorRegion;
@@ -77,8 +71,7 @@ public class EditorScreen extends BaseScreen {
         updateBackgorundColor(level);
         initCamera(level);
 
-        floorTool = new FloorTool(level.getFloor(), editor.getHistory());
-        gameObjectsTool = new GameObjectsTool(level.getGameObjects(), editor.getHistory());
+        editorTool = new EditorTool(level.getFloor(), level.getGameObjects(), editor);
 
         cursor = new Cursor(editor, level, resources, defaultCursorRegion);
 
@@ -164,9 +157,11 @@ public class EditorScreen extends BaseScreen {
     }
 
     private void placeCurrentObjectAtCursorPosition() {
-        gameObjectsTool.addObject(editor.getCurrentlySelectedPrototype().createAtCursor(cursor));
-        if (showAddRemoveMessages) {
-            hud.showMessage("ADD " + editor.getCurrentlySelectedPrototype().getName());
+        if (cursor.isPlacingItemAllowed() && editor.hasSelectedPrototype()) {
+            editorTool.addObject(editor.getCurrentlySelectedPrototype().createAtCursor(cursor), true);
+            if (showAddRemoveMessages) {
+                hud.showMessage("ADD " + editor.getCurrentlySelectedPrototype().getName());
+            }
         }
     }
 
@@ -196,15 +191,12 @@ public class EditorScreen extends BaseScreen {
 
                 return true;
             } else if (editor.isMode(Editor.Mode.ITEM)) {
-                if (cursor.isPlacingItemAllowed() && editor.hasSelectedPrototype()) {
                     placeCurrentObjectAtCursorPosition();
-
                     return true;
-                }
             } else if (editor.isMode(Editor.Mode.DELETE)) {
                 GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
                 if (gameObject != null) {
-                    gameObjectsTool.removeObject(gameObject);
+                    editorTool.removeObject(gameObject, true);
                     if (showAddRemoveMessages) {
                         hud.showMessage("DEL " + gameObject.getName());
                     }
@@ -219,7 +211,7 @@ public class EditorScreen extends BaseScreen {
                             new Plane(Vector3.Z, Vector3.X),
                             intersection);
 
-                    floorTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeIcon());
+                    editorTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeIcon());
                 }
             } else if (editor.isMode(Editor.Mode.TILE_BUCKET)) {
                 if (editor.getCurrentlySelectedPrototype() != null) {
@@ -230,7 +222,7 @@ public class EditorScreen extends BaseScreen {
                             new Plane(Vector3.Z, Vector3.X),
                             intersection);
 
-                    floorTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeIcon());
+                    editorTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeIcon());
                 }
             }
         }
@@ -400,6 +392,12 @@ public class EditorScreen extends BaseScreen {
         Intersector.intersectRayPlane(ray,
                 new Plane(Vector3.Z, Vector3.X),
                 intersection);
+
+        if (editor.hasSelectedPrototype() && editor.getCurrentlySelectedPrototype().isAttached()) {
+            intersection.x = ((int) intersection.x) + 0.5f;
+            intersection.y = ((int) intersection.y) + 0.5f;
+//            intersection.z = ((int) intersection.z) + 0.5f;
+        }
 
         cursor.moveTo(intersection);
     }

@@ -1,28 +1,37 @@
 package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import cz.shroomware.diorama.editor.history.History;
 import cz.shroomware.diorama.editor.history.actions.BucketTileAction;
+import cz.shroomware.diorama.editor.history.actions.DeleteGameObjectAction;
+import cz.shroomware.diorama.editor.history.actions.PlaceGameObjectAction;
 import cz.shroomware.diorama.editor.history.actions.PlaceTileAction;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
+import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.object.GameObjects;
 
-public class FloorTool {
+public class EditorTool {
+    //    FloorTool floorTool;
+//    GameObjectsTool gameObjectsTool;
     Floor floor;
-    History history;
+    GameObjects gameObjects;
+    Editor editor;
 
-    public FloorTool(Floor floor, History history) {
+    public EditorTool(Floor floor, GameObjects gameObjects, Editor editor) {
+//        floorTool = new FloorTool(floor,editor);
         this.floor = floor;
-        this.history = history;
+        this.gameObjects = gameObjects;
+        this.editor = editor;
     }
 
     public void setTileRegion(float x, float y, TextureRegion region) {
         Tile tile = floor.getTileAtWorld(x, y);
         TextureRegion tileRegion = tile.getRegion();
         if (floor.setTileRegionAtWorld(x, y, region)) {
-            history.addAction(new PlaceTileAction(tile, tileRegion, region));
+            editor.getHistory().addAction(new PlaceTileAction(tile, tileRegion, region));
             floor.setDirty();
         }
     }
@@ -65,7 +74,7 @@ public class FloorTool {
                 floodFillTileByOffset(tile, 0, 1, toReplace, replacement, queue, bucketTileAction);
                 floodFillTileByOffset(tile, 0, -1, toReplace, replacement, queue, bucketTileAction);
             }
-            history.addAction(bucketTileAction);
+            editor.getHistory().addAction(bucketTileAction);
 
             return true;
         }
@@ -89,6 +98,50 @@ public class FloorTool {
                 tile.setRegion(replacement);
                 queue.add(tile);
             }
+        }
+    }
+
+    /*
+     * GameObjects part
+     */
+
+    public void addObject(GameObject gameObject, boolean useHistory) {
+        if (gameObject.getPrototype().isAttached()) {
+            Vector3 position = gameObject.getPosition();
+            addObjectToTileAt(position.x, position.y, gameObject);
+        } else {
+            gameObjects.add(gameObject);
+        }
+
+
+        if (useHistory) {
+            editor.getHistory().addAction(new PlaceGameObjectAction(gameObject, this));
+        }
+    }
+
+    public void removeObject(GameObject gameObject, boolean useHistory) {
+        Tile tile = gameObject.getTileAttachedTo();
+        if (tile != null) {
+            tile.detachObject();
+        }
+        gameObjects.remove(gameObject);
+
+        if (useHistory) {
+            editor.getHistory().addAction(new DeleteGameObjectAction(gameObject, this));
+        }
+    }
+
+    private void addObjectToTileAt(float x, float y, GameObject object) {
+        Tile tile = floor.getTileAtWorld(x, y);
+
+        if (tile != null) {
+            GameObject attachedObject = tile.getAttachedGameObject();
+            if (attachedObject != null) {
+                gameObjects.remove(attachedObject);
+            }
+            tile.attachObject(object);
+            object.attachToTile(tile);
+            gameObjects.add(object);
         }
     }
 }
