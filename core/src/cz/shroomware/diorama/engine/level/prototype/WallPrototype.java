@@ -3,6 +3,8 @@ package cz.shroomware.diorama.engine.level.prototype;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Quaternion;
 
+import java.util.HashMap;
+
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.WallObject;
@@ -13,7 +15,7 @@ public class WallPrototype extends Prototype {
     TextureRegion regionConnectedLeft;
     TextureRegion regionConnectedRight;
     TextureRegion regionConnectedBoth;
-    TextureRegion top;
+    HashMap<String, TextureRegion> topRegions = new HashMap<>();
 
     public WallPrototype(Resources resources) {
         this.resources = resources;
@@ -21,7 +23,23 @@ public class WallPrototype extends Prototype {
         this.regionConnectedLeft = resources.getObjectAtlas().findRegion("wall_left");
         this.regionConnectedRight = resources.getObjectAtlas().findRegion("wall_right");
         this.regionConnectedBoth = resources.getObjectAtlas().findRegion("wall_both");
-        this.top = resources.getObjectAtlas().findRegion("wall_top");
+
+        for (int a = 0; a < 2; a++) {
+            for (int b = 0; b < 2; b++) {
+                for (int c = 0; c < 2; c++) {
+                    for (int d = 0; d < 2; d++) {
+                        String name = (a == 0 ? "o" : "x") +
+                                (b == 0 ? "o" : "x") +
+                                (c == 0 ? "o" : "x") +
+                                (d == 0 ? "o" : "x");
+
+                        TextureRegion region = resources.getObjectAtlas().findRegion("wall_top_" + name);
+
+                        topRegions.put(name, region);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -51,7 +69,7 @@ public class WallPrototype extends Prototype {
     @Override
     public boolean dependenciesFulfilled() {
         return region != null &&
-                top != null &&
+                topRegions.size() == 16 &&
                 regionConnectedLeft != null &&
                 regionConnectedRight != null &&
                 regionConnectedBoth != null;
@@ -78,8 +96,8 @@ public class WallPrototype extends Prototype {
         return region;
     }
 
-    public TextureRegion getTop() {
-        return top;
+    public HashMap<String, TextureRegion> getTop() {
+        return topRegions;
     }
 
     public TextureRegion getRegion() {

@@ -90,7 +90,7 @@ boar_back
   index: 3
 bush
   rotate: false
-  xy: 616, 46
+  xy: 754, 83
   size: 5, 8
   orig: 5, 8
   offset: 0, 0
@@ -111,7 +111,7 @@ cursor
   index: -1
 desert_bush
   rotate: false
-  xy: 625, 48
+  xy: 602, 58
   size: 5, 6
   orig: 5, 6
   offset: 0, 0
@@ -377,126 +377,126 @@ flower_a
   index: 4
 flower_a
   rotate: false
-  xy: 562, 50
+  xy: 458, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 1
 flower_a
   rotate: false
-  xy: 542, 30
+  xy: 477, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 2
 flower_a
   rotate: false
-  xy: 581, 50
+  xy: 496, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 3
 flower_b
   rotate: false
-  xy: 883, 70
+  xy: 515, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 0
 flower_b
   rotate: false
-  xy: 883, 70
+  xy: 515, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 4
 flower_b
   rotate: false
-  xy: 883, 70
+  xy: 515, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 2
 flower_b
   rotate: false
-  xy: 902, 70
+  xy: 534, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 1
 flower_b
   rotate: false
-  xy: 921, 70
+  xy: 553, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 3
 flower_c
   rotate: false
-  xy: 940, 70
+  xy: 572, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 0
 flower_c
   rotate: false
-  xy: 959, 70
+  xy: 591, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 1
 flower_c
   rotate: false
-  xy: 978, 70
+  xy: 610, 2
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 2
 flower_c
   rotate: false
-  xy: 997, 70
+  xy: 629, 5
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 3
 flower_c
   rotate: false
-  xy: 462, 10
+  xy: 711, 10
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 4
 flower_d
   rotate: false
-  xy: 481, 10
+  xy: 735, 79
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 0
 flower_d
   rotate: false
-  xy: 481, 10
+  xy: 735, 79
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 4
 flower_d
   rotate: false
-  xy: 500, 10
+  xy: 731, 63
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 1
 flower_d
   rotate: false
-  xy: 500, 10
+  xy: 731, 63
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
   index: 3
 flower_d
   rotate: false
-  xy: 519, 10
+  xy: 731, 47
   size: 15, 12
   orig: 15, 12
   offset: 0, 0
@@ -601,7 +601,7 @@ shroom_a
   index: 0
 shroom_a_1_extra
   rotate: false
-  xy: 711, 15
+  xy: 731, 36
   size: 13, 7
   orig: 13, 7
   offset: 0, 0
@@ -629,7 +629,7 @@ shroom_c
   index: 0
 shroom_c_1_extra
   rotate: false
-  xy: 600, 46
+  xy: 731, 25
   size: 12, 7
   orig: 12, 7
   offset: 0, 0
@@ -734,7 +734,7 @@ tree_g
   index: -1
 tree_h
   rotate: false
-  xy: 600, 57
+  xy: 730, 14
   size: 10, 7
   orig: 10, 7
   offset: 0, 0
@@ -781,9 +781,114 @@ wall_right
   orig: 16, 32
   offset: 0, 0
   index: -1
-wall_top
+wall_top_oooo
   rotate: false
   xy: 542, 46
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_ooox
+  rotate: false
+  xy: 522, 26
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_ooxo
+  rotate: false
+  xy: 562, 46
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_ooxx
+  rotate: false
+  xy: 542, 26
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_oxoo
+  rotate: false
+  xy: 562, 26
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_oxox
+  rotate: false
+  xy: 582, 46
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_oxxo
+  rotate: false
+  xy: 582, 26
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_oxxx
+  rotate: false
+  xy: 602, 38
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_xooo
+  rotate: false
+  xy: 602, 18
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_xoox
+  rotate: false
+  xy: 622, 21
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_xoxo
+  rotate: false
+  xy: 883, 66
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_xoxx
+  rotate: false
+  xy: 903, 66
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_xxoo
+  rotate: false
+  xy: 923, 66
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_xxox
+  rotate: false
+  xy: 943, 66
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_xxxo
+  rotate: false
+  xy: 963, 66
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall_top_xxxx
+  rotate: false
+  xy: 983, 66
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
@@ -881,7 +986,7 @@ water_to_grass_top_right_small
   index: -1
 wave
   rotate: false
-  xy: 522, 26
+  xy: 1003, 66
   size: 16, 16
   orig: 16, 16
   offset: 0, 0

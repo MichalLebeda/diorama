@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
+import java.util.HashMap;
+
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
@@ -19,13 +21,15 @@ public class WallObject extends GameObject {
     TextureRegion regionConnectedLeft;
     TextureRegion regionConnectedRight;
     TextureRegion regionConnectedBoth;
+    HashMap<String, TextureRegion> topRegions;
 
     public WallObject(Vector3 position, WallPrototype prototype) {
-        super(position, prototype.getTop(), prototype);
+        super(position, prototype.getTop().get("oooo"), prototype);
         region = prototype.getRegion();
         regionConnectedLeft = prototype.getRegionConnectedLeft();
         regionConnectedRight = prototype.getRegionConnectedRight();
         regionConnectedBoth = prototype.getRegionConnectedBoth();
+        topRegions = prototype.getTop();
 
         decal.setRotationX(0);
         decal.setZ(prototype.getLeftRegion().getRegionHeight() / PIXELS_PER_METER);
@@ -149,5 +153,22 @@ public class WallObject extends GameObject {
                 right.setTextureRegion(region);
             }
         }
+
+        boolean up, right, down, left;
+        tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
+        up = (tile != null && tile.hasAttachedObject());
+        tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
+        right = (tile != null && tile.hasAttachedObject());
+        tile = floor.getTileByOffset(tileAttachedTo, 0, -1);
+        down = (tile != null && tile.hasAttachedObject());
+        tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
+        left = (tile != null && tile.hasAttachedObject());
+
+        String name = (up ? "x" : "o") +
+                (right ? "x" : "o") +
+                (down ? "x" : "o") +
+                (left ? "x" : "o");
+
+        decal.setTextureRegion(topRegions.get(name));
     }
 }

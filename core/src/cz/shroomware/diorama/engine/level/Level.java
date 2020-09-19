@@ -29,7 +29,7 @@ public class Level {
     public Level(String filename, Prototypes gameObjectPrototypes, Resources resources) {
         this.filename = filename;
         floor = new Floor(resources.getObjectAtlas().findRegion("floor"));
-        gameObjects = new cz.shroomware.diorama.engine.level.object.GameObjects();
+        gameObjects = new GameObjects();
         loadIfExists(gameObjectPrototypes, resources.getObjectAtlas());
     }
 
@@ -43,6 +43,8 @@ public class Level {
             floor.load(bufferedReader, atlas);
             gameObjects.load(bufferedReader, gameObjectPrototypes, floor);
 
+            floor.updateSurroundings();
+
             try {
                 bufferedReader.close();
                 inputStreamReader.close();
@@ -55,6 +57,7 @@ public class Level {
             // Save as new if level file doesn't exist
             save(true);
         }
+
 
         return false;
     }

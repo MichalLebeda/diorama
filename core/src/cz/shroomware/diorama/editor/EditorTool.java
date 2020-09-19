@@ -122,6 +122,7 @@ public class EditorTool {
         Tile tile = gameObject.getTileAttachedTo();
         if (tile != null) {
             tile.detachObject();
+            floor.updateSurroundings();
         }
         gameObjects.remove(gameObject);
 
