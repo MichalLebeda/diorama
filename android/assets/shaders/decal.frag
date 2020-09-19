@@ -16,6 +16,7 @@ void main(){
     }
 
     gl_FragColor = v_color * texel;
+//    gl_FragColor.rgb = gl_FragColor.rgb - (1.0-clamp((v_position.z/0.3), 0.0, 1.0))/14.0;
 
     float distance = distance(u_camera_pos.xy, v_position.xy);
     if (distance>20.0){
