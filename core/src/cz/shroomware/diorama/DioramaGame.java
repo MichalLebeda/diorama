@@ -53,6 +53,8 @@ public class DioramaGame extends Game {
 
         projectSelectionScreen = new ProjectSelectionScreen(this);
         setScreen(projectSelectionScreen);
+
+//        Bullet.init();
     }
 
     int lastWindowedWidth;

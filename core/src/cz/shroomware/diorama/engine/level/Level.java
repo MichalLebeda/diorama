@@ -23,7 +23,6 @@ public class Level {
     protected String filename;
     protected Floor floor;
     protected cz.shroomware.diorama.engine.level.object.GameObjects gameObjects;
-
     //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
     //TODO ZBAVIT SE HISTORIE AT JE TO HEZKY ROZDELENY
     public Level(String filename, Prototypes gameObjectPrototypes, Resources resources) {
