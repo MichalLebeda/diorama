@@ -33,16 +33,16 @@
 
 
      (let loopa ((y 20))
-         (if (< y 100) ;300
+         (if (< y 300) ;300
          (begin
-             (let loop ((x -100)) ;-200
+             (let loop ((x -200)) ;-200
                  (if (< x 100) ;100
                  (begin
                      ; Create a new layer
                      (define new-layer (car (gimp-layer-copy drawable 0)))
                      ; Add the new layer to the image
                      (gimp-image-add-layer image new-layer 0)
-                     (gimp-layer-set-opacity new-layer 0.25) ;0.05
+                     (gimp-layer-set-opacity new-layer 0.05) ;0.05
                      (gimp-layer-scale new-layer 512 (+ 200 y) TRUE)
                      (gimp-item-transform-shear new-layer ORIENTATION-HORIZONTAL x)
                      (gimp-layer-translate new-layer 0 -256)

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -48,6 +49,7 @@ public class ProjectSelectionScreen implements Screen {
         verticalGroup.space(20);
 
         scrollPane = new ScrollPane(verticalGroup);
+        stage.addActor(scrollPane);
 
         createFileLabel = new BackgroundLabel(
                 "New File",
@@ -62,8 +64,6 @@ public class ProjectSelectionScreen implements Screen {
             }
         });
         stage.addActor(createFileLabel);
-
-        stage.addActor(scrollPane);
     }
 
     public void refreshList() {
@@ -75,7 +75,12 @@ public class ProjectSelectionScreen implements Screen {
             final HorizontalGroup horizontalGroup = new HorizontalGroup() {
                 @Override
                 public float getPrefWidth() {
-                    return stage.getWidth() / 2;
+                    return stage.getWidth() / 2f;
+                }
+
+                @Override
+                public float getWidth() {
+                    return getPrefWidth();
                 }
 
                 @Override
@@ -137,12 +142,16 @@ public class ProjectSelectionScreen implements Screen {
 
     @Override
     public void show() {
+        //TODO workaround, show called before resize
+//        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         Gdx.input.setInputProcessor(stage);
-        refreshList();
+        //TODO see resize, workaround
+//        refreshList();
     }
 
     @Override
     public void render(float delta) {
+        stage.setDebugAll(true);
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -158,19 +167,27 @@ public class ProjectSelectionScreen implements Screen {
                 stage.getWidth() - createFileLabel.getWidthWithPadding() - 10,
                 stage.getHeight() - createFileLabel.getHeightWithPadding() - 10);
 
-        updateScrollPaneSize();
+        //TODO: remove this workaround
+        refreshList();
+//        updateScrollPaneSize();
     }
 
     private void updateScrollPaneSize() {
-        verticalGroup.layout();
+        for (Actor actor : verticalGroup.getChildren()) {
+            ((HorizontalGroup) actor).layout();
+            ((HorizontalGroup) actor).pack();
+        }
         verticalGroup.pack();
+        verticalGroup.layout();
 
         scrollPane.setWidth(verticalGroup.getWidth());
         scrollPane.setHeight(stage.getHeight());
+//        scrollPane.layout();
+//        scrollPane.pack();
         scrollPane.setPosition(
-                stage.getWidth() / 2 - scrollPane.getWidth() / 2, 0);
+                stage.getWidth() / 2 - scrollPane.getWidth() / 2, stage.getHeight() - scrollPane.getHeight());
         scrollPane.layout();
-
+//        scrollPane.pack();
     }
 
     @Override

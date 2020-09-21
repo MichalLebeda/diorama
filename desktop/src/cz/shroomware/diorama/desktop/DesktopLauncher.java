@@ -17,10 +17,10 @@ public class DesktopLauncher {
         packUiAtlas();
 
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setWindowedMode(1100, 680);
+        config.setWindowedMode(1100, 620);
 //        config.setWindowedMode(1920, 1080);
         config.setBackBufferConfig(8, 8, 8, 8, 8, 8, 3);
-        config.setWindowSizeLimits(640, 560, 16000, 9000);
+        config.setWindowSizeLimits(640, 480, 16000, 9000);
         config.setTitle("Editor");
         new Lwjgl3Application(new DioramaGame(), config);
     }
