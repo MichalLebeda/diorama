@@ -141,10 +141,10 @@ public class GameObjects {
         }
 
         dirty = false;
-
-        int i = 0;
-        for (GameObject object : gameObjects) {
-            Gdx.app.error("OBJ " + i++, object.toString());
-        }
+//
+//        int i = 0;
+//        for (GameObject object : gameObjects) {
+//            Gdx.app.error("OBJ " + i++, object.toString());
+//        }
     }
 }
