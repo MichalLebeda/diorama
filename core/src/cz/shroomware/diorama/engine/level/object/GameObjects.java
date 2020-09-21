@@ -98,7 +98,7 @@ public class GameObjects {
 
             Vector3 position = new Vector3();
             while ((line = bufferedReader.readLine()) != null) {
-                Gdx.app.error("LINE", line);
+//                Gdx.app.error("LINE", line);
 
                 String[] attributes = line.split(" ");
 
@@ -113,7 +113,7 @@ public class GameObjects {
                 for (int i = 0; i < gameObjectPrototypes.getSize(); i++) {
                     Prototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
                     if (attributes[0].equals(prototype.getName())) {
-                        Gdx.app.error("LINE 2", prototype.getName());
+//                        Gdx.app.error("LINE 2", prototype.getName());
                         Quaternion quaternion = new Quaternion(
                                 Float.parseFloat(attributes[4]),
                                 Float.parseFloat(attributes[5]),
