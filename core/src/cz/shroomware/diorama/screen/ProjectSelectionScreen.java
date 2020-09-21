@@ -151,7 +151,6 @@ public class ProjectSelectionScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        stage.setDebugAll(true);
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
