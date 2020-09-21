@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class Floor {
-    protected static final int GRID_SIZE = 100;
+    public static final int GRID_SIZE = 100;
     protected Tile[][] grid = new Tile[GRID_SIZE][GRID_SIZE];
     protected boolean dirty = false;
 

@@ -45,7 +45,7 @@ public class Prototypes {
                         i++;
                     }
 
-                    RegionAnimation anim = new RegionAnimation(0.1f, pairs);
+                    RegionAnimation anim = new RegionAnimation(0.4f, pairs);
                     anim.setPlayMode(Animation.PlayMode.LOOP);
 
                     addGameObjectPrototype(new AnimatedPrototype(anim, region.name));

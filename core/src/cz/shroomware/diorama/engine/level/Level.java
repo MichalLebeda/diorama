@@ -16,19 +16,23 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 
 public class Level {
     protected String filename;
     protected Floor floor;
-    protected cz.shroomware.diorama.engine.level.object.GameObjects gameObjects;
+    protected GameObjects gameObjects;
+    protected Clouds clouds;
+
     //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
     //TODO ZBAVIT SE HISTORIE AT JE TO HEZKY ROZDELENY
     public Level(String filename, Prototypes gameObjectPrototypes, Resources resources) {
         this.filename = filename;
         floor = new Floor(resources.getObjectAtlas().findRegion("floor"));
         gameObjects = new GameObjects();
+        clouds = new Clouds(floor, resources);
         loadIfExists(gameObjectPrototypes, resources.getObjectAtlas());
     }
 
@@ -91,6 +95,8 @@ public class Level {
         gameObjects.drawShadows(spriteBatch);
 
         gameObjects.drawObjects(decalBatch, delta);
+
+        clouds.draw(decalBatch, delta);
     }
 
     public boolean isInBounds(float x, float y) {

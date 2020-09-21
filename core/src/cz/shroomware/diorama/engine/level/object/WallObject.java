@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
-import java.util.HashMap;
-
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
@@ -21,7 +19,7 @@ public class WallObject extends GameObject {
     TextureRegion regionConnectedLeft;
     TextureRegion regionConnectedRight;
     TextureRegion regionConnectedBoth;
-    HashMap<String, TextureRegion> topRegions;
+    HexRegion topRegions;
 
     public WallObject(Vector3 position, WallPrototype prototype) {
         super(position, prototype.getTop().get("oooo"), prototype);
@@ -164,11 +162,6 @@ public class WallObject extends GameObject {
         tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
         left = (tile != null && tile.hasAttachedObject());
 
-        String name = (up ? "x" : "o") +
-                (right ? "x" : "o") +
-                (down ? "x" : "o") +
-                (left ? "x" : "o");
-
-        decal.setTextureRegion(topRegions.get(name));
+        decal.setTextureRegion(topRegions.get(up, right, down, left));
     }
 }
