@@ -9,6 +9,7 @@ import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
+import cz.shroomware.diorama.engine.level.prototype.TreePrototype;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
 
 public class Prototypes {
@@ -22,36 +23,49 @@ public class Prototypes {
         Array<String> blacklist = new Array<>();
         blacklist.add("cursor");
         blacklist.add("selector_background");
+        blacklist.add("wall");
 
         //TODO zjistit proc se neanimovane nenacitaji
         Array<TextureAtlas.AtlasRegion> regions = resources.getObjectAtlas().getRegions();
         for (TextureAtlas.AtlasRegion region : regions) {
-            if (blacklist.contains(region.name, false)) {
+            boolean discard = false;
+            for (String blacklistedItem : blacklist) {
+                if (region.name.startsWith(blacklistedItem)) {
+                    discard = true;
+                    break;
+                }
+            }
+
+            if (discard) {
                 continue;
             }
 
             Array<TextureAtlas.AtlasRegion> atlasRegions = resources.getObjectAtlas().findRegions(region.name);
             if (atlasRegions.size > 1) {
-                Array<ObjectShadowPair> pairs = new Array<ObjectShadowPair>(ObjectShadowPair.class);
+                Array<ObjectShadowPair> pairs = new Array<>(ObjectShadowPair.class);
 
                 int i = 0;
                 for (TextureAtlas.AtlasRegion atlasRegion : atlasRegions) {
                     Array<TextureAtlas.AtlasRegion> shadowRegions = resources.getShadowAtlas().findRegions(atlasRegion.name);
                     if (i < shadowRegions.size) {
-                            pairs.add(new ObjectShadowPair(atlasRegion, shadowRegions.get(i)));
-                        } else {
-                            pairs.add(new ObjectShadowPair(atlasRegion, null));
-                        }
-                        i++;
+                        pairs.add(new ObjectShadowPair(atlasRegion, shadowRegions.get(i)));
+                    } else {
+                        pairs.add(new ObjectShadowPair(atlasRegion, null));
                     }
+                    i++;
+                }
 
-                    RegionAnimation anim = new RegionAnimation(0.4f, pairs);
-                    anim.setPlayMode(Animation.PlayMode.LOOP);
+                RegionAnimation anim = new RegionAnimation(0.4f, pairs);
+                anim.setPlayMode(Animation.PlayMode.LOOP);
 
-                    addGameObjectPrototype(new AnimatedPrototype(anim, region.name));
+                addGameObjectPrototype(new AnimatedPrototype(anim, region.name));
+            } else {
+                if (region.name.startsWith("tree")) {
+                    addGameObjectPrototype(new TreePrototype(resources, region));
                 } else {
                     addGameObjectPrototype(new SingleRegionPrototype(resources, region));
                 }
+            }
             }
     }
 

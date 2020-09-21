@@ -83,6 +83,39 @@ public class Utils {
         return new Color(max.getKey());
     }
 
+    public static Color getDominantOpaqueColor(Pixmap pixmap) {
+        HashMap<Integer, Integer> occurrences = new HashMap<>();
+
+        // Iterate through pixmap and recorde every occurence of color
+        for (int x = 0; x < pixmap.getWidth(); x++) {
+            for (int y = 0; y < pixmap.getHeight(); y++) {
+                int pixel = pixmap.getPixel(x, y);
+                if (pixel == 0) {
+                    continue;
+                }
+                Gdx.app.log("color", Integer.toHexString(pixel));
+                if (occurrences.containsKey(pixel)) {
+                    Integer occurrence = occurrences.get(pixel);
+                    //TODO: could be done better but looks clean so...
+                    occurrence++;
+                    occurrences.put(pixel, occurrence);
+                } else {
+                    occurrences.put(pixel, 1);
+                }
+            }
+        }
+
+        // Pick color with most occurrences
+        Map.Entry<Integer, Integer> max = null;
+        for (Map.Entry<Integer, Integer> entry : occurrences.entrySet()) {
+            if (max == null || entry.getValue() > max.getValue()) {
+                max = entry;
+            }
+        }
+
+        return new Color(max.getKey());
+    }
+
     public static FileHandle getFileHandle(String filename) {
         return Gdx.files.external(Utils.PROJECT_FOLDER + filename);
     }
