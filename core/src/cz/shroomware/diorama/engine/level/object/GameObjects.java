@@ -95,7 +95,6 @@ public class GameObjects {
 
         String line = null;
         try {
-
             Vector3 position = new Vector3();
             while ((line = bufferedReader.readLine()) != null) {
 //                Gdx.app.error("LINE", line);

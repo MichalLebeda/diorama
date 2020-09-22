@@ -42,6 +42,9 @@ public class SelectedModeIndicator extends Actor {
             case TILE:
                 drawIcon(batch, skin.getDrawable(Utils.TILE_MODE_ICON_DRAWABLE));
                 break;
+            case TILE_BUCKET:
+                drawIcon(batch, skin.getDrawable(Utils.TILE_BUCKET_MODE_ICON_DRAWABLE));
+                break;
             case DELETE:
                 drawIcon(batch, skin.getDrawable(Utils.DELETE_MODE_ICON_DRAWABLE));
                 break;
