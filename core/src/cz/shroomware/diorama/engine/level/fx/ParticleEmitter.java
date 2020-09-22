@@ -17,6 +17,7 @@ public abstract class ParticleEmitter {
     float particlesPerSecond;
     float timeFromLastParticle = 0;
 
+    //TODO GLOBAL PARTICLE LIMIT
     Array<Particle> particleArray = new Array();
 
     public ParticleEmitter(Vector3 position, Vector3 dimensions, float particlesPerSecond) {
@@ -41,6 +42,7 @@ public abstract class ParticleEmitter {
     }
 
     public void draw(MinimalisticDecalBatch decalBatch, float delta) {
+//        Gdx.app.log("ParticleEmitter", "size: " + particleArray.size);
         timeFromLastParticle += delta;
 
         if (timeFromLastParticle >= 1f / particlesPerSecond) {
@@ -49,7 +51,7 @@ public abstract class ParticleEmitter {
 
         for (int i = 0; i < particleArray.size; i++) {
             Particle particle = particleArray.get(i);
-            if (particle.lifespanElapsed()) {
+            if (particle.toRemove()) {
                 particleArray.removeIndex(i);
                 i--;
             } else {
