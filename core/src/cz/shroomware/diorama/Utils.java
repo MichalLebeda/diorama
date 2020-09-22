@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Utils {
+    public static final boolean RAIN = false;
+
     public static final String DARK_BACKGROUND_DRAWABLE = "dark-background";
 
     public static final String ITEM_MODE_ICON_DRAWABLE = "item_mode_icon";

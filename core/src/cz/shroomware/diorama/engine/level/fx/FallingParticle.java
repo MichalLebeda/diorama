@@ -31,7 +31,7 @@ public class FallingParticle extends Particle {
     protected void applyVelocity(float delta) {
         if (!isOnGround()) {
             velocity.x = (float) Math.sin(time * 2) / 8f;
-            velocity.y = (float) Math.cos(time * 2) / 8f;
+//            velocity.y = (float) Math.cos(time * 2) / 8f;
             super.applyVelocity(delta);
         }
     }
