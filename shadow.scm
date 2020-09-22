@@ -1,10 +1,6 @@
-(define (shadow pattern)
-  (let* ((filelist (cadr (file-glob pattern 1))))
-    (while (not (null? filelist))
-           (let* ((filename (car filelist))
-                  (image (car (gimp-file-load RUN-NONINTERACTIVE
-                                              filename filename)))
-                  (drawable (car (gimp-image-get-active-layer image))))
+(define (shadow input_file output_file)
+   (let* ((image (car (gimp-file-load RUN-NONINTERACTIVE input_file input_file)))
+          (drawable (car (gimp-image-get-active-layer image))))
      ; (let * ((new-layer (car (gimp-layer-new
      ;                       image
      ;                       256
@@ -69,7 +65,6 @@
       ; (plug-in-mblur RUN-NONINTERACTIVE image drawable 1 10 20 256 0)
     ; (plug-in-blur RUN-NONINTERACTIVE final-image final-layer)
 
-     (gimp-file-save RUN-NONINTERACTIVE final-image final-layer (string-append "../raw_shadows/" filename) (string-append "../raw_shadows/" filename))
+     (gimp-file-save RUN-NONINTERACTIVE final-image final-layer output_file output_file)
      (gimp-image-delete image)
-     (gimp-image-delete final-image))
-  (set! filelist (cdr filelist)))))
+     (gimp-image-delete final-image)))
