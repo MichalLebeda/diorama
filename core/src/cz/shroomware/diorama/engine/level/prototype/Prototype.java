@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public abstract class Prototype {
 
@@ -21,9 +22,9 @@ public abstract class Prototype {
 
 //    public abstract boolean hasShadow();
 
-    public abstract GameObject createAt(float x, float y, Quaternion quaternion);
+    public abstract GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory);
 
-    public abstract GameObject createAtCursor(GameObject cursor);
+    public abstract GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory);
 
     public abstract String getName();
 

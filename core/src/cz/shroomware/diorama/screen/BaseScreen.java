@@ -1,6 +1,7 @@
 package cz.shroomware.diorama.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -9,17 +10,22 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Level;
 
-public class BaseScreen implements Screen, InputProcessor {
+public abstract class BaseScreen implements Screen, InputProcessor {
     protected DioramaGame game;
+    protected Level level;
     protected Color backgroundColor;
     protected SpriteBatch spriteBatch;
     protected MinimalisticDecalBatch decalBatch;
     protected PerspectiveCamera camera;
+    protected Box2DDebugRenderer dr = new Box2DDebugRenderer();
+
+    protected boolean boxDebug = true;
 
     BaseScreen(DioramaGame game) {
         this.game = game;
@@ -61,11 +67,25 @@ public class BaseScreen implements Screen, InputProcessor {
 
     }
 
+    protected abstract void drawWorld(float delta);
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT
                 | GL20.GL_DEPTH_BUFFER_BIT);
+
+        level.step(delta);
+
+        drawWorld(delta);
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+            boxDebug = !boxDebug;
+        }
+
+        if (boxDebug) {
+            dr.render(level.getWorld(), camera.combined);
+        }
     }
 
     @Override

@@ -10,6 +10,7 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.TreeGameObject;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class TreePrototype extends SingleRegionPrototype {
     TextureRegion leaveParticle;
@@ -28,13 +29,13 @@ public class TreePrototype extends SingleRegionPrototype {
 //    }
 
     @Override
-    public GameObject createAt(float x, float y, Quaternion quaternion) {
-        return new TreeGameObject(onFloorCoords(x, y, objectRegion), quaternion, this);
+    public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
+        return new TreeGameObject(onFloorCoords(x, y, objectRegion), quaternion, this, boxFactory);
     }
 
     @Override
-    public GameObject createAtCursor(GameObject cursor) {
-        return new TreeGameObject(cursor.getPosition(), cursor.getRotation(), this);
+    public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
+        return new TreeGameObject(cursor.getPosition(), cursor.getRotation(), this, boxFactory);
     }
 
     public TextureRegion getLeaveParticle() {

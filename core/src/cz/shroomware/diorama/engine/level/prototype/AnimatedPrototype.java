@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Quaternion;
 import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.object.AnimatedGameObject;
 import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class AnimatedPrototype extends Prototype {
     RegionAnimation regionAnimation;
@@ -26,12 +27,12 @@ public class AnimatedPrototype extends Prototype {
     }
 
     @Override
-    public GameObject createAt(float x, float y, Quaternion quaternion) {
+    public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
         return new AnimatedGameObject(onFloorCoords(x, y, getAnimation().first().getObject()), quaternion, this);
     }
 
     @Override
-    public GameObject createAtCursor(GameObject cursor) {
+    public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
         return new AnimatedGameObject(cursor.getPosition(), cursor.getRotation(), this);
     }
 

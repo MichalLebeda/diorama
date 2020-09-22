@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Quaternion;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.SingleRegionGameObject;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class SingleRegionPrototype extends Prototype {
     protected TextureRegion objectRegion, shadowRegion;
@@ -37,12 +38,12 @@ public class SingleRegionPrototype extends Prototype {
     }
 
     @Override
-    public GameObject createAt(float x, float y, Quaternion quaternion) {
+    public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
         return new SingleRegionGameObject(onFloorCoords(x, y, objectRegion), quaternion, this);
     }
 
     @Override
-    public GameObject createAtCursor(GameObject cursor) {
+    public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
         return new SingleRegionGameObject(cursor.getPosition(), cursor.getRotation(), this);
     }
 

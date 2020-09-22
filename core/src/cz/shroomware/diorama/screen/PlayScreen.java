@@ -9,15 +9,13 @@ import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.engine.level.Level;
-import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.SingleRegionGameObject;
+import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
 public class PlayScreen extends BaseScreen implements InputProcessor {
-    protected static final float SPEED = 0.1f;
+    protected static final float SPEED = 9.0f;
     protected static final float Y_CAMERA_DISTANCE = 4;
-    protected Level level;
-    GameObject player;
+    Player player;
 
     public PlayScreen(DioramaGame game, Level level) {
         super(game);
@@ -25,10 +23,10 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
         updateBackgorundColor(level);
         initCamera(level);
 
-        player = new SingleRegionGameObject(new Vector3(level.getSize() / 2.f, 4, 0.5f),
+        player = new Player(new Vector3(level.getSize() / 2.f, 4, 0.5f),
                 new Quaternion().setFromAxis(Vector3.X, 90),
                 //TODO ZMENIT NA nejakej specialni
-                new SingleRegionPrototype(game.getEditorResources().getObjectAtlas().findRegion("dwarf")));
+                new SingleRegionPrototype(game.getEditorResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
     }
 
@@ -38,25 +36,25 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
     }
 
     @Override
-    public void render(float delta) {
-        super.render(delta);
-
+    public void drawWorld(float delta) {
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            player.translate(0, SPEED, 0);
+            player.setVelocity(0, SPEED);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            player.translate(0, -SPEED, 0);
+            player.setVelocity(0, -SPEED);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            player.translate(-SPEED, 0, 0);
+            player.setVelocity(-SPEED, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            player.translate(SPEED, 0, 0);
+            player.setVelocity(SPEED, 0);
         }
 
-        camera.position.set(player.getPosition().cpy().add(0, -6, 2.5f));
+        player.update();
+        camera.position.set(player.getPosition().cpy().add(0, -6, 4));
         camera.lookAt(player.getPosition());
         camera.update();
+
         spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();

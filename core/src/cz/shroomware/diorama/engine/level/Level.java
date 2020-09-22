@@ -6,8 +6,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.physics.box2d.World;
+import com.google.common.eventbus.EventBus;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,20 +19,36 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.level.event.EventListener;
+import cz.shroomware.diorama.engine.level.event.WallHitEvent;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Level {
     protected String filename;
     protected Floor floor;
     protected GameObjects gameObjects;
     protected Clouds clouds;
+    protected World world;
+    protected BoxFactory boxFactory;
+    protected EventBus eventBus;
 
     //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
     //TODO ZBAVIT SE HISTORIE AT JE TO HEZKY ROZDELENY
     public Level(String filename, Prototypes gameObjectPrototypes, Resources resources) {
         this.filename = filename;
+
+        world = new World(Vector2.Zero, true);
+        boxFactory = new BoxFactory(world);
+        boxFactory.addBox(0, 0, 1, 1);
+
+        eventBus = new EventBus();
+        EventListener listener = new EventListener();
+        eventBus.register(listener);
+        eventBus.post(new WallHitEvent());
+
         floor = new Floor(resources.getObjectAtlas().findRegion("floor"));
         gameObjects = new GameObjects();
         clouds = new Clouds(floor, resources);
@@ -44,7 +63,7 @@ public class Level {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             floor.load(bufferedReader, atlas);
-            gameObjects.load(bufferedReader, gameObjectPrototypes, floor);
+            gameObjects.load(bufferedReader, gameObjectPrototypes, floor, boxFactory);
 
             floor.updateSurroundings();
 
@@ -82,6 +101,10 @@ public class Level {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public void step(float delta) {
+        world.step(delta, 6, 2);
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
@@ -129,5 +152,13 @@ public class Level {
 
     public GameObjects getGameObjects() {
         return gameObjects;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public BoxFactory getBoxFactory() {
+        return boxFactory;
     }
 }

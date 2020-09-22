@@ -7,6 +7,7 @@ import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.HexRegion;
 import cz.shroomware.diorama.engine.level.object.WallObject;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class WallPrototype extends Prototype {
     Resources resources;
@@ -35,13 +36,13 @@ public class WallPrototype extends Prototype {
     }
 
     @Override
-    public GameObject createAt(float x, float y, Quaternion quaternion) {
-        return new WallObject(onFloorCoords(x, y, region), this);
+    public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
+        return new WallObject(onFloorCoords(x, y, region), this, boxFactory);
     }
 
     @Override
-    public GameObject createAtCursor(GameObject cursor) {
-        return new WallObject(cursor.getPosition(), this);
+    public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
+        return new WallObject(cursor.getPosition(), this, boxFactory);
     }
 
     @Override

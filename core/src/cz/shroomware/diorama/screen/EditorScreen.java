@@ -38,8 +38,6 @@ public class EditorScreen extends BaseScreen {
     protected static final float MAX_CAM_DIST_FROM_GRID = 8;
     protected Editor editor;
     protected EditorTool editorTool;
-    //    protected FloorTool floorTool;
-//    protected GameObjectsTool gameObjectsTool;
     protected EditorResources resources;
     protected InputMultiplexer inputMultiplexer;
     protected TextureAtlas shadowAtlas;
@@ -54,7 +52,6 @@ public class EditorScreen extends BaseScreen {
     protected boolean showAddRemoveMessages = false;
     protected boolean preventSave = false; //TODO: this is a workaround for not saving player from preview etc.
     boolean dragging = false;
-    Level level;
     float time = 0;
 
     public EditorScreen(DioramaGame game, String filename) {
@@ -89,9 +86,8 @@ public class EditorScreen extends BaseScreen {
     }
 
     @Override
-    public void render(float delta) {
+    public void drawWorld(float delta) {
         time += delta;
-        super.render(delta);
 
         camera.update();
         spriteBatch.setProjectionMatrix(camera.combined);
@@ -103,6 +99,7 @@ public class EditorScreen extends BaseScreen {
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
         spriteBatch.getShader().setUniformf("u_background_color", backgroundColor);
         spriteBatch.getShader().setUniformf("time", time / 10f);
+        level.step(delta);
         level.draw(spriteBatch, decalBatch, delta);
 
         if (editor.getMode() == Editor.Mode.DELETE) {
@@ -118,6 +115,11 @@ public class EditorScreen extends BaseScreen {
         }
         spriteBatch.end();
         decalBatch.render(camera, backgroundColor, time / 10f);
+    }
+
+    @Override
+    public void render(float delta) {
+        super.render(delta);
 
         hud.setDirty(level.isDirty());
         hud.act();
@@ -158,7 +160,7 @@ public class EditorScreen extends BaseScreen {
 
     private void placeCurrentObjectAtCursorPosition() {
         if (cursor.isPlacingItemAllowed() && editor.hasSelectedPrototype()) {
-            editorTool.addObject(editor.getCurrentlySelectedPrototype().createAtCursor(cursor), true);
+            editorTool.addObject(editor.getCurrentlySelectedPrototype().createAtCursor(cursor, level.getBoxFactory()), true);
             if (showAddRemoveMessages) {
                 hud.showMessage("ADD " + editor.getCurrentlySelectedPrototype().getName());
             }

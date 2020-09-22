@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
@@ -21,7 +22,7 @@ public class WallObject extends GameObject {
     TextureRegion regionConnectedBoth;
     HexRegion topRegions;
 
-    public WallObject(Vector3 position, WallPrototype prototype) {
+    public WallObject(Vector3 position, WallPrototype prototype, BoxFactory boxFactory) {
         super(position, prototype.getTop().get("oooo"), prototype);
         region = prototype.getRegion();
         regionConnectedLeft = prototype.getRegionConnectedLeft();
@@ -57,6 +58,8 @@ public class WallObject extends GameObject {
         back.rotateX(90);
         back.setWidth(back.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         back.setHeight(back.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
+
+        boxFactory.addBoxCenter(position.x, position.y, 1, 1);
     }
 
     public void setSelected(boolean selected) {

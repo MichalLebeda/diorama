@@ -31,7 +31,7 @@ public class Cloud {
             protected Particle createParticle(Vector3 position) {
                 FallingParticle particle = new FallingParticle(position,
                         resources.getObjectAtlas().findRegion("white"),
-                        Color.WHITE,
+                        Color.GRAY,
                         9f,
                         1f);
                 particle.rotateX(90);

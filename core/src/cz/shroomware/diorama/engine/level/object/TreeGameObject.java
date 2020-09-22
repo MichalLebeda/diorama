@@ -8,19 +8,23 @@ import cz.shroomware.diorama.engine.level.fx.FallingParticle;
 import cz.shroomware.diorama.engine.level.fx.Particle;
 import cz.shroomware.diorama.engine.level.fx.ParticleEmitter;
 import cz.shroomware.diorama.engine.level.prototype.TreePrototype;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class TreeGameObject extends SingleRegionGameObject {
     ParticleEmitter particleEmitter;
 
-    public TreeGameObject(Vector3 position, Quaternion quaternion, final TreePrototype prototype) {
+    public TreeGameObject(Vector3 position, Quaternion quaternion, final TreePrototype prototype, BoxFactory boxFactory) {
         super(position, quaternion, prototype);
 
         particleEmitter = createParticleEmitter(position, prototype);
+        boxFactory.addCircle(getPosition().x, getPosition().y, 0.4f);
     }
 
-    protected TreeGameObject(Vector3 position, final TreePrototype prototype) {
+    protected TreeGameObject(Vector3 position, final TreePrototype prototype, BoxFactory boxFactory) {
         super(position, prototype);
+
         particleEmitter = createParticleEmitter(position, prototype);
+        boxFactory.addCircle(getPosition().x, getPosition().y, 0.4f);
     }
 
     protected ParticleEmitter createParticleEmitter(Vector3 position, final TreePrototype prototype) {

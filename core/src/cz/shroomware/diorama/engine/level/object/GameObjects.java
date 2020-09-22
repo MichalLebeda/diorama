@@ -18,6 +18,7 @@ import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class GameObjects {
     protected Array<GameObject> gameObjects = new Array<>();
@@ -90,7 +91,7 @@ public class GameObjects {
         return dirty;
     }
 
-    public void load(BufferedReader bufferedReader, Prototypes gameObjectPrototypes, Floor floor) {
+    public void load(BufferedReader bufferedReader, Prototypes gameObjectPrototypes, Floor floor, BoxFactory boxFactory) {
         gameObjects.clear();
 
         String line = null;
@@ -121,7 +122,7 @@ public class GameObjects {
                         GameObject object = prototype.createAt(
                                 //TODO add Z
                                 position.x, position.y,
-                                quaternion);
+                                quaternion, boxFactory);
 //                        GameObject object = prototype.createAt(position, quaternion);
                         object.setRotation(quaternion);
                         if (prototype.isAttached()) {

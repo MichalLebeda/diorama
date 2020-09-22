@@ -10,6 +10,7 @@ import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 import cz.shroomware.diorama.engine.level.prototype.TreePrototype;
+import cz.shroomware.diorama.engine.level.prototype.TriggerPrototype;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
 
 public class Prototypes {
@@ -19,6 +20,7 @@ public class Prototypes {
     public Prototypes(Resources resources) {
 
         addGameObjectPrototype(new WallPrototype(resources));
+        addGameObjectPrototype(new TriggerPrototype(resources));
 
         Array<String> blacklist = new Array<>();
         blacklist.add("cursor");
