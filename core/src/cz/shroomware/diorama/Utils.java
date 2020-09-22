@@ -97,7 +97,8 @@ public class Utils {
                 if (pixel == 0) {
                     continue;
                 }
-                Gdx.app.log("color", Integer.toHexString(pixel));
+                //TODO cleanup
+//                Gdx.app.log("color", Integer.toHexString(pixel));
                 if (occurrences.containsKey(pixel)) {
                     Integer occurrence = occurrences.get(pixel);
                     //TODO: could be done better but looks clean so...
