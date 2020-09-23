@@ -120,10 +120,11 @@ public class WallObject extends GameObject {
     public void updateSurroundings(Floor floor) {
         Tile tile;
 
+        //TODO: use something like tile.getAttachedObject.isAttachableToWall();
         tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
-        if (tile != null && tile.hasAttachedObject()) {
+        if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
             tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
-            if (tile != null && tile.hasAttachedObject()) {
+            if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
                 front.setTextureRegion(regionConnectedBoth);
                 back.setTextureRegion(regionConnectedBoth);
             } else {
@@ -132,7 +133,7 @@ public class WallObject extends GameObject {
             }
         } else {
             tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
-            if (tile != null && tile.hasAttachedObject()) {
+            if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
                 front.setTextureRegion(regionConnectedRight);
                 back.setTextureRegion(regionConnectedRight);
             } else {
@@ -142,9 +143,9 @@ public class WallObject extends GameObject {
         }
 
         tile = floor.getTileByOffset(tileAttachedTo, 0, -1);
-        if (tile != null && tile.hasAttachedObject()) {
+        if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
             tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
-            if (tile != null && tile.hasAttachedObject()) {
+            if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
                 left.setTextureRegion(regionConnectedBoth);
                 right.setTextureRegion(regionConnectedBoth);
             } else {
@@ -153,7 +154,7 @@ public class WallObject extends GameObject {
             }
         } else {
             tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
-            if (tile != null && tile.hasAttachedObject()) {
+            if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
                 left.setTextureRegion(regionConnectedRight);
                 right.setTextureRegion(regionConnectedRight);
             } else {
@@ -164,13 +165,13 @@ public class WallObject extends GameObject {
 
         boolean up, right, down, left;
         tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
-        up = (tile != null && tile.hasAttachedObject());
+        up = (tile != null && tile.hasAttachedObjectOfClass(WallObject.class));
         tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
-        right = (tile != null && tile.hasAttachedObject());
+        right = (tile != null && tile.hasAttachedObjectOfClass(WallObject.class));
         tile = floor.getTileByOffset(tileAttachedTo, 0, -1);
-        down = (tile != null && tile.hasAttachedObject());
+        down = (tile != null && tile.hasAttachedObjectOfClass(WallObject.class));
         tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
-        left = (tile != null && tile.hasAttachedObject());
+        left = (tile != null && tile.hasAttachedObjectOfClass(WallObject.class));
 
         decal.setTextureRegion(topRegions.get(up, right, down, left));
     }

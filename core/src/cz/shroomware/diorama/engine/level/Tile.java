@@ -46,6 +46,14 @@ public class Tile extends Sprite {
         return attachedGameObject != null;
     }
 
+    public boolean hasAttachedObjectOfClass(Class tClass) {
+        if (!hasAttachedObject()) {
+            return false;
+        }
+
+        return tClass.isInstance(attachedGameObject);
+    }
+
     @Override
     public void draw(Batch batch, float alphaModulation) {
         Gdx.app.error("Tile", "draw(Batch batch, float alphaModulation): use draw public void draw(DecalBatch decalBatch, SpriteBatch spriteBatch, float delta)");
