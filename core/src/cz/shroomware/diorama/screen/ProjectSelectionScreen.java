@@ -25,7 +25,7 @@ import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.DFLabel;
-import cz.shroomware.diorama.ui.FilenameDialog;
+import cz.shroomware.diorama.ui.NameDialog;
 
 public class ProjectSelectionScreen implements Screen {
     final VerticalGroup verticalGroup;
@@ -58,7 +58,12 @@ public class ProjectSelectionScreen implements Screen {
         createFileLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                FilenameDialog dialog = new FilenameDialog(game, ProjectSelectionScreen.this);
+                NameDialog dialog = new NameDialog(game, "New Project Name: ", "") {
+                    @Override
+                    public void onAccepted(String name) {
+                        game.openEditor(name);
+                    }
+                };
                 dialog.show(stage);
                 super.clicked(event, x, y);
             }
