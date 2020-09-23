@@ -15,16 +15,17 @@ public class TreeGameObject extends SingleRegionGameObject {
     ParticleEmitter particleEmitter;
 
     public TreeGameObject(Vector3 position, Quaternion quaternion, final TreePrototype prototype, BoxFactory boxFactory) {
-        super(position, quaternion, prototype, boxFactory);
+        super(position, quaternion, prototype);
         particleEmitter = createParticleEmitter(position, prototype);
+        attachToBody(createBody(boxFactory));
     }
 
     protected TreeGameObject(Vector3 position, final TreePrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype, boxFactory);
+        super(position, prototype);
         particleEmitter = createParticleEmitter(position, prototype);
+        attachToBody(createBody(boxFactory));
     }
 
-    @Override
     protected Body createBody(BoxFactory boxFactory) {
         body = boxFactory.addCircle(getPosition().x, getPosition().y, 0.4f);
         return body;

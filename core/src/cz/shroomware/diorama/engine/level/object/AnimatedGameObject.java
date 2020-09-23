@@ -21,20 +21,13 @@ public class AnimatedGameObject extends GameObject {
     float time;
 
     public AnimatedGameObject(Vector3 position, Quaternion quaternion, AnimatedPrototype prototype, BoxFactory boxFactory) {
-        this(position, prototype, boxFactory);
+        this(position, prototype);
         decal.setRotation(quaternion);
     }
 
     public AnimatedGameObject(Vector3 position, Quaternion quaternion, AnimatedPrototype prototype) {
         this(position, prototype);
         decal.setRotation(quaternion);
-    }
-
-    protected AnimatedGameObject(Vector3 position, AnimatedPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype.getAnimation().first().getObject(), prototype, boxFactory);
-        animation = prototype.getAnimation();
-        createShadowSprite();
-        setRandomAnimOffset();
     }
 
     protected AnimatedGameObject(Vector3 position, AnimatedPrototype prototype) {

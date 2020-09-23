@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
-import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
@@ -18,18 +17,8 @@ public class SingleRegionGameObject extends GameObject {
         setRotation(quaternion);
     }
 
-    public SingleRegionGameObject(Vector3 position, Quaternion quaternion, SingleRegionPrototype prototype, BoxFactory boxFactory) {
-        this(position, prototype, boxFactory);
-        setRotation(quaternion);
-    }
-
     protected SingleRegionGameObject(Vector3 position, SingleRegionPrototype prototype) {
         super(position, prototype.getObjectRegion(), prototype);
-        createShadowSprite(prototype);
-    }
-
-    protected SingleRegionGameObject(Vector3 position, SingleRegionPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype.getObjectRegion(), prototype, boxFactory);
         createShadowSprite(prototype);
     }
 

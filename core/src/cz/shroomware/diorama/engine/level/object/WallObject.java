@@ -25,7 +25,7 @@ public class WallObject extends GameObject {
     HexRegion topRegions;
 
     public WallObject(Vector3 position, WallPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype.getTop().get("oooo"), prototype, boxFactory);
+        super(position, prototype.getTop().get("oooo"), prototype);
 
         region = prototype.getRegion();
         regionConnectedLeft = prototype.getRegionConnectedLeft();
@@ -61,9 +61,10 @@ public class WallObject extends GameObject {
         back.rotateX(90);
         back.setWidth(back.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         back.setHeight(back.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
+
+        attachToBody(createBody(boxFactory));
     }
 
-    @Override
     protected Body createBody(BoxFactory boxFactory) {
         return boxFactory.addBoxCenter(decal.getX(), decal.getY(), 1, 1);
     }

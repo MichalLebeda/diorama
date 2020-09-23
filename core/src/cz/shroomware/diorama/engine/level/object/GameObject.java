@@ -21,7 +21,6 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
-import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
@@ -32,13 +31,6 @@ public class GameObject {
     protected Sprite shadowSprite;
     protected Body body = null;
     protected boolean selected = false;
-
-    protected GameObject(Vector3 position, TextureRegion region, Prototype prototype, BoxFactory boxFactory) {
-        this(position, region, prototype);
-
-        body = createBody(boxFactory);
-        body.setUserData(this);
-    }
 
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
         this.prototype = prototype;
@@ -212,7 +204,8 @@ public class GameObject {
         return body;
     }
 
-    protected Body createBody(BoxFactory boxFactory) {
-        return null;
+    public void attachToBody(Body body) {
+        this.body = body;
+        body.setUserData(this);
     }
 }

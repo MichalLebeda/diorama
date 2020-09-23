@@ -9,10 +9,10 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Trigger extends GameObject {
     public Trigger(Vector3 position, TextureRegion region, TriggerPrototype prototype, BoxFactory boxFactory) {
-        super(position, region, prototype, boxFactory);
+        super(position, region, prototype);
+        attachToBody(createBody(boxFactory));
     }
 
-    @Override
     protected Body createBody(BoxFactory boxFactory) {
         Body body = boxFactory.addBoxCenter(decal.getX(), decal.getY(), 1, 1);
         body.getFixtureList().get(0).setSensor(true);

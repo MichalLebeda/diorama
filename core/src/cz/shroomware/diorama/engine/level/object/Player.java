@@ -12,14 +12,15 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 public class Player extends SingleRegionGameObject {
 
     public Player(Vector3 position, Quaternion quaternion, SingleRegionPrototype prototype, BoxFactory boxFactory) {
-        super(position, quaternion, prototype, boxFactory);
+        super(position, quaternion, prototype);
+        attachToBody(createBody(boxFactory));
     }
 
     protected Player(Vector3 position, SingleRegionPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype, boxFactory);
+        super(position, prototype);
+        attachToBody(createBody(boxFactory));
     }
 
-    @Override
     protected Body createBody(BoxFactory boxFactory) {
         Body body = boxFactory.addDynBoxCenter(decal.getX(), decal.getY(), 0.5f, 0.5f, false);
         body.setFixedRotation(true);
