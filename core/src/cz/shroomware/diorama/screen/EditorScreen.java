@@ -242,7 +242,7 @@ public class EditorScreen extends BaseScreen {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case Input.Keys.X:
-                editor.setMode(Editor.Mode.DELETE);
+                editor.toggleDelete();
                 return true;
             case Input.Keys.G:
                 editor.setMode(Editor.Mode.TILE_BUCKET);
@@ -290,7 +290,11 @@ public class EditorScreen extends BaseScreen {
                 cursor.rotateY(90);
                 return true;
             case Input.Keys.TAB:
-                editor.setNextMode();
+                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    editor.setPrevMode();
+                } else {
+                    editor.setNextMode();
+                }
                 return true;
             case Input.Keys.P:
                 preventSave = true;

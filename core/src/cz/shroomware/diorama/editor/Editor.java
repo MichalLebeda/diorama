@@ -61,11 +61,30 @@ public class Editor {
         mode = mode.getNextMode();
     }
 
+    Mode modeBeforeDeleteToggle = Mode.ITEM;
+
+    public void setPrevMode() {
+        mode = mode.getPrevMode();
+    }
+
+    public void toggleDelete() {
+        if (mode == Mode.DELETE) {
+            mode = modeBeforeDeleteToggle;
+        } else {
+            modeBeforeDeleteToggle = mode;
+            mode = Mode.DELETE;
+        }
+    }
+
     public enum Mode {
         ITEM, DELETE, TILE, TILE_BUCKET, ID_ASSIGN;
 
         public Mode getNextMode() {
             return Mode.values()[(this.ordinal() + 1) % (Mode.values().length)];
+        }
+
+        public Mode getPrevMode() {
+            return Mode.values()[(Mode.values().length + this.ordinal() - 1) % (Mode.values().length)];
         }
     }
 }
