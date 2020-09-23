@@ -102,7 +102,6 @@ public class Level {
         });
 
         boxFactory = new BoxFactory(world);
-        boxFactory.addBox(0, 0, 1, 1);
 
         eventBus = new EventBus();
         EventListener listener = new EventListener();
