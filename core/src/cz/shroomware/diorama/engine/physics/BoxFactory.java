@@ -9,7 +9,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class BoxFactory {
-    private float defDensity = 9, defFriction = 0.4f, defRestitution = 0.3f;
+    private float defDensity = 9, defFriction = 0.4f, defRestitution = 0.0f;
     private Body body;
     private World world;
 
