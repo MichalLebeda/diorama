@@ -10,20 +10,21 @@ import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Player extends SingleRegionGameObject {
-    Body body;
 
     public Player(Vector3 position, Quaternion quaternion, SingleRegionPrototype prototype, BoxFactory boxFactory) {
-        super(position, quaternion, prototype);
-        body = boxFactory.addDynBoxCenter(position.x, position.y, 0.5f, 0.5f, false);
-        body.setFixedRotation(true);
-        body.setLinearDamping(40);
+        super(position, quaternion, prototype, boxFactory);
     }
 
     protected Player(Vector3 position, SingleRegionPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype);
-        body = boxFactory.addDynBoxCenter(position.x, position.y, 0.5f, 0.5f, false);
+        super(position, prototype, boxFactory);
+    }
+
+    @Override
+    protected Body createBody(BoxFactory boxFactory) {
+        Body body = boxFactory.addDynBoxCenter(decal.getX(), decal.getY(), 0.5f, 0.5f, false);
         body.setFixedRotation(true);
         body.setLinearDamping(40);
+        return body;
     }
 
     public void update() {

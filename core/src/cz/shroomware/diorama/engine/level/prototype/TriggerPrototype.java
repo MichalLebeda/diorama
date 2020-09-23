@@ -29,12 +29,12 @@ public class TriggerPrototype extends Prototype {
 
     @Override
     public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
-        return new Trigger(new Vector3(x, y, 0.1f), region, this);
+        return new Trigger(new Vector3(x, y, 0.1f), region, this, boxFactory);
     }
 
     @Override
     public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
-        return new Trigger(cursor.getPosition(), region, this);
+        return new Trigger(cursor.getPosition(), region, this, boxFactory);
     }
 
     @Override

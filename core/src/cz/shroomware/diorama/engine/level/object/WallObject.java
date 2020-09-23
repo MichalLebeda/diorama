@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.box2d.Body;
 
+import cz.shroomware.diorama.engine.HexRegion;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
@@ -23,7 +25,8 @@ public class WallObject extends GameObject {
     HexRegion topRegions;
 
     public WallObject(Vector3 position, WallPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype.getTop().get("oooo"), prototype);
+        super(position, prototype.getTop().get("oooo"), prototype, boxFactory);
+
         region = prototype.getRegion();
         regionConnectedLeft = prototype.getRegionConnectedLeft();
         regionConnectedRight = prototype.getRegionConnectedRight();
@@ -58,8 +61,11 @@ public class WallObject extends GameObject {
         back.rotateX(90);
         back.setWidth(back.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         back.setHeight(back.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
+    }
 
-        boxFactory.addBoxCenter(position.x, position.y, 1, 1);
+    @Override
+    protected Body createBody(BoxFactory boxFactory) {
+        return boxFactory.addBoxCenter(decal.getX(), decal.getY(), 1, 1);
     }
 
     public void setSelected(boolean selected) {

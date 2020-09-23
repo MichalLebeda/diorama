@@ -12,6 +12,7 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.ObjectShadowPair;
 import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
@@ -19,23 +20,37 @@ public class AnimatedGameObject extends GameObject {
     RegionAnimation animation;
     float time;
 
+    public AnimatedGameObject(Vector3 position, Quaternion quaternion, AnimatedPrototype prototype, BoxFactory boxFactory) {
+        this(position, prototype, boxFactory);
+        decal.setRotation(quaternion);
+    }
+
     public AnimatedGameObject(Vector3 position, Quaternion quaternion, AnimatedPrototype prototype) {
         this(position, prototype);
         decal.setRotation(quaternion);
     }
 
+    protected AnimatedGameObject(Vector3 position, AnimatedPrototype prototype, BoxFactory boxFactory) {
+        super(position, prototype.getAnimation().first().getObject(), prototype, boxFactory);
+        animation = prototype.getAnimation();
+        createShadowSprite();
+        setRandomAnimOffset();
+    }
+
     protected AnimatedGameObject(Vector3 position, AnimatedPrototype prototype) {
         super(position, prototype.getAnimation().first().getObject(), prototype);
         animation = prototype.getAnimation();
+        createShadowSprite();
+        setRandomAnimOffset();
+    }
 
+    private void createShadowSprite() {
         ObjectShadowPair pair = animation.first();
         if (pair.getShadow() != null) {
             shadowSprite = new Sprite(pair.getShadow());
             shadowSprite.setSize(decal.getWidth() * Utils.SHADOW_SCALE, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * Utils.SHADOW_SCALE));
-            shadowSprite.setPosition(decal.getPosition().x - shadowSprite.getWidth() / 2, decal.getPosition().y - shadowSprite.getHeight() - 0.01f / PIXELS_PER_METER);
+            shadowSprite.setPosition(decal.getX() - shadowSprite.getWidth() / 2, decal.getY() - shadowSprite.getHeight() - 0.01f / PIXELS_PER_METER);
         }
-
-        setRandomAnimOffset();
     }
 
     public void setRandomAnimOffset() {

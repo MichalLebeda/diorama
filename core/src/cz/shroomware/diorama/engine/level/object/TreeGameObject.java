@@ -3,6 +3,7 @@ package cz.shroomware.diorama.engine.level.object;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.engine.level.fx.FallingParticle;
 import cz.shroomware.diorama.engine.level.fx.Particle;
@@ -14,17 +15,20 @@ public class TreeGameObject extends SingleRegionGameObject {
     ParticleEmitter particleEmitter;
 
     public TreeGameObject(Vector3 position, Quaternion quaternion, final TreePrototype prototype, BoxFactory boxFactory) {
-        super(position, quaternion, prototype);
-
+        super(position, quaternion, prototype, boxFactory);
         particleEmitter = createParticleEmitter(position, prototype);
-        boxFactory.addCircle(getPosition().x, getPosition().y, 0.4f);
     }
 
     protected TreeGameObject(Vector3 position, final TreePrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype);
-
+        super(position, prototype, boxFactory);
         particleEmitter = createParticleEmitter(position, prototype);
-        boxFactory.addCircle(getPosition().x, getPosition().y, 0.4f);
+    }
+
+    @Override
+    protected Body createBody(BoxFactory boxFactory) {
+        body = boxFactory.addCircle(getPosition().x, getPosition().y, 0.4f);
+        return body;
+//        body.setUserData(this);
     }
 
     protected ParticleEmitter createParticleEmitter(Vector3 position, final TreePrototype prototype) {

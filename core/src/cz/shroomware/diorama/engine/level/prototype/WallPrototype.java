@@ -3,9 +3,9 @@ package cz.shroomware.diorama.engine.level.prototype;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Quaternion;
 
+import cz.shroomware.diorama.engine.HexRegion;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.HexRegion;
 import cz.shroomware.diorama.engine.level.object.WallObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 

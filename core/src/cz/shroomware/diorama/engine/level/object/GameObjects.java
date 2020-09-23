@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 import java.io.BufferedReader;
@@ -44,6 +46,11 @@ public class GameObjects {
     public void remove(GameObject gameObject) {
         dirty = true;
         gameObjects.removeValue(gameObject, false);
+        if (gameObject.hasBody()) {
+            Body body = gameObject.getBody();
+            World world = body.getWorld();
+            world.destroyBody(body);
+        }
     }
 
     public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {

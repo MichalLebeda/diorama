@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.box2d.Body;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,6 +21,7 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
+import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
@@ -28,7 +30,15 @@ public class GameObject {
     protected Prototype prototype;
     protected Decal decal;
     protected Sprite shadowSprite;
+    protected Body body = null;
     protected boolean selected = false;
+
+    protected GameObject(Vector3 position, TextureRegion region, Prototype prototype, BoxFactory boxFactory) {
+        this(position, region, prototype);
+
+        body = createBody(boxFactory);
+        body.setUserData(this);
+    }
 
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
         this.prototype = prototype;
@@ -79,9 +89,9 @@ public class GameObject {
 
     public void save(OutputStream outputStream) throws IOException {
         outputStream.write((prototype.getName() + " ").getBytes());
-        outputStream.write((decal.getPosition().x + " ").getBytes());
-        outputStream.write((decal.getPosition().y + " ").getBytes());
-        outputStream.write((decal.getPosition().z + " ").getBytes());
+        outputStream.write((decal.getX() + " ").getBytes());
+        outputStream.write((decal.getY() + " ").getBytes());
+        outputStream.write((decal.getZ() + " ").getBytes());
         outputStream.write((decal.getRotation().x + " ").getBytes());
         outputStream.write((decal.getRotation().y + " ").getBytes());
         outputStream.write((decal.getRotation().z + " ").getBytes());
@@ -191,6 +201,18 @@ public class GameObject {
     }
 
     public void updateSurroundings(Floor floor) {
+        //To be implemented specifically if needed
+    }
 
+    public boolean hasBody() {
+        return body != null;
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    protected Body createBody(BoxFactory boxFactory) {
+        return null;
     }
 }

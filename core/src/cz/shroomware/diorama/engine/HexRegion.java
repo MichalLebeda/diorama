@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.engine.level.object;
+package cz.shroomware.diorama.engine;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
