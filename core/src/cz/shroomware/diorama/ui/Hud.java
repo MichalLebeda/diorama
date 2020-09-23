@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
@@ -37,6 +38,7 @@ public class Hud extends Stage {
     public Hud(final DioramaGame game, Prototypes prototypes, Editor editor, Level level) {
         super();
         this.game = game;
+        EditorResources resources = game.getEditorResources();
 //        setDebugAll(true);
 
         setViewport(new ScreenViewport());
@@ -51,7 +53,7 @@ public class Hud extends Stage {
         itemGroup.space(10);
         for (int i = 0; i < prototypes.getSize(); i++) {
             Prototype prototype = prototypes.getGameObjectPrototype(i);
-            itemGroup.addActor(new Item(game, editor, prototype) {
+            itemGroup.addActor(new Item(game.getEditorResources(), editor, prototype) {
                 @Override
                 public float getPrefWidth() {
                     return 260;
@@ -67,20 +69,21 @@ public class Hud extends Stage {
         addActor(selectedModeIndicator);
 
         modeIndicator = new ModeIndicator(
-                game,
+                resources,
                 editor,
                 selectedModeIndicator.getX() - 10);
 //        modeIndicator.setY(getHeight() - modeIndicator.getHeightWithPadding() - 10);
 //        //TODO: remove
 //        addActor(modeIndicator);
 
-        messages = new Messages(game);
+        messages = new Messages(resources);
         messages.setWidth(400);
         addActor(messages);
 
         projectNameLabel = new LeftToBackgroundLabel(
                 level.getFilename(),
-                game,
+                resources.getSkin(),
+                resources.getDfShader(),
                 selectedItemIndicator.getX() - 10);
         projectNameLabel.addListener(new ClickListener() {
             @Override
@@ -91,7 +94,7 @@ public class Hud extends Stage {
         projectNameLabel.setTouchable(Touchable.enabled);
         addActor(projectNameLabel);
 
-        unsavedChangesLabel = new BackgroundLabel(" . ", game);
+        unsavedChangesLabel = new BackgroundLabel(" . ", resources.getSkin(), resources.getDfShader());
         unsavedChangesLabel.setVisible(false);
         addActor(unsavedChangesLabel);
 

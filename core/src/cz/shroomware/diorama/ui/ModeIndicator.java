@@ -2,14 +2,14 @@ package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 
-import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.EditorResources;
 
 public class ModeIndicator extends LeftToBackgroundLabel {
     Editor editor;
 
-    public ModeIndicator(DioramaGame game, Editor editor , float alignLeftTo) {
-        super("error", game, alignLeftTo);
+    public ModeIndicator(EditorResources resources, Editor editor, float alignLeftTo) {
+        super("error", resources.getSkin(), resources.getDfShader(), alignLeftTo);
         this.editor = editor;
         setText(getModeText());
     }

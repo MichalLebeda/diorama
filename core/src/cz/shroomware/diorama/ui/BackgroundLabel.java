@@ -2,13 +2,13 @@ package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Null;
-
-import cz.shroomware.diorama.DioramaGame;
 
 import static cz.shroomware.diorama.Utils.DARK_BACKGROUND_DRAWABLE;
 
@@ -17,9 +17,24 @@ public class BackgroundLabel extends DFLabel {
 
     protected Drawable background;
 
-    public BackgroundLabel(CharSequence text, DioramaGame game) {
-        super(text, game);
-        background = game.getEditorResources().getSkin().getDrawable(DARK_BACKGROUND_DRAWABLE);
+    public BackgroundLabel(CharSequence text, Skin skin, ShaderProgram dfShader) {
+        super(text, skin, dfShader);
+        background = skin.getDrawable(DARK_BACKGROUND_DRAWABLE);
+    }
+
+    public BackgroundLabel(CharSequence text, Skin skin, String styleName, ShaderProgram dfShader) {
+        super(text, skin, styleName, dfShader);
+        background = skin.getDrawable(DARK_BACKGROUND_DRAWABLE);
+    }
+
+    public BackgroundLabel(CharSequence text, Skin skin, String fontName, Color color, ShaderProgram dfShader) {
+        super(text, skin, fontName, color, dfShader);
+        background = skin.getDrawable(DARK_BACKGROUND_DRAWABLE);
+    }
+
+    public BackgroundLabel(CharSequence text, Skin skin, String fontName, String colorName, ShaderProgram dfShader) {
+        super(text, skin, fontName, colorName, dfShader);
+        background = skin.getDrawable(DARK_BACKGROUND_DRAWABLE);
     }
 
     public float getXWithPadding() {

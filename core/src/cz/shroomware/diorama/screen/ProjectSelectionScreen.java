@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
@@ -23,9 +22,11 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.DFLabel;
 import cz.shroomware.diorama.ui.NameDialog;
+import cz.shroomware.diorama.ui.YesNoDialog;
 
 public class ProjectSelectionScreen implements Screen {
     final VerticalGroup verticalGroup;
@@ -51,9 +52,12 @@ public class ProjectSelectionScreen implements Screen {
         scrollPane = new ScrollPane(verticalGroup);
         stage.addActor(scrollPane);
 
+
+        EditorResources resources = game.getEditorResources();
         createFileLabel = new BackgroundLabel(
                 "New File",
-                game);
+                resources.getSkin(),
+                resources.getDfShader());
 
         createFileLabel.addListener(new ClickListener() {
             @Override
@@ -119,26 +123,20 @@ public class ProjectSelectionScreen implements Screen {
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    // TODO: use custom dialog for DF font support
-                    Dialog dialog = new Dialog("Are you sure", game.getEditorResources().getSkin()) {
+                    YesNoDialog dialog = new YesNoDialog(game, "Are you sure") {
                         @Override
-                        protected void result(Object object) {
-                            super.result(object);
-
-                            if ((boolean) object) {
-                                fileHandle.delete();
-                                verticalGroup.removeActor(horizontalGroup);
-                            }
+                        public void onAccepted() {
+                            fileHandle.delete();
+                            verticalGroup.removeActor(horizontalGroup);
                         }
                     };
-                    dialog.button("No", false);
-                    dialog.button("Yes", true);
                     dialog.show(stage);
                 }
             });
 
             horizontalGroup.addActor(button);
-            horizontalGroup.addActor(new DFLabel(fileHandle.name(), game));
+            EditorResources resources = game.getEditorResources();
+            horizontalGroup.addActor(new DFLabel(fileHandle.name(), resources.getSkin(), resources.getDfShader()));
             verticalGroup.addActor(horizontalGroup);
         }
 

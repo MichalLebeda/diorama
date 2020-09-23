@@ -9,19 +9,19 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 
-import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 public class Item extends HorizontalGroup {
     static final int ITEM_SIZE = 100;
     Prototype prototype;
 
-    public Item(DioramaGame game, final Editor editor, final Prototype prototype) {
+    public Item(EditorResources resources, final Editor editor, final Prototype prototype) {
         this.prototype = prototype;
         space(20);
         align(Align.right);
-        DFLabel label = new DFLabel(prototype.getName(), game);
+        DFLabel label = new DFLabel(prototype.getName(), resources.getSkin(), resources.getDfShader());
         label.setFontScale(0.3f);
         addActor(label);
 

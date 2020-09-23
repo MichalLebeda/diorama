@@ -7,13 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.Align;
 
-import cz.shroomware.diorama.DioramaGame;
+import cz.shroomware.diorama.editor.EditorResources;
 
 public class Messages extends VerticalGroup {
-    DioramaGame game;
+    EditorResources resources;
 
-    public Messages(DioramaGame game) {
-        this.game = game;
+    public Messages(EditorResources resources) {
+        this.resources = resources;
         columnAlign(Align.left);
         align(Align.bottomLeft);
         space(50);
@@ -23,7 +23,7 @@ public class Messages extends VerticalGroup {
     }
 
     public void showMessage(String text) {
-        BackgroundLabel message = new BackgroundLabel(text, game);
+        BackgroundLabel message = new BackgroundLabel(text, resources.getSkin(), resources.getDfShader());
         message.setAlignment(Align.left);
         message.setFontScale(0.3f);
         Container<BackgroundLabel> container=new Container<>(message);
