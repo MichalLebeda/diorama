@@ -32,6 +32,7 @@ public abstract class YesNoDialog extends Dialog {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 onAccepted();
+                hide();
             }
         });
 

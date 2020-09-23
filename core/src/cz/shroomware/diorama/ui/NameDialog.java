@@ -42,6 +42,8 @@ public abstract class NameDialog extends Dialog {
                 if (textField.getText().length() > 0) {
                     onAccepted(textField.getText());
                     hide();
+                    // For screen transition when creating new project
+                    // TODO: edit this
                     remove();
                 }
             }
