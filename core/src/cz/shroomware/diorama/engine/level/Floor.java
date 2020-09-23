@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Floor {
     public static final int GRID_SIZE = 100;
@@ -87,8 +89,18 @@ public class Floor {
     public void load(BufferedReader bufferedReader, TextureAtlas atlas) {
         try {
             String line = bufferedReader.readLine();
+            String[] parts;
 
-            String[] parts = line.split(" ");
+            int hashMapSize = Integer.parseInt(line);
+            HashMap<Integer, String> tileNameToId = new HashMap<>();
+            for (int i = 0; i < hashMapSize; i++) {
+                line = bufferedReader.readLine();
+                parts = line.split(":");
+                tileNameToId.put(Integer.parseInt(parts[1]), parts[0]);
+            }
+
+            line = bufferedReader.readLine();
+            parts = line.split(" ");
             if (parts.length != 2) {
                 return;
             }
@@ -100,7 +112,8 @@ public class Floor {
                 line = bufferedReader.readLine();
                 parts = line.split(" ");
                 for (int x = 0; x < width; x++) {
-                    grid[x][y].setRegion(atlas.findRegion(parts[x]));
+                    int key = Integer.parseInt(parts[x]);
+                    grid[x][y].setRegion(atlas.findRegion(tileNameToId.get(key)));
                 }
             }
         } catch (Exception e) {
@@ -118,11 +131,29 @@ public class Floor {
         int width = getSize();
         int height = getSize();
 
+        int i = 0;
+        HashMap<String, Integer> tileNameToId = new HashMap<>();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                String name = ((TextureAtlas.AtlasRegion) (TextureAtlas.AtlasRegion) grid[x][y].getRegion()).name;
+                if (!tileNameToId.containsKey(name)) {
+                    tileNameToId.put(name, i);
+                    i++;
+                }
+            }
+        }
+
         try {
+            outputStream.write((tileNameToId.size() + "\n").getBytes());
+            for (Map.Entry<String, Integer> entry : tileNameToId.entrySet()) {
+                outputStream.write((entry.getKey() + ":" + entry.getValue() + "\n").getBytes());
+            }
+
             outputStream.write((width + " " + height + "\n").getBytes());
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    outputStream.write((((TextureAtlas.AtlasRegion) grid[x][y].getRegion()).name + (x == width - 1 ? "\n" : " ")).getBytes());
+                    String name = ((TextureAtlas.AtlasRegion) (TextureAtlas.AtlasRegion) grid[x][y].getRegion()).name;
+                    outputStream.write((tileNameToId.get(name) + (x == width - 1 ? "\n" : " ")).getBytes());
                 }
             }
         } catch (IOException e) {
