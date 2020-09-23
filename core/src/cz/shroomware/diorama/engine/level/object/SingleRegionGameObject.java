@@ -13,8 +13,8 @@ import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 public class SingleRegionGameObject extends GameObject {
 
     public SingleRegionGameObject(Vector3 position, Quaternion quaternion, SingleRegionPrototype prototype) {
-        this(position, prototype);
-        setRotation(quaternion);
+        super(position, quaternion, prototype.getObjectRegion(), prototype);
+        createShadowSprite(prototype);
     }
 
     protected SingleRegionGameObject(Vector3 position, SingleRegionPrototype prototype) {
