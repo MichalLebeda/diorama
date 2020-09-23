@@ -13,7 +13,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.google.common.eventbus.EventBus;
@@ -28,6 +27,7 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.event.EventListener;
 import cz.shroomware.diorama.engine.level.event.WallHitEvent;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
+import cz.shroomware.diorama.engine.level.object.Door;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.level.object.Trigger;
@@ -60,14 +60,29 @@ public class Level {
             }
 
             private <T> T getFromContact(Contact contact, Class<T> tClass) {
-                Fixture[] fixtures = {contact.getFixtureA(), contact.getFixtureB()};
+                Body[] bodies = {contact.getFixtureA().getBody(), contact.getFixtureB().getBody()};
 
-                Object fixtureObject;
-                for (Fixture fixture : fixtures) {
-                    fixtureObject = fixture.getBody().getUserData();
+                Object attachedObject;
+                for (Body body : bodies) {
+                    attachedObject = body.getUserData();
 
-                    if (tClass.isInstance(fixtureObject)) {
-                        return (T) fixtureObject;
+                    if (tClass.isInstance(attachedObject)) {
+                        return (T) attachedObject;
+                    }
+                }
+
+                return null;
+            }
+
+            private Object getSecondFromContact(Contact contact, Object first) {
+                Body[] bodies = {contact.getFixtureB().getBody(), contact.getFixtureB().getBody()};
+
+                Object attachedObject;
+                for (Body body : bodies) {
+                    attachedObject = body.getUserData();
+
+                    if (attachedObject != null && attachedObject != first) {
+                        return attachedObject;
                     }
                 }
 
@@ -79,6 +94,15 @@ public class Level {
                 if (isInContact(contact, Trigger.class)) {
                     Trigger trigger = getFromContact(contact, Trigger.class);
                     trigger.addContact();
+                }
+
+                if (isInContact(contact, Door.class)) {
+                    Door door = getFromContact(contact, Door.class);
+
+                    GameObject gameObject = (GameObject) getSecondFromContact(contact, door);
+                    if (gameObject != null) {
+                        door.open(gameObject.getPosition());
+                    }
                 }
             }
 
