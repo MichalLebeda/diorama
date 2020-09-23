@@ -17,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
@@ -143,7 +142,6 @@ public class GameObject {
         int color = pixmap.getPixel((int) (region.getRegionX() + intersection.x * region.getRegionWidth()),
                 (int) (region.getRegionY() + intersection.y * region.getRegionHeight()));
 
-        Utils.pixel = color;
         pixmap.dispose();
         return ((color & 0x000000ff)) / 255f > 0.5f;
     }

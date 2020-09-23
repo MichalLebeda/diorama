@@ -33,8 +33,6 @@ public class Utils {
         return ((Math.round(input / step)) * step);
     }
 
-    public static int pixel  = 0;
-
     //https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
     public static Pixmap extractPixmapFromTextureRegion(TextureRegion textureRegion) {
         TextureData textureData = textureRegion.getTexture().getTextureData();
