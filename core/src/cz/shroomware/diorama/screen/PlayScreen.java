@@ -14,7 +14,7 @@ import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
 public class PlayScreen extends BaseScreen implements InputProcessor {
     protected static final float SPEED = 9.0f;
-    protected static final float Y_CAMERA_DISTANCE = 4;
+    protected static final float Y_CAMERA_DISTANCE = 6;
     Player player;
 
     public PlayScreen(DioramaGame game, Level level) {
@@ -23,9 +23,8 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
         updateBackgorundColor(level);
         initCamera(level);
 
-        player = new Player(new Vector3(level.getSize() / 2.f, 4, 0.5f),
+        player = new Player(new Vector3(level.getSize() / 2.f, Y_CAMERA_DISTANCE, 0.5f),
                 new Quaternion().setFromAxis(Vector3.X, 90),
-                //TODO ZMENIT NA nejakej specialni
                 new SingleRegionPrototype(game.getEditorResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
     }
@@ -51,7 +50,7 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
         }
 
         player.update();
-        camera.position.set(player.getPosition().cpy().add(0, -6, 4));
+        camera.position.set(player.getPosition().cpy().add(0, -Y_CAMERA_DISTANCE, 4));
         camera.lookAt(player.getPosition());
         camera.update();
 
