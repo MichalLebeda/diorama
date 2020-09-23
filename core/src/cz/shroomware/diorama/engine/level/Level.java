@@ -15,7 +15,6 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
-import com.google.common.eventbus.EventBus;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,8 +23,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.engine.level.event.EventListener;
-import cz.shroomware.diorama.engine.level.event.WallHitEvent;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.object.Door;
 import cz.shroomware.diorama.engine.level.object.GameObject;
@@ -40,7 +37,6 @@ public class Level {
     protected Clouds clouds;
     protected World world;
     protected BoxFactory boxFactory;
-    protected EventBus eventBus;
 
     //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
     //TODO ZBAVIT SE HISTORIE AT JE TO HEZKY ROZDELENY
@@ -126,11 +122,6 @@ public class Level {
         });
 
         boxFactory = new BoxFactory(world);
-
-        eventBus = new EventBus();
-        EventListener listener = new EventListener();
-        eventBus.register(listener);
-        eventBus.post(new WallHitEvent());
 
         floor = new Floor(resources.getObjectAtlas().findRegion("floor"));
         gameObjects = new GameObjects();
