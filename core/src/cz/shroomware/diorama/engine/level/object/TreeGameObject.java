@@ -14,7 +14,7 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 public class TreeGameObject extends SingleRegionGameObject {
     ParticleEmitter particleEmitter;
 
-    public TreeGameObject(Vector3 position, Quaternion quaternion, final TreePrototype prototype, BoxFactory boxFactory) {
+    public TreeGameObject(Vector3 position, Quaternion quaternion, TreePrototype prototype, BoxFactory boxFactory) {
         super(position, quaternion, prototype);
         particleEmitter = createParticleEmitter(position, prototype);
         attachToBody(createBody(boxFactory));
