@@ -48,6 +48,9 @@ public class SelectedModeIndicator extends Actor {
             case DELETE:
                 drawIcon(batch, skin.getDrawable(Utils.DELETE_MODE_ICON_DRAWABLE));
                 break;
+            case ID_ASSIGN:
+                drawIcon(batch, skin.getDrawable(Utils.ID_ASSIGN_MODE_ICON_DRAWABLE));
+                break;
         }
     }
 

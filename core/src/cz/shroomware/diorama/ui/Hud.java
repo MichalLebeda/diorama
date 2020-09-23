@@ -18,6 +18,8 @@ import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
+import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 public class Hud extends Stage {
@@ -197,5 +199,27 @@ public class Hud extends Stage {
         selectedModeIndicator.setPosition(
                 selectedItemIndicator.getX() - selectedModeIndicator.getWidth() - 10,
                 selectedItemIndicator.getY());
+    }
+
+    public void openIdAssignDialog(final GameObjects gameObjects, final GameObject gameObject) {
+        NameDialog nameDialog = new NameDialog(game,
+                "Set Object Tag:",
+                gameObject.hasId() ? gameObject.getId() : "") {
+            @Override
+            public void onAccepted(String name) {
+                gameObjects.assignId(gameObject, name);
+                Gdx.app.error("Hud", "assigned id " + gameObject.toString());
+            }
+        };
+
+        nameDialog.show(this);
+    }
+
+    public void setScrollFocus(boolean focus) {
+        if (focus) {
+            setScrollFocus(scrollPane);
+        } else {
+            setScrollFocus(null);
+        }
     }
 }

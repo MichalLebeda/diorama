@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Prototypes;
@@ -57,7 +58,6 @@ public class GameObjects {
         Vector3 intersection = new Vector3();
         BoundingBox boundingBox = new BoundingBox();
 
-
         float minDist = Float.MAX_VALUE;
         GameObject candidate = null;
         //test ray against every game object we have
@@ -78,11 +78,17 @@ public class GameObjects {
         return candidate;
     }
 
+    HashMap<String, GameObject> idToObject = new HashMap<>();
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
     public void save(OutputStream outputStream) {
         Gdx.app.log("GameObject", "saved");
         try {
             for (GameObject object : gameObjects) {
-                object.save(outputStream);
+                outputStream.write(object.toString().getBytes());
             }
 
             outputStream.flush();
@@ -92,10 +98,6 @@ public class GameObjects {
         }
 
         dirty = false;
-    }
-
-    public boolean isDirty() {
-        return dirty;
     }
 
     public void load(BufferedReader bufferedReader, Prototypes gameObjectPrototypes, Floor floor, BoxFactory boxFactory) {
@@ -119,7 +121,15 @@ public class GameObjects {
 
                 for (int i = 0; i < gameObjectPrototypes.getSize(); i++) {
                     Prototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
-                    if (attributes[0].equals(prototype.getName())) {
+
+                    String[] parts = attributes[0].split(":");
+                    String name = parts[0];
+                    String id = null;
+                    if (parts.length > 1) {
+                        id = parts[1];
+                    }
+
+                    if (name.equals(prototype.getName())) {
 //                        Gdx.app.error("LINE 2", prototype.getName());
                         Quaternion quaternion = new Quaternion(
                                 Float.parseFloat(attributes[4]),
@@ -131,12 +141,15 @@ public class GameObjects {
                                 position.x, position.y,
                                 quaternion, boxFactory);
 //                        GameObject object = prototype.createAt(position, quaternion);
-                        object.setRotation(quaternion);
+//                        object.setRotation(quaternion);
                         if (prototype.isAttached()) {
                             // There should always be a Tile for an attached object. Any exceptions are not our fault.
                             Tile tile = floor.getTileAtWorld(position.x, position.y);
                             tile.attachObject(object);
                             object.attachToTile(tile);
+                        }
+                        if (id != null) {
+                            assignId(object, id);
                         }
                         add(object);
                         break;
@@ -148,10 +161,26 @@ public class GameObjects {
         }
 
         dirty = false;
-//
-//        int i = 0;
-//        for (GameObject object : gameObjects) {
-//            Gdx.app.error("OBJ " + i++, object.toString());
-//        }
+    }
+
+    public boolean assignId(GameObject object, String id) {
+        id = id.replace(" ", "_");
+        id = id.replace(":", "_");
+
+        if (idToObject.containsKey(id)) {
+            Gdx.app.error("GameObjects", "Duplicate ID" + id);
+            return false;
+        } else if (idToObject.containsKey(object.getId())) {
+            dirty = true;
+            idToObject.remove(object.getId());
+            idToObject.put(id, object);
+            object.setId(id);
+            return true;
+        } else {
+            dirty = true;
+            idToObject.put(id, object);
+            object.setId(id);
+            return true;
+        }
     }
 }

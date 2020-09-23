@@ -14,9 +14,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Body;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
@@ -31,6 +28,7 @@ public class GameObject {
     protected Decal decal;
     protected Sprite shadowSprite;
     protected Body body = null;
+    protected String id = null;
     protected boolean selected = false;
 
     protected GameObject(Vector3 position, Quaternion quaternion, TextureRegion region, Prototype prototype) {
@@ -86,15 +84,22 @@ public class GameObject {
         }
     }
 
-    public void save(OutputStream outputStream) throws IOException {
-        outputStream.write((prototype.getName() + " ").getBytes());
-        outputStream.write((decal.getX() + " ").getBytes());
-        outputStream.write((decal.getY() + " ").getBytes());
-        outputStream.write((decal.getZ() + " ").getBytes());
-        outputStream.write((decal.getRotation().x + " ").getBytes());
-        outputStream.write((decal.getRotation().y + " ").getBytes());
-        outputStream.write((decal.getRotation().z + " ").getBytes());
-        outputStream.write((decal.getRotation().w + "\n").getBytes());
+    @Override
+    public String toString() {
+        String string = "";
+        if (hasId()) {
+            string += prototype.getName() + ":" + getId() + " ";
+        } else {
+            string += prototype.getName() + " ";
+        }
+        string += decal.getX() + " ";
+        string += decal.getY() + " ";
+        string += decal.getZ() + " ";
+        string += decal.getRotation().x + " ";
+        string += decal.getRotation().y + " ";
+        string += decal.getRotation().z + " ";
+        string += decal.getRotation().w + "\n";
+        return string;
     }
 
     public Vector3 getPosition() {
@@ -237,4 +242,15 @@ public class GameObject {
         return min.crs(max);
     }
 
+    public boolean hasId() {
+        return id != null;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    protected void setId(String id) {
+        this.id = id;
+    }
 }

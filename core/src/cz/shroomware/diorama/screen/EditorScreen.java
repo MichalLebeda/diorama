@@ -75,8 +75,8 @@ public class EditorScreen extends BaseScreen {
         hud = new Hud(game, gameObjectPrototypes, editor, level);
 
         inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(this);
         inputMultiplexer.addProcessor(hud);
+        inputMultiplexer.addProcessor(this);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class EditorScreen extends BaseScreen {
         level.step(delta);
         level.draw(spriteBatch, decalBatch, delta);
 
-        if (editor.getMode() == Editor.Mode.DELETE) {
+        if (editor.getMode() == Editor.Mode.DELETE || editor.getMode() == Editor.Mode.ID_ASSIGN) {
             selectObjectUnderCursor(Gdx.input.getX(), Gdx.input.getY());
         }
 
@@ -204,6 +204,12 @@ public class EditorScreen extends BaseScreen {
                     }
                 }
                 return true;
+            } else if (editor.isMode(Editor.Mode.ID_ASSIGN)) {
+                GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
+                if (gameObject != null) {
+                    hud.openIdAssignDialog(level.getGameObjects(), gameObject);
+                }
+                return true;
             } else if (editor.isMode(Editor.Mode.TILE)) {
                 if (editor.getCurrentlySelectedPrototype() != null) {
                     Vector3 intersection;
@@ -237,6 +243,9 @@ public class EditorScreen extends BaseScreen {
         switch (keycode) {
             case Input.Keys.X:
                 editor.setMode(Editor.Mode.DELETE);
+                return true;
+            case Input.Keys.G:
+                editor.setMode(Editor.Mode.TILE_BUCKET);
                 return true;
             case Input.Keys.F:
                 takingScreenshot = true;
@@ -360,8 +369,10 @@ public class EditorScreen extends BaseScreen {
         Vector2 pos = new Vector2(screenX, screenY);
         pos = hud.screenToStageCoordinates(pos);
         if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
+            hud.setScrollFocus(true);
             cursor.hide();
         } else {
+            hud.setScrollFocus(false);
             cursor.show();
         }
 

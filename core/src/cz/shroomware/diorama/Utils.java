@@ -23,6 +23,8 @@ public class Utils {
 
     public static final String DELETE_MODE_ICON_DRAWABLE = "delete_mode_icon";
 
+    public static final String ID_ASSIGN_MODE_ICON_DRAWABLE = "id_assign_mode_icon";
+
     public static final float PIXELS_PER_METER = 16f;
 
     public static final float SHADOW_SCALE = 2;
