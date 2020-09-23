@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import cz.shroomware.diorama.editor.EditorResources;
-import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.screen.EditorScreen;
 import cz.shroomware.diorama.screen.PlayScreen;
 import cz.shroomware.diorama.screen.ProjectSelectionScreen;
@@ -98,14 +98,14 @@ public class DioramaGame extends Game {
         setScreen(editorScreen);
     }
 
-    public void returnToEditor(){
-        if(editorScreen!=null){
+    public void returnToEditor() {
+        if (editorScreen != null) {
             setScreen(editorScreen);
         }
     }
 
-    public void openGamePreview(Level level) {
-        setScreen(new PlayScreen(this, level));
+    public void openGamePreview(String levelFilename, Prototypes prototypes) {
+        setScreen(new PlayScreen(this, prototypes, levelFilename));
     }
 
     public void openSelection() {

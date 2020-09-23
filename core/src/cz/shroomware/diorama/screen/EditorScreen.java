@@ -50,7 +50,6 @@ public class EditorScreen extends BaseScreen {
     protected GameObject currentlyHighlightedObject;
     protected boolean takingScreenshot;
     protected boolean showAddRemoveMessages = false;
-    protected boolean preventSave = false; //TODO: this is a workaround for not saving player from preview etc.
     boolean dragging = false;
     float time = 0;
 
@@ -81,7 +80,7 @@ public class EditorScreen extends BaseScreen {
 
     @Override
     public void show() {
-        preventSave = false;
+//        preventSave = false;
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
@@ -297,8 +296,9 @@ public class EditorScreen extends BaseScreen {
                 }
                 return true;
             case Input.Keys.P:
-                preventSave = true;
-                game.openGamePreview(level);
+//                preventSave = true;
+                save();
+                game.openGamePreview(level.getFilename(), gameObjectPrototypes);
         }
 
         return false;
@@ -449,9 +449,7 @@ public class EditorScreen extends BaseScreen {
 
     @Override
     public void hide() {
-        if (!preventSave) {
-            save();
-        }
+        save();
 
         Gdx.app.error("hide", "editor");
         super.hide();

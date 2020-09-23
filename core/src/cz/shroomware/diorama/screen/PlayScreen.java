@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
@@ -17,9 +18,9 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
     protected static final float Y_CAMERA_DISTANCE = 6;
     Player player;
 
-    public PlayScreen(DioramaGame game, Level level) {
+    public PlayScreen(DioramaGame game, Prototypes prototypes, String filename) {
         super(game);
-        this.level = level;
+        this.level = new Level(filename, prototypes, game.getEditorResources());
         updateBackgorundColor(level);
         initCamera(level);
 

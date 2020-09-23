@@ -176,7 +176,7 @@ public class Level {
     }
 
     public void step(float delta) {
-        world.step(delta, 6, 2);
+        world.step(delta, 10, 10);
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
