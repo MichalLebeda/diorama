@@ -79,7 +79,7 @@ public class ProjectSelectionScreen implements Screen {
         verticalGroup.clear();
         final Drawable darkBackground = game.getEditorResources().getSkin().getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
 
-        FileHandle[] fileHandles = Gdx.files.external(Utils.PROJECT_FOLDER).list();
+        FileHandle[] fileHandles = Utils.getProjectFolderFileHandle().list();
         for (final FileHandle fileHandle : fileHandles) {
             final HorizontalGroup horizontalGroup = new HorizontalGroup() {
                 @Override

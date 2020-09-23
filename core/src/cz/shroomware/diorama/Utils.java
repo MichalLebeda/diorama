@@ -1,5 +1,6 @@
 package cz.shroomware.diorama;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -29,7 +30,33 @@ public class Utils {
 
     public static final float SHADOW_SCALE = 2;
 
-    public static final String PROJECT_FOLDER = "Documents/PixelLab/";
+    //TODO Create multiplatform way of getting folders
+    public static FileHandle getProjectFolderFileHandle() {
+        Application.ApplicationType type = Gdx.app.getType();
+
+        FileHandle fileHandle = Gdx.files.external("Documents/PixelLab/");
+        if (!fileHandle.exists()) {
+            fileHandle.mkdirs();
+        }
+        return fileHandle;
+
+//        switch (type){
+//            case Desktop:
+//                FileHandle fileHandle =  Gdx.files.local("PixelLab/");
+//                if(!fileHandle.exists()){
+//                    fileHandle.mkdirs();
+//                }
+//                return fileHandle;
+//            case Android:
+//                FileHandle fileHandle =  Gdx.files.local("PixelLab/");
+//                if(!fileHandle.exists()){
+//                    fileHandle.mkdirs();
+//                }
+//                return fileHandle;
+//        }
+//        return Gdx.files
+    }
+
 
     public static float round(float input, float step) {
         return ((Math.round(input / step)) * step);
@@ -122,6 +149,6 @@ public class Utils {
     }
 
     public static FileHandle getFileHandle(String filename) {
-        return Gdx.files.external(Utils.PROJECT_FOLDER + filename);
+        return getProjectFolderFileHandle().child(filename);
     }
 }
