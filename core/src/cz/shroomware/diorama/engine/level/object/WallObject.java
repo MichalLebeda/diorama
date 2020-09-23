@@ -120,7 +120,6 @@ public class WallObject extends GameObject {
     public void updateSurroundings(Floor floor) {
         Tile tile;
 
-        //TODO: use something like tile.getAttachedObject.isAttachableToWall();
         tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
         if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
             tile = floor.getTileByOffset(tileAttachedTo, 1, 0);

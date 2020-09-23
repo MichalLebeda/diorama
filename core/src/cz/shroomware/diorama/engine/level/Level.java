@@ -38,8 +38,6 @@ public class Level {
     protected World world;
     protected BoxFactory boxFactory;
 
-    //TODO ZBAVIT SE ATLASU JEHO ZABALENIM DO NEJAKYHO OBJEKTU S PROTOTYPAMA
-    //TODO ZBAVIT SE HISTORIE AT JE TO HEZKY ROZDELENY
     public Level(String filename, Prototypes gameObjectPrototypes, Resources resources) {
         this.filename = filename;
 
