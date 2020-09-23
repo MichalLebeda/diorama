@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import cz.shroomware.diorama.engine.ObjectShadowPair;
 import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
+import cz.shroomware.diorama.engine.level.prototype.DoorPrototype;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 import cz.shroomware.diorama.engine.level.prototype.TreePrototype;
@@ -21,11 +22,13 @@ public class Prototypes {
 
         addGameObjectPrototype(new WallPrototype(resources));
         addGameObjectPrototype(new TriggerPrototype(resources));
+        addGameObjectPrototype(new DoorPrototype(resources));
 
         Array<String> blacklist = new Array<>();
         blacklist.add("cursor");
         blacklist.add("selector_background");
         blacklist.add("wall");
+        blacklist.add("door");
 
         //TODO zjistit proc se neanimovane nenacitaji
         Array<TextureAtlas.AtlasRegion> regions = resources.getObjectAtlas().getRegions();
