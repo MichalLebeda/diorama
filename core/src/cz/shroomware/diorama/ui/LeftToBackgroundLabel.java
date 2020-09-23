@@ -1,8 +1,5 @@
 package cz.shroomware.diorama.ui;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
 import cz.shroomware.diorama.DioramaGame;
 
 public class LeftToBackgroundLabel extends BackgroundLabel {
