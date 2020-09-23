@@ -30,7 +30,7 @@ import cz.shroomware.diorama.engine.level.event.WallHitEvent;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
-import cz.shroomware.diorama.engine.level.object.Player;
+import cz.shroomware.diorama.engine.level.object.Trigger;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Level {
@@ -64,7 +64,7 @@ public class Level {
 
                 Object fixtureObject;
                 for (Fixture fixture : fixtures) {
-                    fixtureObject = fixture.getUserData();
+                    fixtureObject = fixture.getBody().getUserData();
 
                     if (tClass.isInstance(fixtureObject)) {
                         return (T) fixtureObject;
@@ -76,15 +76,17 @@ public class Level {
 
             @Override
             public void beginContact(Contact contact) {
-                if (isInContact(contact, Player.class)) {
-                    Gdx.app.error("Level", "Player collision begin");
+                if (isInContact(contact, Trigger.class)) {
+                    Trigger trigger = getFromContact(contact, Trigger.class);
+                    trigger.addContact();
                 }
             }
 
             @Override
             public void endContact(Contact contact) {
-                if (isInContact(contact, Player.class)) {
-                    Gdx.app.error("Level", "Player collision end");
+                if (isInContact(contact, Trigger.class)) {
+                    Trigger trigger = getFromContact(contact, Trigger.class);
+                    trigger.removeContact();
                 }
             }
 
