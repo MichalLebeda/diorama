@@ -17,9 +17,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
+import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
@@ -30,6 +32,12 @@ public class GameObject {
     protected Sprite shadowSprite;
     protected Body body = null;
     protected boolean selected = false;
+
+    protected GameObject(Vector3 position, Quaternion quaternion, TextureRegion region, Prototype prototype) {
+        this(position, region, prototype);
+
+        decal.setRotation(quaternion);
+    }
 
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
         this.prototype = prototype;
@@ -206,4 +214,27 @@ public class GameObject {
         this.body = body;
         body.setUserData(this);
     }
+
+    protected void createShadowSprite(SingleRegionPrototype prototype) {
+        TextureRegion shadowRegion = prototype.getShadowRegion();
+        if (prototype.getShadowRegion() != null) {
+            shadowSprite = new Sprite(shadowRegion);
+            shadowSprite.setSize(decal.getWidth() * Utils.SHADOW_SCALE, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * Utils.SHADOW_SCALE));
+            shadowSprite.setPosition(decal.getX() - shadowSprite.getWidth() / 2, decal.getY() - shadowSprite.getHeight() - 0.01f / PIXELS_PER_METER);
+        }
+    }
+
+    public Vector3 getNormalVector() {
+        Vector3 min = new Vector3();
+        Vector3 max = new Vector3();
+        float[] vertices = decal.getVertices();
+        min.set(vertices[Decal.X1],
+                vertices[Decal.Y1],
+                vertices[Decal.Z1]);
+        max.set(vertices[Decal.X4],
+                vertices[Decal.Y4],
+                vertices[Decal.Z4]);
+        return min.crs(max);
+    }
+
 }
