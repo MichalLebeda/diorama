@@ -29,7 +29,7 @@ public class TriggerPrototype extends Prototype {
 
     @Override
     public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
-        return new Trigger(new Vector3(x, y, 0.1f), region, this, boxFactory);
+        return new Trigger(new Vector3(x, y, 0), region, this, boxFactory);
     }
 
     @Override

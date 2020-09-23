@@ -30,8 +30,10 @@ public class Trigger extends GameObject {
     public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
         if (contacts > 0) {
             decal.setColor(Color.ORANGE);
+            decal.setZ(0.01f);
         } else {
             decal.setColor(Color.WHITE);
+            decal.setZ(0.1f);
         }
         super.drawDecal(decalBatch, delta);
     }
