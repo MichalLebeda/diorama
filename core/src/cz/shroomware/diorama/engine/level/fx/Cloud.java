@@ -32,12 +32,12 @@ public class Cloud {
                 FallingParticle particle = new FallingParticle(position,
                         resources.getObjectAtlas().findRegion("white"),
                         Color.GRAY,
-                        9f,
-                        1f);
+                        9f);
                 particle.rotateX(90);
                 return particle;
             }
         };
+        particleEmitter.setParticleLimit(10);
     }
 
     public void draw(MinimalisticDecalBatch decalBatch, float delta) {

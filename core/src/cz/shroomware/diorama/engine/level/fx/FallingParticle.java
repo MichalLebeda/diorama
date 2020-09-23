@@ -5,8 +5,23 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
 public class FallingParticle extends Particle {
-    protected float timeOnGround;
+    protected float timeOnGround = 0;
     protected float elapsedTimeOnGround = 0;
+
+    public FallingParticle(Vector3 position,
+                           TextureRegion region,
+                           Color color,
+                           float fallingVelocity) {
+        super(position, region, color);
+        setVelocityZ(-fallingVelocity);
+    }
+
+    public FallingParticle(Vector3 position,
+                           TextureRegion region,
+                           float fallingVelocity) {
+        super(position, region);
+        setVelocityZ(-fallingVelocity);
+    }
 
     public FallingParticle(Vector3 position,
                            TextureRegion region,
@@ -50,6 +65,9 @@ public class FallingParticle extends Particle {
 
     @Override
     public boolean toRemove() {
+        if (timeOnGround == 0) {
+            return false;
+        }
         return isOnGround() && elapsedTimeOnGround > timeOnGround;
     }
 }

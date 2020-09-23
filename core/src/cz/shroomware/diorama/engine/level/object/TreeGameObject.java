@@ -34,19 +34,21 @@ public class TreeGameObject extends SingleRegionGameObject {
 
     protected ParticleEmitter createParticleEmitter(Vector3 position, final TreePrototype prototype) {
         float depth = 1f;
-        return new ParticleEmitter(new Vector3(position.x - getWidth() / 2, position.y - depth / 2, position.z - getHeight() / 3), new
+        ParticleEmitter particleEmitter = new ParticleEmitter(new Vector3(position.x - getWidth() / 2, position.y - depth / 2, position.z - getHeight() / 3), new
                 Vector3(getWidth(), depth, getHeight() / 3f), 0.2f) {
             @Override
             protected Particle createParticle(Vector3 position) {
                 FallingParticle particle = new FallingParticle(position,
                         prototype.getLeaveParticle(),
                         prototype.getLeaveParticleColor(),
-                        0.3f,
-                        10f);
+                        0.3f);
                 particle.rotateX(90);
                 return particle;
             }
         };
+
+        particleEmitter.setParticleLimit(4);
+        return particleEmitter;
     }
 
     @Override

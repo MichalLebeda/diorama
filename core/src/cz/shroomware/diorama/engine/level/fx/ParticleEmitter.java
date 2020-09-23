@@ -17,6 +17,8 @@ public abstract class ParticleEmitter {
     float particlesPerSecond;
     float timeFromLastParticle = 0;
 
+    int particleLimit = 0;
+
     //TODO GLOBAL PARTICLE LIMIT
     Array<Particle> particleArray = new Array();
 
@@ -70,6 +72,26 @@ public abstract class ParticleEmitter {
 
         particleArray.add(particle);
         timeFromLastParticle = 0;
+
+        while (particleLimitExceeded()) {
+            particleArray.removeIndex(0);
+        }
+    }
+
+    protected boolean particleLimitExceeded() {
+        if (particleLimit == 0) {
+            return false;
+        }
+
+        return particleArray.size > particleLimit;
+    }
+
+    public int getParticleLimit() {
+        return particleLimit;
+    }
+
+    public void setParticleLimit(int particleLimit) {
+        this.particleLimit = particleLimit;
     }
 
     protected abstract Particle createParticle(Vector3 position);
