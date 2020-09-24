@@ -7,7 +7,11 @@ import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
+import cz.shroomware.diorama.engine.level.logic.Event;
+import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.DoorPrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
@@ -26,6 +30,8 @@ public class Door extends GameObject {
     Vector2 rotVector = new Vector2();
     Vector2 rotOriginVector = new Vector2();
 
+    Array<Handler> handlers = new Array<>(Handler.class);
+
     public Door(Vector3 position,
                 Quaternion quaternion,
                 DoorPrototype prototype,
@@ -40,31 +46,46 @@ public class Door extends GameObject {
 
         attachToBody(boxFactory.addBoxCenter(decal.getX(), decal.getY(), 1, 0.1f));
 
-//        Method method = null;
-//        try {
-//            // Necessary, because setRelativeAngle uses decal.getVertices()
-//            // which are not updated until decal.update() which is protected
-//            // TODO: find another solution
-//            method = decal.getClass().getDeclaredMethod("update");
-//            method.setAccessible(true);
-//            Object r = method.invoke(decal);
-//            method.setAccessible(false);
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        } catch (InvocationTargetException e) {
-//            e.printStackTrace();
-//        }
+        handlers.add(new Handler(this, "open") {
+            @Override
+            public void handle() {
+                // Open door in oposite direction
+                open(new Vector3(getPosition().cpy().add(0, -1, 0)));
+            }
+        });
+
+        handlers.add(new Handler(this, "close") {
+            @Override
+            public void handle() {
+                close();
+            }
+        });
     }
 
-//    public Door(Vector3 position,
+    @Override
+    public Array<Event> getEvents() {
+        return null;
+    }
+
+    @Override
+    public Array<Handler> getHandlers() {
+        return handlers;
+    }
+
+    @Override
+    public void onRegister(Logic logic) {
+
+    }
+
+    //    public Door(Vector3 position,
 //                DoorPrototype prototype,
 //                BoxFactory boxFactory) {
 //        super(position, prototype.getDoorPostRegion(), prototype);
 ////TODO:
 //
 //        attachToBody(boxFactory.addBoxCenter(decal.getX(), decal.getY(), 1, 0.1f));
+
+
 //    }
 
     public void open(Vector3 openedByPos) {
@@ -136,7 +157,6 @@ public class Door extends GameObject {
             float alpha = time / ANIM_DURATION;
             relativeAngle = Interpolation.bounceOut.apply(startRelativeAngle, targetRelativeAngle, alpha);
             setAngleRelative(relativeAngle);
-
         }
     }
 }

@@ -7,10 +7,14 @@ import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.HexRegion;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
+import cz.shroomware.diorama.engine.level.logic.Event;
+import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
@@ -173,5 +177,20 @@ public class WallObject extends GameObject {
         left = (tile != null && tile.hasAttachedObjectOfClass(WallObject.class));
 
         decal.setTextureRegion(topRegions.get(up, right, down, left));
+    }
+
+    @Override
+    public Array<Event> getEvents() {
+        return null;
+    }
+
+    @Override
+    public Array<Handler> getHandlers() {
+        return null;
+    }
+
+    @Override
+    public void onRegister(Logic logic) {
+
     }
 }

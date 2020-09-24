@@ -297,6 +297,9 @@ public class EditorScreen extends BaseScreen {
             case Input.Keys.P:
                 save();
                 game.openGamePreview(level.getFilename(), gameObjectPrototypes);
+                return true;
+            case Input.Keys.V:
+                level.dumpLogic();
         }
 
         return false;

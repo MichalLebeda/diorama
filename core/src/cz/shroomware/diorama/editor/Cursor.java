@@ -7,9 +7,13 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.logic.Event;
+import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.object.SingleRegionGameObject;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
@@ -135,5 +139,20 @@ public class Cursor extends SingleRegionGameObject {
 
     public void rotateY(float angle) {
         decal.rotateY(angle);
+    }
+
+    @Override
+    public Array<Event> getEvents() {
+        return null;
+    }
+
+    @Override
+    public Array<Handler> getHandlers() {
+        return null;
+    }
+
+    @Override
+    public void onRegister(Logic logic) {
+
     }
 }

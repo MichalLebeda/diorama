@@ -10,7 +10,7 @@ import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public class SingleRegionGameObject extends GameObject {
+public abstract class SingleRegionGameObject extends GameObject {
 
     public SingleRegionGameObject(Vector3 position, Quaternion quaternion, SingleRegionPrototype prototype) {
         super(position, quaternion, prototype.getObjectRegion(), prototype);

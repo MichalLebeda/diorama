@@ -20,12 +20,18 @@ import java.util.HashMap;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.Tile;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class GameObjects {
     protected Array<GameObject> gameObjects = new Array<>();
     protected boolean dirty = false;
+    protected Logic logic;
+
+    public GameObjects(Logic logic) {
+        this.logic = logic;
+    }
 
     public void drawShadows(Batch batch) {
         for (GameObject object : gameObjects) {
@@ -42,6 +48,7 @@ public class GameObjects {
     public void add(GameObject gameObject) {
         dirty = true;
         gameObjects.add(gameObject);
+        logic.register(gameObject);
     }
 
     public void remove(GameObject gameObject) {
@@ -52,6 +59,8 @@ public class GameObjects {
             World world = body.getWorld();
             world.destroyBody(body);
         }
+
+        logic.unregister(gameObject);
     }
 
     public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
@@ -88,7 +97,7 @@ public class GameObjects {
         Gdx.app.log("GameObject", "saved");
         try {
             for (GameObject object : gameObjects) {
-                outputStream.write(object.toString().getBytes());
+                outputStream.write((object.toString() + "\n").getBytes());
             }
 
             outputStream.flush();
@@ -100,7 +109,11 @@ public class GameObjects {
         dirty = false;
     }
 
-    public void load(BufferedReader bufferedReader, Prototypes gameObjectPrototypes, Floor floor, BoxFactory boxFactory) {
+    public void load(BufferedReader bufferedReader,
+                     Prototypes gameObjectPrototypes,
+                     Floor floor,
+                     BoxFactory boxFactory,
+                     Logic logic) {
         gameObjects.clear();
 
         String line = null;

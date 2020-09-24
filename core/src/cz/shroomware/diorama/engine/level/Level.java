@@ -24,6 +24,7 @@ import java.io.OutputStream;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.object.Door;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
@@ -36,6 +37,7 @@ public class Level {
     protected GameObjects gameObjects;
     protected Clouds clouds;
     protected World world;
+    protected Logic logic;
     protected BoxFactory boxFactory;
 
     public Level(String filename, Prototypes gameObjectPrototypes, Resources resources) {
@@ -92,11 +94,11 @@ public class Level {
 
                 if (isInContact(contact, Door.class)) {
                     Door door = getFromContact(contact, Door.class);
-
-                    GameObject gameObject = (GameObject) getSecondFromContact(contact, door);
-                    if (gameObject != null) {
-                        door.open(gameObject.getPosition());
-                    }
+//
+//                    GameObject gameObject = (GameObject) getSecondFromContact(contact, door);
+//                    if (gameObject != null) {
+//                        door.open(gameObject.getPosition());
+//                    }
                 }
             }
 
@@ -120,11 +122,14 @@ public class Level {
         });
 
         boxFactory = new BoxFactory(world);
-
+        logic = new Logic();
         floor = new Floor(resources.getObjectAtlas().findRegion("floor"));
-        gameObjects = new GameObjects();
+        gameObjects = new GameObjects(logic);
         clouds = new Clouds(floor, resources);
         loadIfExists(gameObjectPrototypes, resources.getObjectAtlas());
+
+        logic.testConnect();
+
     }
 
     public boolean loadIfExists(Prototypes gameObjectPrototypes, TextureAtlas atlas) {
@@ -135,7 +140,7 @@ public class Level {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             floor.load(bufferedReader, atlas);
-            gameObjects.load(bufferedReader, gameObjectPrototypes, floor, boxFactory);
+            gameObjects.load(bufferedReader, gameObjectPrototypes, floor, boxFactory, logic);
 
             floor.updateSurroundings();
 
@@ -232,5 +237,14 @@ public class Level {
 
     public BoxFactory getBoxFactory() {
         return boxFactory;
+    }
+
+    public Logic getLogic() {
+        return logic;
+    }
+
+    //TODO remove
+    public void dumpLogic() {
+        Gdx.app.log("Level:Logic", "\n" + logic.toString());
     }
 }

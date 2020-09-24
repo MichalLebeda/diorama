@@ -4,10 +4,14 @@ import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.level.fx.FallingParticle;
 import cz.shroomware.diorama.engine.level.fx.Particle;
 import cz.shroomware.diorama.engine.level.fx.ParticleEmitter;
+import cz.shroomware.diorama.engine.level.logic.Event;
+import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.TreePrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
@@ -56,5 +60,20 @@ public class TreeGameObject extends SingleRegionGameObject {
         super.drawDecal(decalBatch, delta);
 
         particleEmitter.draw(decalBatch, delta);
+    }
+
+    @Override
+    public Array<Event> getEvents() {
+        return null;
+    }
+
+    @Override
+    public Array<Handler> getHandlers() {
+        return null;
+    }
+
+    @Override
+    public void onRegister(Logic logic) {
+
     }
 }

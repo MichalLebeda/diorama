@@ -15,7 +15,7 @@ public class TriggerPrototype extends Prototype {
 
     public TriggerPrototype(Resources resources) {
         this.resources = resources;
-        region = resources.getObjectAtlas().findRegion("white");
+        region = resources.getObjectAtlas().findRegion("wall_top_oooo");
     }
 
     @Override

@@ -2,8 +2,12 @@ package cz.shroomware.diorama.engine.level.prototype;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.RegionAnimation;
+import cz.shroomware.diorama.engine.level.logic.Event;
+import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.object.AnimatedGameObject;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
@@ -28,12 +32,42 @@ public class AnimatedPrototype extends Prototype {
 
     @Override
     public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
-        return new AnimatedGameObject(onFloorCoords(x, y, getAnimation().first().getObject()), quaternion, this);
+        return new AnimatedGameObject(onFloorCoords(x, y, getAnimation().first().getObject()), quaternion, this) {
+            @Override
+            public Array<Event> getEvents() {
+                return null;
+            }
+
+            @Override
+            public Array<Handler> getHandlers() {
+                return null;
+            }
+
+            @Override
+            public void onRegister(Logic logic) {
+
+            }
+        };
     }
 
     @Override
     public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
-        return new AnimatedGameObject(cursor.getPosition(), cursor.getRotation(), this);
+        return new AnimatedGameObject(cursor.getPosition(), cursor.getRotation(), this) {
+            @Override
+            public Array<Event> getEvents() {
+                return null;
+            }
+
+            @Override
+            public Array<Handler> getHandlers() {
+                return null;
+            }
+
+            @Override
+            public void onRegister(Logic logic) {
+
+            }
+        };
     }
 
     @Override

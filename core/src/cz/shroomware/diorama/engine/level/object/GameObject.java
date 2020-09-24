@@ -15,14 +15,16 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.Identifiable;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
+import cz.shroomware.diorama.engine.level.logic.LogicallyRepresentable;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public class GameObject {
+public abstract class GameObject implements Identifiable, LogicallyRepresentable {
     protected Tile tileAttachedTo;
     protected Prototype prototype;
     protected Decal decal;
@@ -98,7 +100,7 @@ public class GameObject {
         string += decal.getRotation().x + " ";
         string += decal.getRotation().y + " ";
         string += decal.getRotation().z + " ";
-        string += decal.getRotation().w + "\n";
+        string += decal.getRotation().w;
         return string;
     }
 
@@ -242,10 +244,12 @@ public class GameObject {
         return min.crs(max);
     }
 
+    @Override
     public boolean hasId() {
         return id != null;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -253,4 +257,14 @@ public class GameObject {
     protected void setId(String id) {
         this.id = id;
     }
+
+//    @Override
+//    public Array<Event> getEvents() {
+//        return null;
+//    }
+//
+//    @Override
+//    public Array<Handler> getHandlers() {
+//        return null;
+//    }
 }
