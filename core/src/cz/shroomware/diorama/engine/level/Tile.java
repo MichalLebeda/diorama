@@ -1,7 +1,6 @@
 package cz.shroomware.diorama.engine.level;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -22,11 +21,12 @@ public class Tile extends Sprite {
     }
 
     public void draw(SpriteBatch spriteBatch, float delta) {
-        if (attachedGameObject != null) {
-            setColor(Color.ORANGE);
-        } else {
-            setColor(Color.WHITE);
-        }
+        //TODO: remove
+//        if (attachedGameObject != null) {
+//            setColor(Color.ORANGE);
+//        } else {
+//            setColor(Color.WHITE);
+//        }
         super.draw(spriteBatch);
     }
 
