@@ -80,7 +80,6 @@ public class EditorScreen extends BaseScreen {
 
     @Override
     public void show() {
-//        preventSave = false;
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
@@ -296,7 +295,6 @@ public class EditorScreen extends BaseScreen {
                 }
                 return true;
             case Input.Keys.P:
-//                preventSave = true;
                 save();
                 game.openGamePreview(level.getFilename(), gameObjectPrototypes);
         }
