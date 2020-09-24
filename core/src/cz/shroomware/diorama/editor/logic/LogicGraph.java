@@ -1,12 +1,13 @@
 package cz.shroomware.diorama.editor.logic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,16 +30,18 @@ public class LogicGraph extends Stage {
     HandlerButton handlerButton = null;
     ShapeRenderer shapeRenderer;
     Mode mode = Mode.ADD;
+    Preferences preferences;
 
-    public LogicGraph(Viewport viewport, Logic logic, EditorResources editorResources, ShapeRenderer shapeRenderer) {
-        super(viewport);
+    public LogicGraph(String levelName, Logic logic, EditorResources editorResources, ShapeRenderer shapeRenderer) {
+        super(new ScreenViewport());
         this.logic = logic;
         this.shapeRenderer = shapeRenderer;
-        getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+
+        preferences = Gdx.app.getPreferences(levelName);
 
         Set<Identifiable> parentsSet = logic.getAllParents();
-        for (Identifiable object : parentsSet) {
-            LogicBlock block = new LogicBlock(logic, object, editorResources) {
+        for (Identifiable identifiable : parentsSet) {
+            LogicBlock block = new LogicBlock(logic, identifiable, editorResources) {
                 @Override
                 public void onEventClicked(EventButton button) {
                     if (eventButton == null) {
@@ -59,11 +62,27 @@ public class LogicGraph extends Stage {
                     }
                 }
             };
-            blocks.put(object, block);
+            float x = preferences.getFloat(identifiable.getId() + ".x", 0);
+            float y = preferences.getFloat(identifiable.getId() + ".y", 0);
+            block.setPosition(x, y);
+            blocks.put(identifiable, block);
             eventButtonHashMap.putAll(block.getEventButtonHashMap());
             handlerButtonHashMap.putAll(block.getHandlerButtonHashMap());
             addActor(block);
         }
+
+        preferences.flush();
+    }
+
+    public void savePositions() {
+        for (Map.Entry<Identifiable, LogicBlock> entry : blocks.entrySet()) {
+            Identifiable identifiable = entry.getKey();
+            LogicBlock logicBlock = entry.getValue();
+            preferences.putFloat(identifiable.getId() + ".x", logicBlock.getX());
+            preferences.putFloat(identifiable.getId() + ".y", logicBlock.getY());
+        }
+
+        preferences.flush();
     }
 
     public void toggleMode() {
@@ -114,14 +133,7 @@ public class LogicGraph extends Stage {
     private void drawLines() {
         shapeRenderer.setProjectionMatrix(getCamera().combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        switch (mode) {
-            case ADD:
-                shapeRenderer.setColor(Color.WHITE);
-                break;
-            case REMOVE:
-                shapeRenderer.setColor(Color.RED);
-                break;
-        }
+        shapeRenderer.setColor(Color.WHITE);
 
         Set<Map.Entry<Event, ArrayList<Handler>>> eventToHandlersConnectionsSet = logic.getEventToHandlersConnections().entrySet();
         for (Map.Entry<Event, ArrayList<Handler>> entry : eventToHandlersConnectionsSet) {
@@ -134,6 +146,15 @@ public class LogicGraph extends Stage {
                 handlerButton = handlerButtonHashMap.get(handler);
                 drawLine(eventButton, handlerButton);
             }
+        }
+
+        switch (mode) {
+            case ADD:
+                shapeRenderer.setColor(Color.WHITE);
+                break;
+            case REMOVE:
+                shapeRenderer.setColor(Color.RED);
+                break;
         }
 
         Vector3 cursorPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);

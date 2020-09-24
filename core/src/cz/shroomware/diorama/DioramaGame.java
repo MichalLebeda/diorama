@@ -110,8 +110,8 @@ public class DioramaGame extends Game {
         setScreen(new PlayScreen(this, prototypes, levelFilename));
     }
 
-    public void openLogicEditor(Logic logic) {
-        setScreen(new LogicEditorScreen(this, logic));
+    public void openLogicEditor(String levelName, Logic logic) {
+        setScreen(new LogicEditorScreen(this, levelName, logic));
     }
 
     public void openSelection() {

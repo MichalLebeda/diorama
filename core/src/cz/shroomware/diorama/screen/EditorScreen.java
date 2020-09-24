@@ -76,8 +76,6 @@ public class EditorScreen extends BaseScreen {
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(hud);
         inputMultiplexer.addProcessor(this);
-
-        game.openLogicEditor(level.getLogic());
     }
 
     @Override
@@ -305,7 +303,7 @@ public class EditorScreen extends BaseScreen {
                 level.dumpLogic();
                 return true;
             case Input.Keys.SEMICOLON:
-                game.openLogicEditor(level.getLogic());
+                game.openLogicEditor(level.getFilename(), level.getLogic());
         }
 
         return false;

@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.engine.level.object.Door;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.level.object.Trigger;
@@ -91,15 +90,6 @@ public class Level {
                     Trigger trigger = getFromContact(contact, Trigger.class);
                     trigger.addContact();
                 }
-
-                if (isInContact(contact, Door.class)) {
-                    Door door = getFromContact(contact, Door.class);
-//
-//                    GameObject gameObject = (GameObject) getSecondFromContact(contact, door);
-//                    if (gameObject != null) {
-//                        door.open(gameObject.getPosition());
-//                    }
-                }
             }
 
             @Override
@@ -159,7 +149,6 @@ public class Level {
             save(true);
         }
 
-
         return false;
     }
 
@@ -191,7 +180,7 @@ public class Level {
     }
 
     public void step(float delta) {
-        world.step(delta, 10, 10);
+        world.step(delta, 6, 2);
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
@@ -220,14 +209,6 @@ public class Level {
     public boolean isDirty() {
         return gameObjects.isDirty() || floor.isDirty() || logic.isDirty();
     }
-
-//    public void addObject(GameObject object) {
-//        gameObjects.add(object);
-//    }
-//
-//    public void removeObject(GameObject object) {
-//        gameObjects.remove(object);
-//    }
 
     public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
         return gameObjects.findIntersectingWithRay(ray, cameraPos);

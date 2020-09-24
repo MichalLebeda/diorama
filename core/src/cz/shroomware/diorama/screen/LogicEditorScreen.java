@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.logic.LogicGraph;
@@ -27,13 +26,13 @@ public class LogicEditorScreen implements Screen, InputProcessor {
     SpriteBatch spriteBatch;
     OrthographicCamera camera;
 
-    public LogicEditorScreen(DioramaGame game, Logic logic) {
+    public LogicEditorScreen(DioramaGame game, String levelName, Logic logic) {
         this.logic = logic;
         this.game = game;
 
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
-        graph = new LogicGraph(new ScreenViewport(), logic, game.getEditorResources(), shapeRenderer);
+        graph = new LogicGraph(levelName, logic, game.getEditorResources(), shapeRenderer);
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(graph);
         inputMultiplexer.addProcessor(this);
@@ -43,6 +42,12 @@ public class LogicEditorScreen implements Screen, InputProcessor {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+    @Override
+    public void hide() {
+        graph.savePositions();
+        dispose();
     }
 
     @Override
@@ -56,7 +61,7 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.rect(0, 0, 1, 1);
+        shapeRenderer.rect(camera.viewportWidth - 40, 0, 40, 40);
         shapeRenderer.end();
     }
 
@@ -74,11 +79,6 @@ public class LogicEditorScreen implements Screen, InputProcessor {
     @Override
     public void resume() {
 
-    }
-
-    @Override
-    public void hide() {
-        dispose();
     }
 
     @Override
