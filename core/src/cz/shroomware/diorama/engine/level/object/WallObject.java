@@ -21,7 +21,8 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class WallObject extends GameObject {
-    Decal left, right, front, back;
+    Decal leftDecal, rightDecal, frontDecal, backDecal;
+    boolean up, right, down, left;
     TextureRegion region;
     TextureRegion regionConnectedLeft;
     TextureRegion regionConnectedRight;
@@ -40,31 +41,31 @@ public class WallObject extends GameObject {
         decal.setRotationX(0);
         decal.setZ(prototype.getLeftRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        left = Decal.newDecal(prototype.getLeftRegion(), true);
-        left.setPosition(position.cpy().add(-0.5f, 0, 0));
-        left.rotateX(90);
-        left.rotateY(90);
-        left.setWidth(left.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
-        left.setHeight(left.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
+        leftDecal = Decal.newDecal(prototype.getLeftRegion(), true);
+        leftDecal.setPosition(position.cpy().add(-0.5f, 0, 0));
+        leftDecal.rotateX(90);
+        leftDecal.rotateY(90);
+        leftDecal.setWidth(leftDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
+        leftDecal.setHeight(leftDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        right = Decal.newDecal(prototype.getRightRegion(), true);
-        right.setPosition(position.cpy().add(0.5f, 0, 0));
-        right.rotateX(90);
-        right.rotateY(90);
-        right.setWidth(right.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
-        right.setHeight(right.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
+        rightDecal = Decal.newDecal(prototype.getRightRegion(), true);
+        rightDecal.setPosition(position.cpy().add(0.5f, 0, 0));
+        rightDecal.rotateX(90);
+        rightDecal.rotateY(90);
+        rightDecal.setWidth(rightDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
+        rightDecal.setHeight(rightDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        front = Decal.newDecal(prototype.getFrontRegion(), true);
-        front.rotateX(90);
-        front.setPosition(position.cpy().add(0, -0.5f, 0));
-        front.setWidth(front.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
-        front.setHeight(front.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
+        frontDecal = Decal.newDecal(prototype.getFrontRegion(), true);
+        frontDecal.rotateX(90);
+        frontDecal.setPosition(position.cpy().add(0, -0.5f, 0));
+        frontDecal.setWidth(frontDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
+        frontDecal.setHeight(frontDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        back = Decal.newDecal(prototype.getBackRegion(), true);
-        back.setPosition(position.cpy().add(0, 0.5f, 0));
-        back.rotateX(90);
-        back.setWidth(back.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
-        back.setHeight(back.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
+        backDecal = Decal.newDecal(prototype.getBackRegion(), true);
+        backDecal.setPosition(position.cpy().add(0, 0.5f, 0));
+        backDecal.rotateX(90);
+        backDecal.setWidth(backDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
+        backDecal.setHeight(backDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
         attachToBody(createBody(boxFactory));
     }
@@ -77,23 +78,23 @@ public class WallObject extends GameObject {
         this.selected = selected;
         if (selected) {
             decal.setColor(0.2f, 0.2f, 0.2f, 1);
-            left.setColor(0.2f, 0.2f, 0.2f, 1);
-            right.setColor(0.2f, 0.2f, 0.2f, 1);
-            front.setColor(0.2f, 0.2f, 0.2f, 1);
-            back.setColor(0.2f, 0.2f, 0.2f, 1);
+            leftDecal.setColor(0.2f, 0.2f, 0.2f, 1);
+            rightDecal.setColor(0.2f, 0.2f, 0.2f, 1);
+            frontDecal.setColor(0.2f, 0.2f, 0.2f, 1);
+            backDecal.setColor(0.2f, 0.2f, 0.2f, 1);
         } else {
             decal.setColor(Color.WHITE);
-            left.setColor(Color.WHITE);
-            right.setColor(Color.WHITE);
-            front.setColor(Color.WHITE);
-            back.setColor(Color.WHITE);
+            leftDecal.setColor(Color.WHITE);
+            rightDecal.setColor(Color.WHITE);
+            frontDecal.setColor(Color.WHITE);
+            backDecal.setColor(Color.WHITE);
         }
     }
 
     public void sizeBoundingBox(BoundingBox boundingBox) {
         Vector3 min = new Vector3();
         Vector3 max = new Vector3();
-        float[] vertices = front.getVertices();
+        float[] vertices = frontDecal.getVertices();
         min.set(vertices[Decal.X1],
                 vertices[Decal.Y1],
                 vertices[Decal.Z1]);
@@ -106,19 +107,27 @@ public class WallObject extends GameObject {
     @Override
     public boolean isPixelOpaque(Vector3 intersection) {
         return isPixelOpaque(intersection, decal) ||
-                isPixelOpaque(intersection, left) ||
-                isPixelOpaque(intersection, right) ||
-                isPixelOpaque(intersection, front) ||
-                isPixelOpaque(intersection, back);
+                isPixelOpaque(intersection, leftDecal) ||
+                isPixelOpaque(intersection, rightDecal) ||
+                isPixelOpaque(intersection, frontDecal) ||
+                isPixelOpaque(intersection, backDecal);
     }
 
     @Override
     public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
         super.drawDecal(decalBatch, delta);
-        decalBatch.add(left);
-        decalBatch.add(right);
-        decalBatch.add(front);
-        decalBatch.add(back);
+        if (!left) {
+            decalBatch.add(leftDecal);
+        }
+        if (!right) {
+            decalBatch.add(rightDecal);
+        }
+        if (!down) {
+            decalBatch.add(frontDecal);
+        }
+        if (!up) {
+            decalBatch.add(backDecal);
+        }
     }
 
     public void updateSurroundings(Floor floor) {
@@ -128,20 +137,20 @@ public class WallObject extends GameObject {
         if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
             tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
             if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
-                front.setTextureRegion(regionConnectedBoth);
-                back.setTextureRegion(regionConnectedBoth);
+                frontDecal.setTextureRegion(regionConnectedBoth);
+                backDecal.setTextureRegion(regionConnectedBoth);
             } else {
-                front.setTextureRegion(regionConnectedLeft);
-                back.setTextureRegion(regionConnectedLeft);
+                frontDecal.setTextureRegion(regionConnectedLeft);
+                backDecal.setTextureRegion(regionConnectedLeft);
             }
         } else {
             tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
             if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
-                front.setTextureRegion(regionConnectedRight);
-                back.setTextureRegion(regionConnectedRight);
+                frontDecal.setTextureRegion(regionConnectedRight);
+                backDecal.setTextureRegion(regionConnectedRight);
             } else {
-                front.setTextureRegion(region);
-                back.setTextureRegion(region);
+                frontDecal.setTextureRegion(region);
+                backDecal.setTextureRegion(region);
             }
         }
 
@@ -149,24 +158,23 @@ public class WallObject extends GameObject {
         if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
             tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
             if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
-                left.setTextureRegion(regionConnectedBoth);
-                right.setTextureRegion(regionConnectedBoth);
+                leftDecal.setTextureRegion(regionConnectedBoth);
+                rightDecal.setTextureRegion(regionConnectedBoth);
             } else {
-                left.setTextureRegion(regionConnectedLeft);
-                right.setTextureRegion(regionConnectedLeft);
+                leftDecal.setTextureRegion(regionConnectedLeft);
+                rightDecal.setTextureRegion(regionConnectedLeft);
             }
         } else {
             tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
             if (tile != null && tile.hasAttachedObjectOfClass(WallObject.class)) {
-                left.setTextureRegion(regionConnectedRight);
-                right.setTextureRegion(regionConnectedRight);
+                leftDecal.setTextureRegion(regionConnectedRight);
+                rightDecal.setTextureRegion(regionConnectedRight);
             } else {
-                left.setTextureRegion(region);
-                right.setTextureRegion(region);
+                leftDecal.setTextureRegion(region);
+                rightDecal.setTextureRegion(region);
             }
         }
 
-        boolean up, right, down, left;
         tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
         up = (tile != null && tile.hasAttachedObjectOfClass(WallObject.class));
         tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
