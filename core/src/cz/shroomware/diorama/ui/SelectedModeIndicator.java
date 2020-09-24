@@ -1,9 +1,13 @@
 package cz.shroomware.diorama.ui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import cz.shroomware.diorama.Utils;
@@ -16,11 +20,22 @@ public class SelectedModeIndicator extends Actor {
     protected Editor editor;
     protected Skin skin;
 
-    public SelectedModeIndicator(Editor editor, Skin skin) {
+    public SelectedModeIndicator(final Editor editor, Skin skin) {
         this.editor = editor;
         this.background = skin.getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
         this.skin = skin;
         setSize(ICON_SIZE + 2 * BORDER_WIDTH, ICON_SIZE + 2 * BORDER_WIDTH);
+
+        addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    editor.setPrevMode();
+                } else {
+                    editor.setNextMode();
+                }
+            }
+        });
     }
 
     @Override
