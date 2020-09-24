@@ -86,27 +86,26 @@ public class Floor {
         return dirty;
     }
 
-    public void load(BufferedReader bufferedReader, TextureAtlas atlas) {
-        try {
-            String line = bufferedReader.readLine();
-            String[] parts;
+    public void load(BufferedReader bufferedReader, TextureAtlas atlas) throws IOException {
+        String line = bufferedReader.readLine();
+        String[] parts;
 
-            int hashMapSize = Integer.parseInt(line);
-            HashMap<Integer, String> tileNameToId = new HashMap<>();
-            for (int i = 0; i < hashMapSize; i++) {
-                line = bufferedReader.readLine();
-                parts = line.split(":");
-                tileNameToId.put(Integer.parseInt(parts[1]), parts[0]);
-            }
-
+        int hashMapSize = Integer.parseInt(line);
+        HashMap<Integer, String> tileNameToId = new HashMap<>();
+        for (int i = 0; i < hashMapSize; i++) {
             line = bufferedReader.readLine();
-            parts = line.split(" ");
-            if (parts.length != 2) {
-                return;
-            }
+            parts = line.split(":");
+            tileNameToId.put(Integer.parseInt(parts[1]), parts[0]);
+        }
 
-            int width = Integer.parseInt(parts[0]);
-            int height = Integer.parseInt(parts[1]);
+        line = bufferedReader.readLine();
+        parts = line.split(" ");
+        if (parts.length != 2) {
+            return;
+        }
+
+        int width = Integer.parseInt(parts[0]);
+        int height = Integer.parseInt(parts[1]);
 
             for (int y = 0; y < height; y++) {
                 line = bufferedReader.readLine();
@@ -116,9 +115,6 @@ public class Floor {
                     grid[x][y].setRegion(atlas.findRegion(tileNameToId.get(key)));
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         dirty = false;
     }
@@ -127,7 +123,7 @@ public class Floor {
         dirty = true;
     }
 
-    public void save(OutputStream outputStream) {
+    public void save(OutputStream outputStream) throws IOException {
         int width = getSize();
         int height = getSize();
 
@@ -143,21 +139,17 @@ public class Floor {
             }
         }
 
-        try {
-            outputStream.write((tileNameToId.size() + "\n").getBytes());
-            for (Map.Entry<String, Integer> entry : tileNameToId.entrySet()) {
-                outputStream.write((entry.getKey() + ":" + entry.getValue() + "\n").getBytes());
-            }
+        outputStream.write((tileNameToId.size() + "\n").getBytes());
+        for (Map.Entry<String, Integer> entry : tileNameToId.entrySet()) {
+            outputStream.write((entry.getKey() + ":" + entry.getValue() + "\n").getBytes());
+        }
 
-            outputStream.write((width + " " + height + "\n").getBytes());
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    String name = ((TextureAtlas.AtlasRegion) (TextureAtlas.AtlasRegion) grid[x][y].getRegion()).name;
-                    outputStream.write((tileNameToId.get(name) + (x == width - 1 ? "\n" : " ")).getBytes());
-                }
+        outputStream.write((width + " " + height + "\n").getBytes());
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                String name = ((TextureAtlas.AtlasRegion) (TextureAtlas.AtlasRegion) grid[x][y].getRegion()).name;
+                outputStream.write((tileNameToId.get(name) + (x == width - 1 ? "\n" : " ")).getBytes());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         dirty = false;

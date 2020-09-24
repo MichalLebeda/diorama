@@ -25,7 +25,7 @@ public abstract class BaseScreen implements Screen, InputProcessor {
     protected PerspectiveCamera camera;
     protected Box2DDebugRenderer dr = new Box2DDebugRenderer();
 
-    protected boolean boxDebug = true;
+    protected boolean boxDebug = false;
 
     BaseScreen(DioramaGame game) {
         this.game = game;

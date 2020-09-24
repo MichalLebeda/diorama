@@ -127,9 +127,6 @@ public class Level {
         gameObjects = new GameObjects(logic);
         clouds = new Clouds(floor, resources);
         loadIfExists(gameObjectPrototypes, resources.getObjectAtlas());
-
-        logic.testConnect();
-
     }
 
     public boolean loadIfExists(Prototypes gameObjectPrototypes, TextureAtlas atlas) {
@@ -139,8 +136,13 @@ public class Level {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-            floor.load(bufferedReader, atlas);
-            gameObjects.load(bufferedReader, gameObjectPrototypes, floor, boxFactory, logic);
+            try {
+                floor.load(bufferedReader, atlas);
+                gameObjects.load(bufferedReader, gameObjectPrototypes, floor, boxFactory);
+                logic.load(bufferedReader, gameObjects);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             floor.updateSurroundings();
 
@@ -164,8 +166,16 @@ public class Level {
     public boolean save(boolean force) {
         if (isDirty() || force) {
             OutputStream outputStream = Utils.getFileHandle(filename).write(false);
-            floor.save(outputStream);
-            gameObjects.save(outputStream);
+            try {
+                floor.save(outputStream);
+                gameObjects.save(outputStream);
+                logic.save(outputStream);
+                outputStream.flush();
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
             return true;
         }
 
@@ -208,7 +218,7 @@ public class Level {
     }
 
     public boolean isDirty() {
-        return gameObjects.isDirty() || floor.isDirty();
+        return gameObjects.isDirty() || floor.isDirty() || logic.isDirty();
     }
 
 //    public void addObject(GameObject object) {

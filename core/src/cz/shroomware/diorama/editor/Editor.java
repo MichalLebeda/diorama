@@ -24,7 +24,7 @@ public class Editor {
 
     public void setCurrentlySelectedPrototype(Prototype currentlySelectedPrototype) {
         this.currentlySelectedPrototype = currentlySelectedPrototype;
-        if (isMode(Editor.Mode.DELETE)) {
+        if (isMode(Editor.Mode.DELETE) || isMode(Mode.ID_ASSIGN)) {
             setMode(Editor.Mode.ITEM);
         }
     }

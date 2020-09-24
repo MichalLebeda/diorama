@@ -3,25 +3,33 @@ package cz.shroomware.diorama.engine.level.logic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import cz.shroomware.diorama.engine.Identifiable;
+import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.object.GameObjects;
 
 public class Logic {
+    boolean dirty = false;
     HashMap<Identifiable, ArrayList<Event>> availableEvents = new HashMap<>();
     HashMap<Identifiable, ArrayList<Handler>> availableHandlers = new HashMap<>();
     HashMap<Event, ArrayList<Handler>> eventToHandlersConnections = new HashMap<>();
-//
-//    public void addEvent(Event event) {
-//        availableEvents.put(event.getName(), event);
-//    }
-//
-//    public void addHandler(Handler handler) {
-//        availableHandlers.put(handler.getName(), handler);
-//    }
+
+    public Set<Identifiable> getAllParents() {
+        Set<Identifiable> parentsSet = new HashSet<>();
+        parentsSet.addAll(availableEvents.keySet());
+        parentsSet.addAll(availableHandlers.keySet());
+
+        return parentsSet;
+    }
 
     public void addEvents(Array<Event> events) {
         if (events != null) {
@@ -74,8 +82,8 @@ public class Logic {
     public void removeEvents(Array<Event> events) {
         if (events != null) {
             for (Event event : events) {
-                availableEvents.remove(event.getEventName());
-                removeConnectionsByEvent(event);
+                availableEvents.remove(event.getParent());
+                removeAllConnectionsWithEvent(event);
             }
         }
     }
@@ -83,13 +91,21 @@ public class Logic {
     public void removeHandlers(Array<Handler> handlers) {
         if (handlers != null) {
             for (Handler handler : handlers) {
-                availableHandlers.remove(handler.getHandlerName());
-                removeConnectionByHandler(handler);
+                availableHandlers.remove(handler.getParent());
+                removeAllConnectionsWithHandler(handler);
             }
         }
     }
 
-    protected void removeConnectionsByEvent(Event event) {
+    public ArrayList<Event> getEvents(Identifiable identifiable) {
+        return getAvailableEvents().get(identifiable);
+    }
+
+    public ArrayList<Handler> getHandlers(Identifiable identifiable) {
+        return getAvailableHandlers().get(identifiable);
+    }
+
+    protected void removeAllConnectionsWithEvent(Event event) {
         ArrayList<Handler> connectedHandlers = eventToHandlersConnections.get(event);
         if (connectedHandlers != null) {
             for (Handler handler : connectedHandlers) {
@@ -102,7 +118,7 @@ public class Logic {
         eventToHandlersConnections.remove(event);
     }
 
-    protected void removeConnectionByHandler(Handler handler) {
+    protected void removeAllConnectionsWithHandler(Handler handler) {
         Iterator<Map.Entry<Event, ArrayList<Handler>>> iterator = eventToHandlersConnections.entrySet().iterator();
 
         while (iterator.hasNext()) {
@@ -168,6 +184,10 @@ public class Logic {
     }
 
     public void connect(Event event, Handler handler) {
+        if (!event.getParent().hasId() | !handler.getParent().hasId()) {
+            Gdx.app.error("Logic", "Cannot connect, missing ID form one of the objects");
+            return;
+        }
         if (eventToHandlersConnections.containsKey(event)) {
             ArrayList<Handler> connectedHandlers = eventToHandlersConnections.get(event);
             if (connectedHandlers.contains(handler)) {
@@ -177,6 +197,7 @@ public class Logic {
                         + event.toString());
             } else {
                 connectedHandlers.add(handler);
+                dirty = true;
                 Gdx.app.error("Logic", "Added handler: "
                         + handler.toString()
                         + " to already added event: "
@@ -186,11 +207,31 @@ public class Logic {
             ArrayList<Handler> connectedHandlers = new ArrayList<>();
             connectedHandlers.add(handler);
             eventToHandlersConnections.put(event, connectedHandlers);
+            dirty = true;
             Gdx.app.error("Logic", "Added handler: "
                     + handler.toString()
                     + " to not handled event: "
                     + event.toString()
                     + " until now");
+        }
+    }
+
+
+    public void disconnect(Event event, Handler handler) {
+        ArrayList<Handler> connectedHandlers = eventToHandlersConnections.get(event);
+        if (connectedHandlers == null) {
+            Gdx.app.error("Logic", "No such handler: " + handler.toString() + " for event:" + event.toString());
+            return;
+        }
+        connectedHandlers.remove(handler);
+        dirty = true;
+        Gdx.app.error("Logic", "Removed connection between: "
+                + event.toString()
+                + " and: "
+                + handler.toString());
+        if (connectedHandlers.isEmpty()) {
+            Gdx.app.error("Logic", "Event: " + event.toString() + " has no connections, conn. record removed");
+            eventToHandlersConnections.remove(event);
         }
     }
 
@@ -229,9 +270,9 @@ public class Logic {
                 for (ArrayList<Handler> handlers : availableHandlers.values()) {
                     for (Handler handler : handlers) {
                         if (event.getEventName().contains("pressed") && handler.getHandlerName().contains("open")) {
-                            connect(event, handler);
+//                            connect(event, handler);
                         } else if (event.getEventName().contains("released") && handler.getHandlerName().contains("close")) {
-                            connect(event, handler);
+//                            connect(event, handler);
                         }
                     }
                 }
@@ -248,5 +289,65 @@ public class Logic {
     public void unregister(LogicallyRepresentable object) {
         removeEvents(object.getEvents());
         removeHandlers(object.getHandlers());
+    }
+
+    public HashMap<Event, ArrayList<Handler>> getEventToHandlersConnections() {
+        return eventToHandlersConnections;
+    }
+
+    public void load(BufferedReader bufferedReader, GameObjects gameObjects) throws IOException {
+        int connectionAmount = Integer.parseInt(bufferedReader.readLine());
+
+        String line;
+        for (int i = 0; i < connectionAmount; i++) {
+            line = bufferedReader.readLine();
+            String[] pair = line.split(" ");
+            String[] eventParts = pair[0].split(":");
+            String[] handlerParts = pair[1].split(":");
+
+            //TODO: use hashmap for getEvents/handlers
+            GameObject eventObject = gameObjects.getById(eventParts[0]);
+            Event foundEvent = null;
+            Array<Event> events = eventObject.getEvents();
+            for (Event event : events) {
+                if (event.getEventName().equals(eventParts[1])) {
+                    foundEvent = event;
+                    break;
+                }
+            }
+
+            GameObject handlerObject = gameObjects.getById(handlerParts[0]);
+            Handler foundHandler = null;
+            Array<Handler> handlers = handlerObject.getHandlers();
+            for (Handler handler : handlers) {
+                if (handler.getHandlerName().equals(handlerParts[1])) {
+                    foundHandler = handler;
+                    break;
+                }
+            }
+
+            if (foundEvent == null || foundHandler == null) {
+                Gdx.app.error("Logic", "error reading file");
+            }
+
+            connect(foundEvent, foundHandler);
+        }
+
+        dirty = false;
+    }
+
+    public void save(OutputStream outputStream) throws IOException {
+        outputStream.write((eventToHandlersConnections.size() + "\n").getBytes());
+        for (Map.Entry<Event, ArrayList<Handler>> entry : eventToHandlersConnections.entrySet()) {
+            ArrayList<Handler> handlers = entry.getValue();
+            for (Handler handler : handlers) {
+                outputStream.write((entry.getKey().toString() + " " + handler.toString() + "\n").getBytes());
+            }
+        }
+        dirty = false;
+    }
+
+    public boolean isDirty() {
+        return dirty;
     }
 }

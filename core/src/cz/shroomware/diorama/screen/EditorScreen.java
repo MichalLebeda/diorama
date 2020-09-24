@@ -76,6 +76,8 @@ public class EditorScreen extends BaseScreen {
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(hud);
         inputMultiplexer.addProcessor(this);
+
+        game.openLogicEditor(level.getLogic());
     }
 
     @Override
@@ -238,6 +240,7 @@ public class EditorScreen extends BaseScreen {
 
     @Override
     public boolean keyDown(int keycode) {
+        //TODO make every function working through GUI
         switch (keycode) {
             case Input.Keys.X:
                 editor.toggleDelete();
@@ -277,13 +280,13 @@ public class EditorScreen extends BaseScreen {
                     hud.showMessage("NOT saved as " + level.getFilename());
                 }
                 return true;
-            case Input.Keys.L:
-                if (level.loadIfExists(gameObjectPrototypes, resources.getObjectAtlas())) {
-                    hud.showMessage("Loaded " + level.getFilename());
-                } else {
-                    hud.showMessage("FAILED to load " + level.getFilename());
-                }
-                return true;
+//            case Input.Keys.L:
+//                if (level.loadIfExists(gameObjectPrototypes,l resources.getObjectAtlas())) {
+//                    hud.showMessage("Loaded " + level.getFilename());
+//                } else {
+//                    hud.showMessage("FAILED to load " + level.getFilename());
+//                }
+//                return true;
             case Input.Keys.Z:
                 cursor.rotateY(90);
                 return true;
@@ -300,6 +303,9 @@ public class EditorScreen extends BaseScreen {
                 return true;
             case Input.Keys.V:
                 level.dumpLogic();
+                return true;
+            case Input.Keys.SEMICOLON:
+                game.openLogicEditor(level.getLogic());
         }
 
         return false;

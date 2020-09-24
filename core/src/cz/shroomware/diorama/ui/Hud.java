@@ -42,6 +42,7 @@ public class Hud extends Stage {
 //        setDebugAll(true);
 
         setViewport(new ScreenViewport());
+        //TODO remember why
         getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
         selectedItemIndicator = new SelectedItemIndicator(editor, game.getEditorResources().getSkin());

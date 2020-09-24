@@ -93,17 +93,11 @@ public class GameObjects {
         return dirty;
     }
 
-    public void save(OutputStream outputStream) {
+    public void save(OutputStream outputStream) throws IOException {
         Gdx.app.log("GameObject", "saved");
-        try {
-            for (GameObject object : gameObjects) {
-                outputStream.write((object.toString() + "\n").getBytes());
-            }
-
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        outputStream.write((gameObjects.size + "\n").getBytes());
+        for (GameObject object : gameObjects) {
+            outputStream.write((object.toString() + "\n").getBytes());
         }
 
         dirty = false;
@@ -112,43 +106,43 @@ public class GameObjects {
     public void load(BufferedReader bufferedReader,
                      Prototypes gameObjectPrototypes,
                      Floor floor,
-                     BoxFactory boxFactory,
-                     Logic logic) {
+                     BoxFactory boxFactory) throws IOException {
         gameObjects.clear();
 
         String line = null;
-        try {
-            Vector3 position = new Vector3();
-            while ((line = bufferedReader.readLine()) != null) {
+        Vector3 position = new Vector3();
+        int objectAmount = Integer.parseInt(bufferedReader.readLine());
+        for (int j = 0; j < objectAmount; j++) {
 //                Gdx.app.error("LINE", line);
 
-                String[] attributes = line.split(" ");
+            line = bufferedReader.readLine();
+            String[] attributes = line.split(" ");
 
-                if (attributes.length != 8) {
-                    continue;
+            if (attributes.length != 8) {
+                continue;
+            }
+            position.set(
+                    Float.parseFloat(attributes[1]),
+                    Float.parseFloat(attributes[2]),
+                    Float.parseFloat(attributes[3]));
+
+            for (int i = 0; i < gameObjectPrototypes.getSize(); i++) {
+                Prototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
+
+                String[] parts = attributes[0].split(":");
+                String name = parts[0];
+                String id = null;
+                if (parts.length > 1) {
+                    id = parts[1];
                 }
-                position.set(
-                        Float.parseFloat(attributes[1]),
-                        Float.parseFloat(attributes[2]),
-                        Float.parseFloat(attributes[3]));
 
-                for (int i = 0; i < gameObjectPrototypes.getSize(); i++) {
-                    Prototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
-
-                    String[] parts = attributes[0].split(":");
-                    String name = parts[0];
-                    String id = null;
-                    if (parts.length > 1) {
-                        id = parts[1];
-                    }
-
-                    if (name.equals(prototype.getName())) {
+                if (name.equals(prototype.getName())) {
 //                        Gdx.app.error("LINE 2", prototype.getName());
-                        Quaternion quaternion = new Quaternion(
-                                Float.parseFloat(attributes[4]),
-                                Float.parseFloat(attributes[5]),
-                                Float.parseFloat(attributes[6]),
-                                Float.parseFloat(attributes[7]));
+                    Quaternion quaternion = new Quaternion(
+                            Float.parseFloat(attributes[4]),
+                            Float.parseFloat(attributes[5]),
+                            Float.parseFloat(attributes[6]),
+                            Float.parseFloat(attributes[7]));
                         GameObject object = prototype.createAt(
                                 //TODO add Z
                                 position.x, position.y,
@@ -169,9 +163,6 @@ public class GameObjects {
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         dirty = false;
     }
@@ -195,5 +186,9 @@ public class GameObjects {
             object.setId(id);
             return true;
         }
+    }
+
+    public GameObject getById(String id) {
+        return idToObject.get(id);
     }
 }
