@@ -5,6 +5,7 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -123,10 +124,26 @@ public class LogicGraph extends Stage {
     }
 
     private void drawLine(EventButton actorA, HandlerButton actorB) {
+        Gdx.gl20.glLineWidth(3);
+        float lineStartXOffset = 0;
+        float lineEndXOffset = 0;
+
+        Actor parentA = actorA.getParent();
+        Actor parentB = actorB.getParent();
+
+        float xPositionA = parentA.getX() + actorA.getX() + actorA.getWidth() / 2;
+        float xPositionB = parentB.getX() + actorB.getX() + actorB.getWidth() / 2;
+
+        if (xPositionA < xPositionB) {
+            lineStartXOffset = actorA.getWidth();
+        } else {
+            lineEndXOffset = actorB.getWidth();
+        }
+
         shapeRenderer.line(
-                actorA.getParent().getX() + actorA.getX() + actorA.getWidth() / 2,
+                actorA.getParent().getX() + actorA.getX() + lineStartXOffset,
                 actorA.getParent().getY() + actorA.getHeight() / 2 + actorA.getY(),
-                actorB.getParent().getX() + actorB.getX() + actorB.getWidth() / 2,
+                actorB.getParent().getX() + actorB.getX() + lineEndXOffset,
                 actorB.getParent().getY() + actorB.getHeight() / 2 + actorB.getY());
     }
 
