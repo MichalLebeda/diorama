@@ -18,90 +18,20 @@ import cz.shroomware.diorama.engine.Identifiable;
 public class Logic {
     boolean dirty = false;
     HashMap<String, LogicallyRepresentable> registered = new HashMap<>();
-    HashMap<Identifiable, ArrayList<Event>> availableEvents = new HashMap<>();
-    HashMap<Identifiable, ArrayList<Handler>> availableHandlers = new HashMap<>();
     HashMap<Event, ArrayList<Handler>> eventToHandlersConnections = new HashMap<>();
 
     public Set<Identifiable> getAllParents() {
         Set<Identifiable> parentsSet = new HashSet<>();
-        parentsSet.addAll(availableEvents.keySet());
-        parentsSet.addAll(availableHandlers.keySet());
 
         return parentsSet;
     }
 
-    public void addEvents(Array<Event> events) {
-        if (events != null) {
-            for (Event event : events) {
-                Identifiable parent = event.getParent();
-                ArrayList<Event> parentsEvents;
-                if (!availableEvents.containsKey(event.parent)) {
-                    parentsEvents = new ArrayList<>();
-                    availableEvents.put(parent, parentsEvents);
-                } else {
-                    parentsEvents = availableEvents.get(parent);
-
-                    if (parentsEvents.contains(event)) {
-                        Gdx.app.error("Logic", "Cannot assign same event:"
-                                + event.toString()
-                                + " to parent: "
-                                + (parent.hasId() ? parent.getId() : parent.toString()));
-                        return;
-                    }
-                }
-                parentsEvents.add(event);
-            }
-        }
+    public Array<Event> getEvents(LogicallyRepresentable logicallyRepresentable) {
+        return registered.get(logicallyRepresentable).getEvents();
     }
 
-    public void addHandlers(Array<Handler> handlers) {
-        if (handlers != null) {
-            for (Handler handler : handlers) {
-                Identifiable parent = handler.getParent();
-                ArrayList<Handler> parentsHandlers;
-                if (!availableHandlers.containsKey(handler.parent)) {
-                    parentsHandlers = new ArrayList<>();
-                    availableHandlers.put(parent, parentsHandlers);
-                } else {
-                    parentsHandlers = availableHandlers.get(parent);
-
-                    if (parentsHandlers.contains(handler)) {
-                        Gdx.app.error("Logic", "Cannot assign same handler:"
-                                + handler.toString()
-                                + " to parent: "
-                                + (parent.hasId() ? parent.getId() : parent.toString()));
-                        return;
-                    }
-                }
-                parentsHandlers.add(handler);
-            }
-        }
-    }
-
-    public void removeEvents(Array<Event> events) {
-        if (events != null) {
-            for (Event event : events) {
-                availableEvents.remove(event.getParent());
-                removeAllConnectionsWithEvent(event);
-            }
-        }
-    }
-
-    public void removeHandlers(Array<Handler> handlers) {
-        if (handlers != null) {
-            for (Handler handler : handlers) {
-                availableHandlers.remove(handler.getParent());
-                removeAllConnectionsWithHandler(handler);
-            }
-        }
-    }
-
-    public ArrayList<Event> getEvents(Identifiable identifiable) {
-        return getAvailableEvents().get(identifiable);
-    }
-
-    public ArrayList<Handler> getHandlers(Identifiable identifiable) {
-        return getAvailableHandlers().get(identifiable);
+    public Array<Handler> getHandlers(LogicallyRepresentable logicallyRepresentable) {
+        return registered.get(logicallyRepresentable.getId()).getHandlers();
     }
 
     protected void removeAllConnectionsWithEvent(Event event) {
@@ -139,14 +69,6 @@ public class Logic {
                 iterator.remove();
             }
         }
-    }
-
-    public HashMap<Identifiable, ArrayList<Event>> getAvailableEvents() {
-        return availableEvents;
-    }
-
-    public HashMap<Identifiable, ArrayList<Handler>> getAvailableHandlers() {
-        return availableHandlers;
     }
 
     public void sendEvent(Event event) {
@@ -219,7 +141,8 @@ public class Logic {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("Events:\n");
-        for (ArrayList<Event> events : availableEvents.values()) {
+        for (LogicallyRepresentable logicallyRepresentable : registered.values()) {
+            Array<Event> events = logicallyRepresentable.getEvents();
             for (Event event : events) {
                 stringBuilder.append(event.toString()).append("\n");
             }
@@ -227,7 +150,8 @@ public class Logic {
         stringBuilder.append("\n");
 
         stringBuilder.append("Handlers:\n");
-        for (ArrayList<Handler> handlers : availableHandlers.values()) {
+        for (LogicallyRepresentable logicallyRepresentable : registered.values()) {
+            Array<Handler> handlers = logicallyRepresentable.getHandlers();
             for (Handler handler : handlers) {
                 stringBuilder.append(handler.toString()).append("\n");
             }
@@ -245,17 +169,22 @@ public class Logic {
     }
 
     public void register(LogicallyRepresentable object) {
-        //TODO use registered everywhere
         registered.put(object.getId(), object);
-        addEvents(object.getEvents());
-        addHandlers(object.getHandlers());
         object.onRegister(this);
     }
 
     public void unregister(LogicallyRepresentable object) {
         registered.remove(object.getId());
-        removeEvents(object.getEvents());
-        removeHandlers(object.getHandlers());
+
+        Array<Event> events = object.getEvents();
+        for (Event event : events) {
+            removeAllConnectionsWithEvent(event);
+        }
+
+        Array<Handler> handlers = object.getHandlers();
+        for (Handler handler : handlers) {
+            removeAllConnectionsWithHandler(handler);
+        }
     }
 
     public HashMap<Event, ArrayList<Handler>> getEventToHandlersConnections() {
