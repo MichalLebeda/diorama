@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.DioramaGame;
@@ -24,7 +25,8 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
         updateBackgorundColor(level);
         initCamera(level);
 
-        player = new Player(new Vector3(level.getSize() / 2.f, Y_CAMERA_DISTANCE, 0.5f),
+        Vector2 offset = new Vector2(-3, +6);
+        player = new Player(new Vector3(level.getSize() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0.5f),
                 new Quaternion().setFromAxis(Vector3.X, 90),
                 new SingleRegionPrototype(game.getEditorResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
@@ -74,9 +76,13 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if (super.keyDown(keycode)) {
+            return true;
+        }
+
         switch (keycode) {
             case Input.Keys.ESCAPE:
-                level.getGameObjects().remove(player);
+                dispose();
                 game.returnToEditor();
                 return true;
         }

@@ -41,21 +41,6 @@ public abstract class LogicBlock extends VerticalGroup {
         addActor(label);
         label.setFontScale(0.4f);
 
-        ArrayList<Event> events = logic.getEvents(identifiable);
-        if (events != null) {
-            for (Event event : events) {
-                final EventButton eventButton = new EventButton(editorResources, event);
-                eventButton.addListener(new ClickListener() {
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        onEventClicked(eventButton);
-                    }
-                });
-                eventButtonHashMap.put(event, eventButton);
-                addActor(eventButton);
-            }
-        }
-
         ArrayList<Handler> handlers = logic.getHandlers(identifiable);
         if (handlers != null) {
             for (Handler handler : handlers) {
@@ -68,6 +53,21 @@ public abstract class LogicBlock extends VerticalGroup {
                 });
                 handlerButtonHashMap.put(handler, handlerButton);
                 addActor(handlerButton);
+            }
+        }
+
+        ArrayList<Event> events = logic.getEvents(identifiable);
+        if (events != null) {
+            for (Event event : events) {
+                final EventButton eventButton = new EventButton(editorResources, event);
+                eventButton.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        onEventClicked(eventButton);
+                    }
+                });
+                eventButtonHashMap.put(event, eventButton);
+                addActor(eventButton);
             }
         }
 

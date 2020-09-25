@@ -238,6 +238,9 @@ public class EditorScreen extends BaseScreen {
 
     @Override
     public boolean keyDown(int keycode) {
+        if (super.keyDown(keycode)) {
+            return true;
+        }
         //TODO make every function working through GUI
         switch (keycode) {
             case Input.Keys.X:

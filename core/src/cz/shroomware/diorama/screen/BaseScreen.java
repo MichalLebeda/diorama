@@ -79,10 +79,6 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 
         drawWorld(delta);
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
-            boxDebug = !boxDebug;
-        }
-
         if (boxDebug) {
             dr.render(level.getWorld(), camera.combined);
         }
@@ -115,6 +111,11 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.O) {
+            boxDebug = !boxDebug;
+            return true;
+        }
+
         return false;
     }
 

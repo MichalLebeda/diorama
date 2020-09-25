@@ -187,8 +187,4 @@ public class GameObjects {
             return true;
         }
     }
-
-    public GameObject getById(String id) {
-        return idToObject.get(id);
-    }
 }

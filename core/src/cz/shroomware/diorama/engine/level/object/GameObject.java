@@ -15,7 +15,6 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.engine.Identifiable;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.logic.LogicallyRepresentable;
@@ -24,7 +23,7 @@ import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public abstract class GameObject implements Identifiable, LogicallyRepresentable {
+public abstract class GameObject implements LogicallyRepresentable {
     protected Tile tileAttachedTo;
     protected Prototype prototype;
     protected Decal decal;

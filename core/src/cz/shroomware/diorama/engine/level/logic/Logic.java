@@ -14,11 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.shroomware.diorama.engine.Identifiable;
-import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.GameObjects;
 
 public class Logic {
     boolean dirty = false;
+    HashMap<String, LogicallyRepresentable> registered = new HashMap<>();
     HashMap<Identifiable, ArrayList<Event>> availableEvents = new HashMap<>();
     HashMap<Identifiable, ArrayList<Handler>> availableHandlers = new HashMap<>();
     HashMap<Event, ArrayList<Handler>> eventToHandlersConnections = new HashMap<>();
@@ -281,6 +280,8 @@ public class Logic {
     }
 
     public void register(LogicallyRepresentable object) {
+        //TODO use registered everywhere
+        registered.put(object.getId(), object);
         addEvents(object.getEvents());
         addHandlers(object.getHandlers());
         object.onRegister(this);
@@ -295,7 +296,10 @@ public class Logic {
         return eventToHandlersConnections;
     }
 
-    public void load(BufferedReader bufferedReader, GameObjects gameObjects) throws IOException {
+    public void load(BufferedReader bufferedReader) throws IOException {
+        AndGate andGate = new AndGate("and_0");
+        register(andGate);
+
         int connectionAmount = Integer.parseInt(bufferedReader.readLine());
 
         String line;
@@ -306,7 +310,7 @@ public class Logic {
             String[] handlerParts = pair[1].split(":");
 
             //TODO: use hashmap for getEvents/handlers
-            GameObject eventObject = gameObjects.getById(eventParts[0]);
+            LogicallyRepresentable eventObject = registered.get(eventParts[0]);
             Event foundEvent = null;
             Array<Event> events = eventObject.getEvents();
             for (Event event : events) {
@@ -316,7 +320,7 @@ public class Logic {
                 }
             }
 
-            GameObject handlerObject = gameObjects.getById(handlerParts[0]);
+            LogicallyRepresentable handlerObject = registered.get(handlerParts[0]);
             Handler foundHandler = null;
             Array<Handler> handlers = handlerObject.getHandlers();
             for (Handler handler : handlers) {

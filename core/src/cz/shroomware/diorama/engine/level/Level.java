@@ -129,7 +129,8 @@ public class Level {
             try {
                 floor.load(bufferedReader, atlas);
                 gameObjects.load(bufferedReader, gameObjectPrototypes, floor, boxFactory);
-                logic.load(bufferedReader, gameObjects);
+
+                logic.load(bufferedReader);
             } catch (IOException e) {
                 e.printStackTrace();
             }

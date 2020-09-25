@@ -86,6 +86,11 @@ public class LogicGraph extends Stage {
         preferences.flush();
     }
 
+    public void cancelConnection() {
+        eventButton = null;
+        handlerButton = null;
+    }
+
     public void toggleMode() {
         if (mode == Mode.ADD) {
             mode = Mode.REMOVE;
