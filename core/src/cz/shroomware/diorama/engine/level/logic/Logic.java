@@ -150,27 +150,8 @@ public class Logic {
     }
 
     public void sendEvent(Event event) {
-        Event origEvent = availableEvents.values().iterator().next().get(0);
-        if (origEvent == event) {
-            Gdx.app.log("Logic", "ok");
-        }
-        Gdx.app.log("Logic", "Sent event: " + event.toString());
+        Gdx.app.log("Logic", "Logic recieved event: " + event.toString());
 
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Connections recapitulation:\n");
-        for (Map.Entry<Event, ArrayList<Handler>> entry : eventToHandlersConnections.entrySet()) {
-            if (event == entry.getKey()) {
-                Gdx.app.log("Logic", "event matches!");
-            }
-
-            for (Handler handler : entry.getValue()) {
-                stringBuilder.append(entry.getKey().toString()).append(" <----> ").append(handler.toString()).append("\n");
-            }
-        }
-        Gdx.app.log("Level", toString());
-
-//        if (eventToHandlersConnections.containsKey(event)) {
         ArrayList<Handler> connectedHandlers = eventToHandlersConnections.get(event);
         if (connectedHandlers != null) {
             Gdx.app.log("Logic", "Handling event: " + event.toString());
@@ -178,7 +159,8 @@ public class Logic {
                 Gdx.app.log("Logic", "Calling handler: " + handler.toString());
                 handler.handle();
             }
-
+        } else {
+            Gdx.app.log("Logic", "No handlers for event: " + event.toString());
         }
     }
 
@@ -197,7 +179,7 @@ public class Logic {
             } else {
                 connectedHandlers.add(handler);
                 dirty = true;
-                Gdx.app.error("Logic", "Added handler: "
+                Gdx.app.log("Logic", "Added handler: "
                         + handler.toString()
                         + " to already added event: "
                         + event.toString());
@@ -207,9 +189,9 @@ public class Logic {
             connectedHandlers.add(handler);
             eventToHandlersConnections.put(event, connectedHandlers);
             dirty = true;
-            Gdx.app.error("Logic", "Added handler: "
+            Gdx.app.log("Logic", "Added handler: "
                     + handler.toString()
-                    + " to not handled event: "
+                    + " to not yet handled event: "
                     + event.toString()
                     + " until now");
         }
@@ -288,6 +270,7 @@ public class Logic {
     }
 
     public void unregister(LogicallyRepresentable object) {
+        registered.remove(object.getId());
         removeEvents(object.getEvents());
         removeHandlers(object.getHandlers());
     }
@@ -298,6 +281,8 @@ public class Logic {
 
     public void load(BufferedReader bufferedReader) throws IOException {
         AndGate andGate = new AndGate("and_0");
+        register(andGate);
+        andGate = new AndGate("and_1");
         register(andGate);
 
         int connectionAmount = Integer.parseInt(bufferedReader.readLine());
@@ -341,7 +326,13 @@ public class Logic {
     }
 
     public void save(OutputStream outputStream) throws IOException {
-        outputStream.write((eventToHandlersConnections.size() + "\n").getBytes());
+        int size = 0;
+        for (ArrayList<Handler> handlers : eventToHandlersConnections.values()) {
+            for (Handler handler : handlers) {
+                size++;
+            }
+        }
+        outputStream.write((size + "\n").getBytes());
         for (Map.Entry<Event, ArrayList<Handler>> entry : eventToHandlersConnections.entrySet()) {
             ArrayList<Handler> handlers = entry.getValue();
             for (Handler handler : handlers) {

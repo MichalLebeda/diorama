@@ -14,22 +14,8 @@ public class LeftToBackgroundLabel extends BackgroundLabel {
         setX(alignLeftToX - getWidthWithPadding());
     }
 
-    public LeftToBackgroundLabel(CharSequence text, Skin skin, String styleName, ShaderProgram dfShader, float alignLeftToX) {
-        super(text, skin, styleName, dfShader);
-
-        this.alignLeftToX = alignLeftToX;
-        setX(alignLeftToX - getWidthWithPadding());
-    }
-
     public LeftToBackgroundLabel(CharSequence text, Skin skin, String fontName, Color color, ShaderProgram dfShader, float alignLeftToX) {
         super(text, skin, fontName, color, dfShader);
-
-        this.alignLeftToX = alignLeftToX;
-        setX(alignLeftToX - getWidthWithPadding());
-    }
-
-    public LeftToBackgroundLabel(CharSequence text, Skin skin, String fontName, String colorName, ShaderProgram dfShader, float alignLeftToX) {
-        super(text, skin, fontName, colorName, dfShader);
 
         this.alignLeftToX = alignLeftToX;
         setX(alignLeftToX - getWidthWithPadding());

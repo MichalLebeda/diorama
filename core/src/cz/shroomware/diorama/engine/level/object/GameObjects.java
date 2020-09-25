@@ -48,6 +48,8 @@ public class GameObjects {
     public void add(GameObject gameObject) {
         dirty = true;
         gameObjects.add(gameObject);
+
+        // Register object to logic system
         logic.register(gameObject);
     }
 
@@ -60,6 +62,7 @@ public class GameObjects {
             world.destroyBody(body);
         }
 
+        // Unregister object from logic system
         logic.unregister(gameObject);
     }
 
@@ -69,10 +72,10 @@ public class GameObjects {
 
         float minDist = Float.MAX_VALUE;
         GameObject candidate = null;
-        //test ray against every game object we have
+
+        // Test ray against every game object we have
         for (GameObject gameObject : gameObjects) {
             gameObject.sizeBoundingBox(boundingBox);
-            //TODO: IF DECAL WAS ROTATED BY NON MULTIPLE OF 90, PASSED POSITION WILL FAIL COS BOUNDS WILL BE NON PLANAR
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
                 if (gameObject.isPixelOpaque(intersection.cpy())) {
                     float currentObjectDist = cameraPos.cpy().add(intersection.cpy().scl(-1)).len();

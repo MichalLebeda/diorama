@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -96,7 +97,7 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
     @Override
     public void hide() {
-        graph.savePositions();
+        graph.save();
         dispose();
     }
 
@@ -108,16 +109,11 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
         graph.act();
         graph.draw();
-
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.rect(camera.viewportWidth - 40, 0, 40, 40);
-        shapeRenderer.end();
     }
 
     @Override
     public void resize(int width, int height) {
-        graph.getViewport().update(width, height, false);
+        graph.getViewport().update(width, height);
         camera.setToOrtho(true, width, height);
     }
 
@@ -146,6 +142,14 @@ public class LogicEditorScreen implements Screen, InputProcessor {
             case Input.Keys.TAB:
                 graph.toggleMode();
                 return true;
+            case Input.Keys.SPACE:
+                Camera camera = graph.getCamera();
+                camera.position.set(0, 0, 0);
+                camera.update();
+                return true;
+            case Input.Keys.N:
+                graph.centerByMax();
+                return true;
         }
         return false;
     }
@@ -172,9 +176,8 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        OrthographicCamera camera = (OrthographicCamera) graph.getCamera();
-        camera.translate(-Gdx.input.getDeltaX() * camera.zoom, Gdx.input.getDeltaY() * camera.zoom);
-        return false;
+        graph.move(Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
+        return true;
     }
 
     @Override
@@ -184,9 +187,7 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
-        OrthographicCamera camera = (OrthographicCamera) graph.getCamera();
-        camera.zoom += 0.1f * amount;
-        camera.update();
+        graph.zoom(amount);
         return true;
     }
 }

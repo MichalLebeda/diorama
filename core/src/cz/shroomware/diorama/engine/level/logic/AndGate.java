@@ -10,7 +10,8 @@ public class AndGate implements LogicallyRepresentable, Identifiable {
 
     Event outputTrue;
     Event outputFalse;
-    Array<Handler> handlers = new Array<>();
+    Array<Handler> handlers = new Array<>(Handler.class);
+    Array<Event> events = new Array<>(Event.class);
 
     boolean aValue = false;
     boolean bValue = false;
@@ -47,8 +48,10 @@ public class AndGate implements LogicallyRepresentable, Identifiable {
             }
         });
 
-        outputFalse = new Event(this, "output_false");
         outputTrue = new Event(this, "output_true");
+        outputFalse = new Event(this, "output_false");
+        events.add(outputTrue);
+        events.add(outputFalse);
     }
 
     private void eval() {
@@ -61,10 +64,6 @@ public class AndGate implements LogicallyRepresentable, Identifiable {
 
     @Override
     public Array<Event> getEvents() {
-        Array<Event> events = new Array<>();
-        events.add(outputTrue);
-        events.add(outputFalse);
-
         return events;
     }
 

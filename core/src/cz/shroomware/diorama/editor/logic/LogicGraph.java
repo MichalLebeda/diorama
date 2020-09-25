@@ -3,7 +3,9 @@ package cz.shroomware.diorama.editor.logic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -40,6 +42,12 @@ public class LogicGraph extends Stage {
 
         preferences = Gdx.app.getPreferences(levelName);
 
+        OrthographicCamera camera = (OrthographicCamera) getCamera();
+        camera.position.x = preferences.getFloat("camera.x", 0);
+        camera.position.y = preferences.getFloat("camera.y", 0);
+        camera.zoom = preferences.getFloat("camera.zoom", 1);
+        camera.update();
+
         Set<Identifiable> parentsSet = logic.getAllParents();
         for (Identifiable identifiable : parentsSet) {
             LogicBlock block = new LogicBlock(logic, identifiable, editorResources) {
@@ -70,17 +78,6 @@ public class LogicGraph extends Stage {
             eventButtonHashMap.putAll(block.getEventButtonHashMap());
             handlerButtonHashMap.putAll(block.getHandlerButtonHashMap());
             addActor(block);
-        }
-
-        preferences.flush();
-    }
-
-    public void savePositions() {
-        for (Map.Entry<Identifiable, LogicBlock> entry : blocks.entrySet()) {
-            Identifiable identifiable = entry.getKey();
-            LogicBlock logicBlock = entry.getValue();
-            preferences.putFloat(identifiable.getId() + ".x", logicBlock.getX());
-            preferences.putFloat(identifiable.getId() + ".y", logicBlock.getY());
         }
 
         preferences.flush();
@@ -128,34 +125,48 @@ public class LogicGraph extends Stage {
         drawLines();
     }
 
+    public void save() {
+        preferences.putFloat("camera.x", getCamera().position.x);
+        preferences.putFloat("camera.y", getCamera().position.y);
+        preferences.putFloat("camera.zoom", ((OrthographicCamera) getCamera()).zoom);
+
+        for (Map.Entry<Identifiable, LogicBlock> entry : blocks.entrySet()) {
+            Identifiable identifiable = entry.getKey();
+            LogicBlock logicBlock = entry.getValue();
+            preferences.putFloat(identifiable.getId() + ".x", logicBlock.getX());
+            preferences.putFloat(identifiable.getId() + ".y", logicBlock.getY());
+        }
+
+        preferences.flush();
+    }
+
     private void drawLine(EventButton actorA, HandlerButton actorB) {
         Gdx.gl20.glLineWidth(3);
         float lineStartXOffset = 0;
         float lineEndXOffset = 0;
 
-        Actor parentA = actorA.getParent();
-        Actor parentB = actorB.getParent();
+        Vector2 aPosition = new Vector2(0, 0);
+        Vector2 bPosition = new Vector2(0, 0);
 
-        float xPositionA = parentA.getX() + actorA.getX() + actorA.getWidth() / 2;
-        float xPositionB = parentB.getX() + actorB.getX() + actorB.getWidth() / 2;
+        aPosition = actorA.localToStageCoordinates(aPosition);
+        bPosition = actorB.localToStageCoordinates(bPosition);
 
-        if (xPositionA < xPositionB) {
-            lineStartXOffset = actorA.getWidth();
-        } else {
-            lineEndXOffset = actorB.getWidth();
-        }
+        aPosition.add(actorA.getWidth(), actorA.getHeight() / 2);
+        bPosition.add(0, actorB.getHeight() / 2);
 
         shapeRenderer.line(
-                actorA.getParent().getX() + actorA.getX() + lineStartXOffset,
-                actorA.getParent().getY() + actorA.getHeight() / 2 + actorA.getY(),
-                actorB.getParent().getX() + actorB.getX() + lineEndXOffset,
-                actorB.getParent().getY() + actorB.getHeight() / 2 + actorB.getY());
+                aPosition.x + lineStartXOffset,
+                aPosition.y,
+                bPosition.x + lineEndXOffset,
+                bPosition.y);
     }
 
     private void drawLines() {
         shapeRenderer.setProjectionMatrix(getCamera().combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
+
+        shapeRenderer.circle(0, 0, 10);
 
         Set<Map.Entry<Event, ArrayList<Handler>>> eventToHandlersConnectionsSet = logic.getEventToHandlersConnections().entrySet();
         for (Map.Entry<Event, ArrayList<Handler>> entry : eventToHandlersConnectionsSet) {
@@ -195,6 +206,77 @@ public class LogicGraph extends Stage {
                     cursorPos.y);
         }
         shapeRenderer.end();
+    }
+
+    public void centerByAverage() {
+        Vector2 averagePos = new Vector2();
+
+        for (LogicBlock block : blocks.values()) {
+            averagePos.add(block.getX(), block.getY());
+        }
+
+        averagePos.scl(1f / blocks.size());
+
+        for (LogicBlock block : blocks.values()) {
+            block.setPosition(block.getX() - averagePos.x + getViewport().getWorldWidth() / 2,
+                    block.getY() - averagePos.y + getViewport().getWorldHeight() / 2);
+        }
+    }
+
+    public void centerByMax() {
+        if (blocks.isEmpty()) {
+            return;
+        }
+
+        Actor leftmost = null,
+                rightmost = null,
+                top = null,
+                bottom = null;
+
+        for (LogicBlock block : blocks.values()) {
+            if (leftmost == null || block.getX() < leftmost.getX()) {
+                leftmost = block;
+            }
+            if (rightmost == null || block.getX() + block.getWidth() > rightmost.getX() + rightmost.getWidth()) {
+                rightmost = block;
+            }
+            if (top == null || block.getY() + block.getHeight() > top.getY() + top.getHeight()) {
+                top = block;
+            }
+            if (bottom == null || block.getY() < bottom.getY()) {
+                bottom = block;
+            }
+        }
+
+        Vector2 size = new Vector2();
+        Vector2 position = new Vector2();
+
+        size.set(
+                (rightmost.getX() - leftmost.getX() + rightmost.getWidth()),
+                (top.getY() - bottom.getY() + top.getHeight()));
+
+        position.set(leftmost.getX(), bottom.getY());
+
+        for (LogicBlock block : blocks.values()) {
+            block.setPosition(-position.x + block.getX() - size.x / 2,
+                    -position.y + block.getY() - size.y / 2);
+        }
+    }
+
+    public void move(int amountX, int amountY) {
+        OrthographicCamera camera = (OrthographicCamera) getCamera();
+        camera.translate(-amountX * camera.zoom, amountY * camera.zoom);
+    }
+
+    public void zoom(int amount) {
+        OrthographicCamera camera = (OrthographicCamera) getCamera();
+        camera.zoom += 0.1f * amount;
+        if (camera.zoom < 1) {
+            camera.zoom = 1;
+        } else if (camera.zoom > 5) {
+            camera.zoom = 5;
+        }
+        camera.update();
     }
 
     enum Mode {ADD, REMOVE}

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
@@ -41,6 +42,9 @@ public abstract class LogicBlock extends VerticalGroup {
         addActor(label);
         label.setFontScale(0.4f);
 
+        HorizontalGroup horizontalGroup = new HorizontalGroup();
+
+        VerticalGroup verticalGroup = new VerticalGroup();
         ArrayList<Handler> handlers = logic.getHandlers(identifiable);
         if (handlers != null) {
             for (Handler handler : handlers) {
@@ -52,10 +56,13 @@ public abstract class LogicBlock extends VerticalGroup {
                     }
                 });
                 handlerButtonHashMap.put(handler, handlerButton);
-                addActor(handlerButton);
+                verticalGroup.addActor(handlerButton);
             }
         }
+//        verticalGroup.wrap();
+        horizontalGroup.addActor(verticalGroup);
 
+        verticalGroup = new VerticalGroup();
         ArrayList<Event> events = logic.getEvents(identifiable);
         if (events != null) {
             for (Event event : events) {
@@ -67,9 +74,14 @@ public abstract class LogicBlock extends VerticalGroup {
                     }
                 });
                 eventButtonHashMap.put(event, eventButton);
-                addActor(eventButton);
+                verticalGroup.addActor(eventButton);
             }
         }
+//        verticalGroup.wrap();
+        horizontalGroup.addActor(verticalGroup);
+
+//        horizontalGroup.wrap();
+        addActor(horizontalGroup);
 
         pack();
         layout();
