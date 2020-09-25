@@ -244,23 +244,6 @@ public class Logic {
         return stringBuilder.toString();
     }
 
-    //TODO: REMOVE
-    public void testConnect() {
-        for (ArrayList<Event> events : availableEvents.values()) {
-            for (Event event : events) {
-                for (ArrayList<Handler> handlers : availableHandlers.values()) {
-                    for (Handler handler : handlers) {
-                        if (event.getEventName().contains("pressed") && handler.getHandlerName().contains("open")) {
-//                            connect(event, handler);
-                        } else if (event.getEventName().contains("released") && handler.getHandlerName().contains("close")) {
-//                            connect(event, handler);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     public void register(LogicallyRepresentable object) {
         //TODO use registered everywhere
         registered.put(object.getId(), object);

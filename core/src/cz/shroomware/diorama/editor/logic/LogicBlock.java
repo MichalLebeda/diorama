@@ -15,28 +15,28 @@ import java.util.HashMap;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorResources;
-import cz.shroomware.diorama.engine.Identifiable;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.Logic;
+import cz.shroomware.diorama.engine.level.logic.LogicallyRepresentable;
 import cz.shroomware.diorama.ui.DFLabel;
 
 public abstract class LogicBlock extends VerticalGroup {
-    protected Identifiable identifiable;
+    protected LogicallyRepresentable logicallyRepresentable;
     protected Vector2 relativeDragPos = new Vector2();
     protected Drawable background;
 
     HashMap<Handler, HandlerButton> handlerButtonHashMap = new HashMap<>();
     HashMap<Event, EventButton> eventButtonHashMap = new HashMap<>();
 
-    public LogicBlock(Logic logic, Identifiable identifiable, EditorResources editorResources) {
-        this.identifiable = identifiable;
+    public LogicBlock(Logic logic, LogicallyRepresentable logicallyRepresentable, EditorResources editorResources) {
+        this.logicallyRepresentable = logicallyRepresentable;
 
         setTouchable(Touchable.enabled);
         pad(15);
-        space(15);
+        space(10);
 
-        DFLabel label = new DFLabel(identifiable.hasId() ? identifiable.getId() : identifiable.toString(),
+        DFLabel label = new DFLabel(logicallyRepresentable.hasId() ? logicallyRepresentable.getId() : logicallyRepresentable.toString(),
                 editorResources.getSkin(),
                 editorResources.getDfShader());
         addActor(label);
@@ -45,7 +45,7 @@ public abstract class LogicBlock extends VerticalGroup {
         HorizontalGroup horizontalGroup = new HorizontalGroup();
 
         VerticalGroup verticalGroup = new VerticalGroup();
-        ArrayList<Handler> handlers = logic.getHandlers(identifiable);
+        ArrayList<Handler> handlers = logic.getHandlers(logicallyRepresentable);
         if (handlers != null) {
             for (Handler handler : handlers) {
                 final HandlerButton handlerButton = new HandlerButton(editorResources, handler);
@@ -63,7 +63,7 @@ public abstract class LogicBlock extends VerticalGroup {
         horizontalGroup.addActor(verticalGroup);
 
         verticalGroup = new VerticalGroup();
-        ArrayList<Event> events = logic.getEvents(identifiable);
+        ArrayList<Event> events = logic.getEvents(logicallyRepresentable);
         if (events != null) {
             for (Event event : events) {
                 final EventButton eventButton = new EventButton(editorResources, event);

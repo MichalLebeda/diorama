@@ -1,12 +1,10 @@
 package cz.shroomware.diorama.engine.level.logic;
 
-import cz.shroomware.diorama.engine.Identifiable;
-
 public abstract class Handler {
-    Identifiable parent;
+    LogicallyRepresentable parent;
     String name;
 
-    public Handler(Identifiable parent, String name) {
+    public Handler(LogicallyRepresentable parent, String name) {
         this.parent = parent;
         this.name = name;
     }
@@ -15,7 +13,7 @@ public abstract class Handler {
         return name;
     }
 
-    public Identifiable getParent() {
+    public LogicallyRepresentable getParent() {
         return parent;
     }
 

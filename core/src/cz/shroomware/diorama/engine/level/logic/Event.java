@@ -1,12 +1,10 @@
 package cz.shroomware.diorama.engine.level.logic;
 
-import cz.shroomware.diorama.engine.Identifiable;
-
 public class Event {
-    Identifiable parent;
+    LogicallyRepresentable parent;
     String name;
 
-    public Event(Identifiable parent, String name) {
+    public Event(LogicallyRepresentable parent, String name) {
         this.parent = parent;
         this.name = name;
     }
@@ -15,7 +13,7 @@ public class Event {
         return name;
     }
 
-    public Identifiable getParent() {
+    public LogicallyRepresentable getParent() {
         return parent;
     }
 
