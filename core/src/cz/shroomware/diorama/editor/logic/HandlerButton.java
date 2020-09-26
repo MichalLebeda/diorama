@@ -9,10 +9,10 @@ import cz.shroomware.diorama.ui.DFButton;
 public class HandlerButton extends DFButton {
     protected Handler handler;
 
-    public HandlerButton(EditorResources resources, Handler handler) {
+    public HandlerButton(EditorResources resources, Handler handler, Color color) {
         super(resources, handler.getHandlerName());
         this.handler = handler;
-        label.setColor(new Color(0.4f, 1, 0.4f, 1));
+        label.setColor(color);
     }
 
     public Handler getHandler() {

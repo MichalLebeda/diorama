@@ -9,10 +9,10 @@ import cz.shroomware.diorama.ui.DFButton;
 public class EventButton extends DFButton {
     protected Event event;
 
-    public EventButton(EditorResources resources, Event event) {
+    public EventButton(EditorResources resources, Event event, Color color) {
         super(resources, event.getEventName());
         this.event = event;
-        label.setColor(new Color(1, 0.4f, 0.4f, 1));
+        label.setColor(color);
     }
 
     public Event getEvent() {

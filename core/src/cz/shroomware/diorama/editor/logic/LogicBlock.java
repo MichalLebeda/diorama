@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.editor.logic;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -9,15 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
-import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.logic.LogicallyRepresentable;
 import cz.shroomware.diorama.ui.DFLabel;
 
@@ -29,7 +29,10 @@ public abstract class LogicBlock extends VerticalGroup {
     HashMap<Handler, HandlerButton> handlerButtonHashMap = new HashMap<>();
     HashMap<Event, EventButton> eventButtonHashMap = new HashMap<>();
 
-    public LogicBlock(Logic logic, LogicallyRepresentable logicallyRepresentable, EditorResources editorResources) {
+    public LogicBlock(LogicallyRepresentable logicallyRepresentable,
+                      EditorResources editorResources,
+                      Color eventColor,
+                      Color handlerColor) {
         this.logicallyRepresentable = logicallyRepresentable;
 
         setTouchable(Touchable.enabled);
@@ -45,42 +48,64 @@ public abstract class LogicBlock extends VerticalGroup {
         HorizontalGroup horizontalGroup = new HorizontalGroup();
 
         VerticalGroup verticalGroup = new VerticalGroup();
-        ArrayList<Handler> handlers = logic.getHandlers(logicallyRepresentable);
+        Array<Handler> handlers = logicallyRepresentable.getHandlers();
         if (handlers != null) {
             for (Handler handler : handlers) {
-                final HandlerButton handlerButton = new HandlerButton(editorResources, handler);
+                final HandlerButton handlerButton = new HandlerButton(editorResources, handler, handlerColor);
                 handlerButton.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         onHandlerClicked(handlerButton);
                     }
                 });
+                handlerButton.addListener(new DragListener() {
+                    @Override
+                    public void dragStart(InputEvent event, float x, float y, int pointer) {
+                        onButtonDragStart();
+                    }
+
+                    @Override
+                    public void dragStop(InputEvent event, float x, float y, int pointer) {
+                        event.cancel();
+                        onButtonDragStart();
+                    }
+                });
                 handlerButtonHashMap.put(handler, handlerButton);
                 verticalGroup.addActor(handlerButton);
             }
         }
-//        verticalGroup.wrap();
+
         horizontalGroup.addActor(verticalGroup);
 
         verticalGroup = new VerticalGroup();
-        ArrayList<Event> events = logic.getEvents(logicallyRepresentable);
+        Array<Event> events = logicallyRepresentable.getEvents();
         if (events != null) {
             for (Event event : events) {
-                final EventButton eventButton = new EventButton(editorResources, event);
+                final EventButton eventButton = new EventButton(editorResources, event, eventColor);
                 eventButton.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         onEventClicked(eventButton);
                     }
                 });
+                eventButton.addListener(new DragListener() {
+                    @Override
+                    public void dragStart(InputEvent event, float x, float y, int pointer) {
+                        onButtonDragStart();
+                    }
+
+                    @Override
+                    public void dragStop(InputEvent event, float x, float y, int pointer) {
+                        event.cancel();
+                        onButtonDragStart();
+                    }
+                });
                 eventButtonHashMap.put(event, eventButton);
                 verticalGroup.addActor(eventButton);
             }
         }
-//        verticalGroup.wrap();
         horizontalGroup.addActor(verticalGroup);
 
-//        horizontalGroup.wrap();
         addActor(horizontalGroup);
 
         pack();
@@ -90,6 +115,7 @@ public abstract class LogicBlock extends VerticalGroup {
             @Override
             public void dragStart(InputEvent event, float x, float y, int pointer) {
                 relativeDragPos.set(event.getStageX() - getX(), event.getStageY() - getY());
+                onButtonDragStart();
             }
 
             @Override
@@ -119,4 +145,6 @@ public abstract class LogicBlock extends VerticalGroup {
     public abstract void onEventClicked(EventButton button);
 
     public abstract void onHandlerClicked(HandlerButton button);
+
+    public abstract void onButtonDragStart();
 }

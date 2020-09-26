@@ -7,31 +7,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-
-import cz.shroomware.diorama.engine.Identifiable;
 
 public class Logic {
     boolean dirty = false;
     HashMap<String, LogicallyRepresentable> registered = new HashMap<>();
     HashMap<Event, ArrayList<Handler>> eventToHandlersConnections = new HashMap<>();
 
-    public Set<Identifiable> getAllParents() {
-        Set<Identifiable> parentsSet = new HashSet<>();
-
-        return parentsSet;
-    }
-
-    public Array<Event> getEvents(LogicallyRepresentable logicallyRepresentable) {
-        return registered.get(logicallyRepresentable).getEvents();
-    }
-
-    public Array<Handler> getHandlers(LogicallyRepresentable logicallyRepresentable) {
-        return registered.get(logicallyRepresentable.getId()).getHandlers();
+    public Collection<LogicallyRepresentable> getAllParents() {
+        return registered.values();
     }
 
     protected void removeAllConnectionsWithEvent(Event event) {
@@ -119,7 +106,6 @@ public class Logic {
         }
     }
 
-
     public void disconnect(Event event, Handler handler) {
         ArrayList<Handler> connectedHandlers = eventToHandlersConnections.get(event);
         if (connectedHandlers == null) {
@@ -128,12 +114,12 @@ public class Logic {
         }
         connectedHandlers.remove(handler);
         dirty = true;
-        Gdx.app.error("Logic", "Removed connection between: "
+        Gdx.app.log("Logic", "Removed connection between: "
                 + event.toString()
                 + " and: "
                 + handler.toString());
         if (connectedHandlers.isEmpty()) {
-            Gdx.app.error("Logic", "Event: " + event.toString() + " has no connections, conn. record removed");
+            Gdx.app.log("Logic", "Event: " + event.toString() + " has no connections, conn. record removed");
             eventToHandlersConnections.remove(event);
         }
     }
