@@ -17,7 +17,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
-import cz.shroomware.diorama.engine.level.logic.LogicComponent;
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
@@ -245,7 +245,7 @@ public abstract class GameObject implements LogicComponent {
 
     @Override
     public boolean hasId() {
-        return id != null;
+        return id != null && !id.equals("");
     }
 
     @Override

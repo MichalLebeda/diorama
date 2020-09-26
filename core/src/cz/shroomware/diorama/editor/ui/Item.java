@@ -16,7 +16,7 @@ import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.ui.DFLabel;
 
 public class Item extends HorizontalGroup {
-    static final int ITEM_SIZE = 100;
+    static final int IMAGE_SIZE = 100;
     Prototype prototype;
 
     public Item(Skin skin, ShaderProgram dfShader, final Editor editor, final Prototype prototype) {
@@ -30,15 +30,15 @@ public class Item extends HorizontalGroup {
         TextureRegion iconRegion = prototype.getIconRegion();
         Image image = new Image(iconRegion);
 
-        image.setSize(ITEM_SIZE, ITEM_SIZE);
+        image.setSize(IMAGE_SIZE, IMAGE_SIZE);
 
         Drawable drawable = image.getDrawable();
         if (iconRegion.getRegionWidth() > iconRegion.getRegionHeight()) {
-            drawable.setMinWidth(ITEM_SIZE);
-            drawable.setMinHeight((float) iconRegion.getRegionHeight() / (float) iconRegion.getRegionWidth() * ITEM_SIZE);
+            drawable.setMinWidth(IMAGE_SIZE);
+            drawable.setMinHeight((float) iconRegion.getRegionHeight() / (float) iconRegion.getRegionWidth() * IMAGE_SIZE);
         } else {
-            drawable.setMinHeight(ITEM_SIZE);
-            drawable.setMinWidth((float) iconRegion.getRegionWidth() / (float) prototype.getIconRegion().getRegionHeight() * ITEM_SIZE);
+            drawable.setMinHeight(IMAGE_SIZE);
+            drawable.setMinWidth((float) iconRegion.getRegionWidth() / (float) prototype.getIconRegion().getRegionHeight() * IMAGE_SIZE);
 
 //            padLeft((drawable.getMinHeight() - drawable.getMinWidth()) / 2);
             padRight((drawable.getMinHeight() - drawable.getMinWidth()) / 2);

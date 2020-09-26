@@ -1,10 +1,12 @@
 package cz.shroomware.diorama.engine.level.logic;
 
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
+
 public class Event {
-    LogicComponent parent;
+    cz.shroomware.diorama.engine.level.logic.component.LogicComponent parent;
     String name;
 
-    public Event(LogicComponent parent, String name) {
+    public Event(cz.shroomware.diorama.engine.level.logic.component.LogicComponent parent, String name) {
         this.parent = parent;
         this.name = name;
     }

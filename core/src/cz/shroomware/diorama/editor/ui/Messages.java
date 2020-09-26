@@ -24,7 +24,7 @@ public class Messages extends VerticalGroup {
     }
 
     public void showMessage(String text) {
-        BackgroundLabel message = new BackgroundLabel(text, resources.getSkin(), resources.getDfShader());
+        BackgroundLabel message = new BackgroundLabel(resources.getSkin(), resources.getDfShader(), text);
         message.setAlignment(Align.left);
         message.setFontScale(0.3f);
         Container<BackgroundLabel> container=new Container<>(message);

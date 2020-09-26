@@ -23,6 +23,7 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
 
     public PlayLevelScreen(EngineGame game, Prototypes prototypes, String filename) {
         super(game.getResources());
+        this.game = game;
         this.level = new Level(filename, prototypes, game.getResources());
         updatebackgorundcolor(level);
         initCamera(level);

@@ -14,20 +14,22 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.Collection;
+
 import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.ui.Messages;
-import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.GameObjects;
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
+import cz.shroomware.diorama.engine.level.logic.prototype.PureLogicComponentPrototype;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.LeftToBackgroundLabel;
-import cz.shroomware.diorama.ui.NameDialog;
 
-public class LogicHud extends Stage {
+public abstract class LogicHud extends Stage {
     LogicSelectedModeIndicator logicSelectedModeIndicator;
+    LogicEditor logicEditor;
     ScrollPane scrollPane;
     EditorEngineGame game;
-    EditorResources resources;
+    EditorResources editorResources;
     LeftToBackgroundLabel projectNameLabel;
     BackgroundLabel unsavedChangesLabel;
     Messages messages;
@@ -36,7 +38,8 @@ public class LogicHud extends Stage {
     public LogicHud(final EditorEngineGame game, LogicEditor logicEditor) {
         super();
         this.game = game;
-        resources = game.getResources();
+        this.logicEditor = logicEditor;
+        editorResources = game.getResources();
 
 //        setDebugAll(true);
 
@@ -48,15 +51,19 @@ public class LogicHud extends Stage {
         itemGroup.columnAlign(Align.right);
         itemGroup.pad(10);
         itemGroup.space(10);
-//        for (int i = 0; i < prototypes.getSize(); i++) {
-//            Prototype prototype = prototypes.getGameObjectPrototype(i);
-//            itemGroup.addActor(new Item(game.getEditorResources(), logicEditor, prototype) {
-//                @Override
-//                public float getPrefWidth() {
-//                    return 260;
-//                }
-//            });
-//        }
+        Collection<PureLogicComponentPrototype> prototypes = logicEditor.getLogic().getNameToPureLogicPrototypes().values();
+        for (PureLogicComponentPrototype prototype : prototypes) {
+            final PureLogicItem item = new PureLogicItem(editorResources, prototype);
+            item.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+
+                    LogicComponent component = LogicHud.this.logicEditor.getLogic().createPureLogicComponent(item.getPrototype());
+                    onComponentAdded(component);
+                }
+            });
+            itemGroup.addActor(item);
+        }
 
         scrollPane = new ScrollPane(itemGroup, game.getResources().getSkin());
         scrollPane.pack();
@@ -65,41 +72,27 @@ public class LogicHud extends Stage {
         logicSelectedModeIndicator = new LogicSelectedModeIndicator(logicEditor, game.getResources().getSkin());
         addActor(logicSelectedModeIndicator);
 
-        messages = new Messages(resources);
+        messages = new Messages(editorResources);
         messages.setWidth(400);
         addActor(messages);
 
         projectNameLabel = new LeftToBackgroundLabel(
                 logicEditor.levelName,
-                resources.getSkin(),
-                resources.getDfShader(),
+                editorResources.getSkin(),
+                editorResources.getDfShader(),
                 logicSelectedModeIndicator.getX() - 10);
         projectNameLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.openSelection();
+                game.returnToEditor();
             }
         });
         projectNameLabel.setTouchable(Touchable.enabled);
         addActor(projectNameLabel);
 
-        unsavedChangesLabel = new BackgroundLabel(" . ", resources.getSkin(), resources.getDfShader());
+        unsavedChangesLabel = new BackgroundLabel(editorResources.getSkin(), editorResources.getDfShader(), " . ");
         unsavedChangesLabel.setVisible(false);
         addActor(unsavedChangesLabel);
-
-//        colorIndicator = new Image(game.getEditorResources().getUiAtlas().findRegion("white")) {
-//            @Override
-//            public float getMinHeight() {
-//                return 100;
-//            }
-//
-//            @Override
-//            public float getMaxHeight() {
-//                return 100;
-//            }
-//        };
-//        colorIndicator.setSize(100, 100);
-//        addActor(colorIndicator);
     }
 
     public void setDirty(boolean dirty) {
@@ -187,22 +180,7 @@ public class LogicHud extends Stage {
 
         logicSelectedModeIndicator.setPosition(
                 scrollPane.getX() - logicSelectedModeIndicator.getWidth() - 10,
-                scrollPane.getY());
-    }
-
-    public void openIdAssignDialog(final GameObjects gameObjects, final GameObject gameObject) {
-        NameDialog nameDialog = new NameDialog(resources.getSkin(),
-                resources.getDfShader(),
-                "Set Object Tag:",
-                gameObject.hasId() ? gameObject.getId() : "") {
-            @Override
-            public void onAccepted(String name) {
-                gameObjects.assignId(gameObject, name);
-                Gdx.app.error("Hud", "assigned id " + gameObject.toString());
-            }
-        };
-
-        nameDialog.show(this);
+                getHeight() - logicSelectedModeIndicator.getHeight() - 10);
     }
 
     public void setScrollFocus(boolean focus) {
@@ -212,4 +190,6 @@ public class LogicHud extends Stage {
             setScrollFocus(null);
         }
     }
+
+    public abstract void onComponentAdded(LogicComponent component);
 }

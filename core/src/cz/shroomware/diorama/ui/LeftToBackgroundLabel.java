@@ -7,7 +7,7 @@ public class LeftToBackgroundLabel extends BackgroundLabel {
     float alignLeftToX;
 
     public LeftToBackgroundLabel(CharSequence text, Skin skin, ShaderProgram dfShader, float alignLeftToX) {
-        super(text, skin, dfShader);
+        super(skin, dfShader, text);
 
         this.alignLeftToX = alignLeftToX;
         setX(alignLeftToX - getWidthWithPadding());

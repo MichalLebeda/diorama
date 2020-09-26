@@ -17,27 +17,43 @@ import com.badlogic.gdx.math.Vector2;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.ui.logic.LogicEditor;
 import cz.shroomware.diorama.editor.ui.logic.LogicGraph;
+import cz.shroomware.diorama.editor.ui.logic.LogicHud;
 import cz.shroomware.diorama.engine.level.logic.Logic;
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 
 public class LogicEditorScreen implements Screen, InputProcessor {
+    EditorEngineGame game;
     //TODO make ProjectSelScreeen from same parent
     LogicEditor logicEditor;
-    InputMultiplexer inputMultiplexer;
-    Color backgroundColor = new Color(0x424242ff);
-    EditorEngineGame game;
     LogicGraph graph;
+    LogicHud hud;
+
+    Color backgroundColor = new Color(0x424242ff);
     ShapeRenderer shapeRenderer;
     SpriteBatch spriteBatch;
     OrthographicCamera camera;
+    InputMultiplexer inputMultiplexer;
 
     public LogicEditorScreen(EditorEngineGame game, String levelName, Logic logic) {
         this.game = game;
 
         logicEditor = new LogicEditor(logic, levelName);
-        spriteBatch = new SpriteBatch();
+
         shapeRenderer = new ShapeRenderer();
         graph = new LogicGraph(logicEditor, game.getResources(), shapeRenderer);
+
+        hud = new LogicHud(game, logicEditor) {
+            @Override
+            public void onComponentAdded(LogicComponent component) {
+                graph.update(true);
+                graph.setPosToCamera(component);
+            }
+        };
+
+
+        spriteBatch = new SpriteBatch();
         inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(hud);
         inputMultiplexer.addProcessor(graph);
         inputMultiplexer.addProcessor(this);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -110,11 +126,15 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
         graph.act();
         graph.draw();
+
+        hud.act();
+        hud.draw();
     }
 
     @Override
     public void resize(int width, int height) {
         graph.getViewport().update(width, height);
+        hud.resize(width, height);
         camera.setToOrtho(true, width, height);
     }
 
@@ -138,10 +158,14 @@ public class LogicEditorScreen implements Screen, InputProcessor {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case Input.Keys.ESCAPE:
-                game.returnToEditor();
+                graph.cancelConnection();
                 return true;
             case Input.Keys.TAB:
-                graph.toggleMode();
+                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    logicEditor.setPrevMode();
+                } else {
+                    logicEditor.setNextMode();
+                }
                 return true;
             case Input.Keys.SPACE:
                 Camera camera = graph.getCamera();

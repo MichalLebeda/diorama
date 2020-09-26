@@ -91,7 +91,7 @@ public class Hud extends Stage {
         projectNameLabel.setTouchable(Touchable.enabled);
         addActor(projectNameLabel);
 
-        unsavedChangesLabel = new BackgroundLabel(" . ", resources.getSkin(), resources.getDfShader());
+        unsavedChangesLabel = new BackgroundLabel(resources.getSkin(), resources.getDfShader(), " . ");
         unsavedChangesLabel.setVisible(false);
         addActor(unsavedChangesLabel);
 
@@ -206,8 +206,7 @@ public class Hud extends Stage {
                 gameObject.hasId() ? gameObject.getId() : "") {
             @Override
             public void onAccepted(String name) {
-                gameObjects.assignId(gameObject, name);
-                Gdx.app.error("Hud", "assigned id " + gameObject.toString());
+                gameObjects.assignId(gameObject, name, messages);
             }
         };
 

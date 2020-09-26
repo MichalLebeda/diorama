@@ -1,15 +1,14 @@
-package cz.shroomware.diorama.engine.level.logic.gate;
+package cz.shroomware.diorama.engine.level.logic.component;
 
 import com.badlogic.gdx.utils.Array;
 
-import cz.shroomware.diorama.engine.Identifiable;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.engine.level.logic.LogicComponent;
+import cz.shroomware.diorama.engine.level.logic.prototype.PureLogicComponentPrototype;
 
-public class AndGate implements LogicComponent, Identifiable {
-    Logic logic;
+public class AndGate extends PureLogicComponent {
+    Logic logic = null;
     String id;
 
     Event outputTrue;
@@ -20,7 +19,8 @@ public class AndGate implements LogicComponent, Identifiable {
     boolean aValue = false;
     boolean bValue = false;
 
-    public AndGate(String id) {
+    public AndGate(PureLogicComponentPrototype prototype, String id) {
+        super(prototype, id);
         this.id = id;
 
         handlers.add(new Handler(this, "set_a_true") {

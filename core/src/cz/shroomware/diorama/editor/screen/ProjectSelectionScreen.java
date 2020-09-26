@@ -54,9 +54,8 @@ public class ProjectSelectionScreen implements Screen {
         scrollPane = new ScrollPane(verticalGroup);
         stage.addActor(scrollPane);
         createFileLabel = new BackgroundLabel(
-                "New File",
-                resources.getSkin(),
-                resources.getDfShader());
+                resources.getSkin(), resources.getDfShader(), "New File"
+        );
 
         createFileLabel.addListener(new ClickListener() {
             @Override
@@ -106,7 +105,7 @@ public class ProjectSelectionScreen implements Screen {
                     game.openEditor(fileHandle.name());
                 }
             });
-            final Button button = new Button(resources.getSkin()) {
+            Button button = new Button(resources.getSkin()) {
                 @Override
                 public void draw(Batch batch, float parentAlpha) {
                     super.draw(batch, parentAlpha);

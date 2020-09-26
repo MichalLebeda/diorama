@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import cz.shroomware.diorama.engine.level.Resources;
 
@@ -13,11 +15,16 @@ public class EditorResources extends Resources {
     protected TextureRegion darkBackgroundRegion;
     protected TextureRegion cursorRegion;
     protected ShaderProgram dfShader;
+    protected Drawable slotDrawable;
 
     public EditorResources(Resources resources) {
         objectAtlas = resources.getObjectAtlas();
         shadowAtlas = resources.getShadowAtlas();
         spriteBatchShader = resources.getSpriteBatchShader();
+    }
+
+    public Drawable getSlotDrawable() {
+        return slotDrawable;
     }
 
     public TextureAtlas getUiAtlas() {
@@ -26,6 +33,8 @@ public class EditorResources extends Resources {
 
     public void setUiAtlas(TextureAtlas uiAtlas) {
         this.uiAtlas = uiAtlas;
+
+        slotDrawable = new TextureRegionDrawable(uiAtlas.findRegion("slot"));
     }
 
     public Skin getSkin() {

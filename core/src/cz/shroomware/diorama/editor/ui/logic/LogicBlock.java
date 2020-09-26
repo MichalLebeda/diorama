@@ -1,15 +1,21 @@
 package cz.shroomware.diorama.editor.ui.logic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
@@ -18,19 +24,22 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
-import cz.shroomware.diorama.engine.level.logic.LogicComponent;
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
+import cz.shroomware.diorama.engine.level.logic.component.PureLogicComponent;
 import cz.shroomware.diorama.ui.DFLabel;
 
 public abstract class LogicBlock extends VerticalGroup {
     protected LogicComponent logicComponent;
     protected Vector2 relativeDragPos = new Vector2();
     protected Drawable background;
+    protected Button deleteButton = null;
 
     HashMap<Handler, HandlerButton> handlerButtonHashMap = new HashMap<>();
     HashMap<Event, EventButton> eventButtonHashMap = new HashMap<>();
+    boolean draggedBefore = false;
 
     public LogicBlock(LogicComponent logicComponent,
-                      EditorResources editorResources,
+                      final EditorResources editorResources,
                       Color eventColor,
                       Color handlerColor) {
         this.logicComponent = logicComponent;
@@ -39,14 +48,51 @@ public abstract class LogicBlock extends VerticalGroup {
         pad(15);
         space(10);
 
-        DFLabel label = new DFLabel(editorResources.getSkin(), editorResources.getDfShader(), logicComponent.hasId() ? logicComponent.getId() : logicComponent.toString()
-        );
-        addActor(label);
+        DFLabel label = new DFLabel(editorResources.getSkin(), editorResources.getDfShader(), logicComponent.hasId() ? logicComponent.getId() : logicComponent.toString());
         label.setFontScale(0.4f);
+        Table topTable = null;
+        if (logicComponent instanceof PureLogicComponent) {
+            topTable = new Table();
+            label.setAlignment(Align.center);
+            topTable.setWidth(getWidth());
+            topTable.add(label).center().grow();
 
-        HorizontalGroup horizontalGroup = new HorizontalGroup();
+            //TODO SEPARATE CLASS
+            deleteButton = new Button(editorResources.getSkin()) {
+                @Override
+                public void draw(Batch batch, float parentAlpha) {
+                    super.draw(batch, parentAlpha);
 
-        VerticalGroup verticalGroup = new VerticalGroup();
+                    TextureRegion crossRegion = editorResources.getUiAtlas().findRegion("cross");
+                    float PAD = 20;
+                    batch.draw(crossRegion, getX() + PAD,
+                            getY() + PAD,
+                            getWidth() - 2 * PAD,
+                            getHeight() - 2 * PAD);
+                }
+            };
+
+            deleteButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (!draggedBefore) {
+                        onRequestDelete();
+                    }
+                }
+            });
+
+            topTable.add(deleteButton);
+            addActor(topTable);
+
+        } else {
+            addActor(label);
+        }
+
+        final HorizontalGroup horizontalGroup = new HorizontalGroup();
+        horizontalGroup.space(30);
+
+        final VerticalGroup handlerVerticalGroup = new VerticalGroup();
+        handlerVerticalGroup.columnAlign(Align.left);
         Array<Handler> handlers = logicComponent.getHandlers();
         if (handlers != null) {
             for (Handler handler : handlers) {
@@ -57,26 +103,14 @@ public abstract class LogicBlock extends VerticalGroup {
                         onHandlerClicked(handlerButton);
                     }
                 });
-                handlerButton.addListener(new DragListener() {
-                    @Override
-                    public void dragStart(InputEvent event, float x, float y, int pointer) {
-                        onButtonDragStart();
-                    }
-
-                    @Override
-                    public void dragStop(InputEvent event, float x, float y, int pointer) {
-                        event.cancel();
-                        onButtonDragStart();
-                    }
-                });
                 handlerButtonHashMap.put(handler, handlerButton);
-                verticalGroup.addActor(handlerButton);
+                handlerVerticalGroup.addActor(handlerButton);
             }
         }
+        horizontalGroup.addActor(handlerVerticalGroup);
 
-        horizontalGroup.addActor(verticalGroup);
-
-        verticalGroup = new VerticalGroup();
+        final VerticalGroup eventVerticalGroup = new VerticalGroup();
+        eventVerticalGroup.columnAlign(Align.right);
         Array<Event> events = logicComponent.getEvents();
         if (events != null) {
             for (Event event : events) {
@@ -87,39 +121,61 @@ public abstract class LogicBlock extends VerticalGroup {
                         onEventClicked(eventButton);
                     }
                 });
-                eventButton.addListener(new DragListener() {
-                    @Override
-                    public void dragStart(InputEvent event, float x, float y, int pointer) {
-                        onButtonDragStart();
-                    }
-
-                    @Override
-                    public void dragStop(InputEvent event, float x, float y, int pointer) {
-                        event.cancel();
-                        onButtonDragStart();
-                    }
-                });
                 eventButtonHashMap.put(event, eventButton);
-                verticalGroup.addActor(eventButton);
+                eventVerticalGroup.addActor(eventButton);
             }
         }
-        horizontalGroup.addActor(verticalGroup);
+        horizontalGroup.addActor(eventVerticalGroup);
 
         addActor(horizontalGroup);
 
         pack();
         layout();
 
+        if (topTable != null) {
+            topTable.setWidth(horizontalGroup.getWidth());
+            topTable.setX(horizontalGroup.getX());
+        }
+
         addListener(new DragListener() {
             @Override
             public void dragStart(InputEvent event, float x, float y, int pointer) {
                 relativeDragPos.set(event.getStageX() - getX(), event.getStageY() - getY());
-                onButtonDragStart();
+                event.handle();
             }
 
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
                 setPosition(getX() - relativeDragPos.x + x, getY() - relativeDragPos.y + y);
+                event.handle();
+            }
+        });
+
+        addCaptureListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                draggedBefore = false;
+
+                if (deleteButton != null) {
+                    Vector2 click = new Vector2(event.getStageX(), event.getStageY());
+                    click = deleteButton.stageToLocalCoordinates(click);
+                    if (deleteButton.hit(click.x, click.y, false) != null) {
+                        Gdx.app.error("LogicBlock", "possible interception");
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                super.touchDragged(event, x, y, pointer);
+
+                if (!draggedBefore) {
+                    Gdx.app.error("LogicBlock", "Button will intercept click");
+                }
+                draggedBefore = true;
             }
         });
 
@@ -141,9 +197,13 @@ public abstract class LogicBlock extends VerticalGroup {
         return handlerButtonHashMap;
     }
 
+    public LogicComponent getLogicComponent() {
+        return logicComponent;
+    }
+
     public abstract void onEventClicked(EventButton button);
 
     public abstract void onHandlerClicked(HandlerButton button);
 
-    public abstract void onButtonDragStart();
+    public abstract void onRequestDelete();
 }

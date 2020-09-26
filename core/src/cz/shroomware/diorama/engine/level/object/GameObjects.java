@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import cz.shroomware.diorama.editor.ui.Messages;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.Tile;
@@ -146,47 +147,74 @@ public class GameObjects {
                             Float.parseFloat(attributes[5]),
                             Float.parseFloat(attributes[6]),
                             Float.parseFloat(attributes[7]));
-                        GameObject object = prototype.createAt(
-                                //TODO add Z
-                                position.x, position.y,
-                                quaternion, boxFactory);
+                    GameObject object = prototype.createAt(
+                            //TODO add Z
+                            position.x, position.y,
+                            quaternion, boxFactory);
 //                        GameObject object = prototype.createAt(position, quaternion);
 //                        object.setRotation(quaternion);
-                        if (prototype.isAttached()) {
-                            // There should always be a Tile for an attached object. Any exceptions are not our fault.
-                            Tile tile = floor.getTileAtWorld(position.x, position.y);
-                            tile.attachObject(object);
-                            object.attachToTile(tile);
-                        }
-                        if (id != null) {
-                            assignId(object, id);
-                        }
-                        add(object);
-                        break;
+                    if (prototype.isAttached()) {
+                        // There should always be a Tile for an attached object. Any exceptions are not our fault.
+                        Tile tile = floor.getTileAtWorld(position.x, position.y);
+                        tile.attachObject(object);
+                        object.attachToTile(tile);
                     }
+                    if (id != null) {
+                        assignId(object, id);
+                    }
+                    add(object);
+                    break;
                 }
             }
+        }
 
         dirty = false;
     }
 
     public boolean assignId(GameObject object, String id) {
+        return assignId(object, id, null);
+    }
+
+    public boolean assignId(GameObject object, String id, Messages messages) {
+        if (id == null || id.equals("")) {
+            Gdx.app.error("GameObjects", "ID NOT(!!!) changed:" + id);
+            Gdx.app.error("GameObjects", "Reason: bad ID");
+            if (messages != null) {
+                messages.showMessage("Bad ID");
+            }
+            return false;
+        }
+
         id = id.replace(" ", "_");
         id = id.replace(":", "_");
 
         if (idToObject.containsKey(id)) {
-            Gdx.app.error("GameObjects", "Duplicate ID" + id);
+            Gdx.app.error("GameObjects", "ID NOT(!!!) changed: " + id);
+            Gdx.app.error("GameObjects", "Reason: Duplicate ID: " + id);
+            if (messages != null) {
+                messages.showMessage("Duplicate ID, using old");
+            }
             return false;
         } else if (idToObject.containsKey(object.getId())) {
             dirty = true;
             idToObject.remove(object.getId());
             idToObject.put(id, object);
+            String oldId = object.getId();
             object.setId(id);
+            logic.componentIdChange(object, oldId);
+            if (messages != null) {
+                messages.showMessage("ID Changed");
+            }
             return true;
         } else {
             dirty = true;
             idToObject.put(id, object);
+            String oldId = object.getId();
             object.setId(id);
+            logic.componentIdChange(object, oldId);
+            if (messages != null) {
+                messages.showMessage("New ID assigned");
+            }
             return true;
         }
     }
