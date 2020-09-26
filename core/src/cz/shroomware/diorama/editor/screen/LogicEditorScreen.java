@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.screen;
+package cz.shroomware.diorama.editor.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -14,28 +14,29 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 
-import cz.shroomware.diorama.DioramaGame;
-import cz.shroomware.diorama.editor.logic.LogicGraph;
+import cz.shroomware.diorama.editor.EditorEngineGame;
+import cz.shroomware.diorama.editor.ui.logic.LogicEditor;
+import cz.shroomware.diorama.editor.ui.logic.LogicGraph;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 
 public class LogicEditorScreen implements Screen, InputProcessor {
     //TODO make ProjectSelScreeen from same parent
+    LogicEditor logicEditor;
     InputMultiplexer inputMultiplexer;
     Color backgroundColor = new Color(0x424242ff);
-    Logic logic;
-    DioramaGame game;
+    EditorEngineGame game;
     LogicGraph graph;
     ShapeRenderer shapeRenderer;
     SpriteBatch spriteBatch;
     OrthographicCamera camera;
 
-    public LogicEditorScreen(DioramaGame game, String levelName, Logic logic) {
-        this.logic = logic;
+    public LogicEditorScreen(EditorEngineGame game, String levelName, Logic logic) {
         this.game = game;
 
+        logicEditor = new LogicEditor(logic, levelName);
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
-        graph = new LogicGraph(levelName, logic, game.getEditorResources(), shapeRenderer);
+        graph = new LogicGraph(logicEditor, game.getResources(), shapeRenderer);
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(graph);
         inputMultiplexer.addProcessor(this);

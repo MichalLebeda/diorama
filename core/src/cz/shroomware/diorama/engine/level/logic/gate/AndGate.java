@@ -1,10 +1,14 @@
-package cz.shroomware.diorama.engine.level.logic;
+package cz.shroomware.diorama.engine.level.logic.gate;
 
 import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.Identifiable;
+import cz.shroomware.diorama.engine.level.logic.Event;
+import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.Logic;
+import cz.shroomware.diorama.engine.level.logic.LogicComponent;
 
-public class AndGate implements LogicallyRepresentable, Identifiable {
+public class AndGate implements LogicComponent, Identifiable {
     Logic logic;
     String id;
 

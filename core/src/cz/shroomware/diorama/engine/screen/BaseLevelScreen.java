@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.screen;
+package cz.shroomware.diorama.engine.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -12,12 +12,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
-import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.Resources;
 
-public abstract class BaseScreen implements Screen, InputProcessor {
-    protected DioramaGame game;
+public abstract class BaseLevelScreen implements Screen, InputProcessor {
     protected Level level;
     protected Color backgroundColor;
     protected SpriteBatch spriteBatch;
@@ -27,14 +26,13 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 
     protected boolean boxDebug = false;
 
-    BaseScreen(DioramaGame game) {
-        this.game = game;
+    protected BaseLevelScreen(Resources resources) {
         spriteBatch = new SpriteBatch();
-        spriteBatch.setShader(game.getEditorResources().getSpriteBatchShader());
+        spriteBatch.setShader(resources.getSpriteBatchShader());
         decalBatch = new MinimalisticDecalBatch();
     }
 
-    protected void updateBackgorundColor(Level level) {
+    protected void updatebackgorundcolor(Level level) {
         // Use dominant floor color as background
         Pixmap pixmap = Utils.extractPixmapFromTextureRegion(level.getFloor().getTileAtIndex(0, 0));
         backgroundColor = Utils.getDominantColor(pixmap);

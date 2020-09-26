@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor.logic;
+package cz.shroomware.diorama.editor.ui.logic;
 
 import com.badlogic.gdx.graphics.Color;
 
@@ -10,7 +10,7 @@ public class HandlerButton extends DFButton {
     protected Handler handler;
 
     public HandlerButton(EditorResources resources, Handler handler, Color color) {
-        super(resources, handler.getHandlerName());
+        super(resources.getSkin(), resources.getDfShader(), handler.getHandlerName());
         this.handler = handler;
         label.setColor(color);
     }

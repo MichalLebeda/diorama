@@ -1,33 +1,31 @@
 package cz.shroomware.diorama.ui;
 
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
-import cz.shroomware.diorama.DioramaGame;
-import cz.shroomware.diorama.editor.EditorResources;
-
 public abstract class NameDialog extends Dialog {
     TextField textField;
 
-    public NameDialog(final DioramaGame game, String info, String initialText) {
-        super("", game.getEditorResources().getSkin());
+    public NameDialog(Skin skin, ShaderProgram dfShader, String info, String initialText) {
+        super("", skin);
         padTop(64);
         getTitleTable().clearChildren();
         getTitleTable().align(Align.left);
-        EditorResources resources = game.getEditorResources();
-        getTitleTable().add(new DFLabel(info, resources.getSkin(), resources.getDfShader()));
-        textField = new DFTextField(initialText, game.getEditorResources().getSkin(), game.getEditorResources().getDfShader());
+        getTitleTable().add(new DFLabel(skin, dfShader, info));
+        textField = new DFTextField(skin, dfShader, initialText);
         textField.setWidth(150);
         getContentTable().add(textField).fill().expand();
 //        getContentTable().padTop(64);
 
-        DFButton cancelButton = new DFButton(resources, "Cancel");
-        DFButton okButton = new DFButton(resources, "OK");
+        DFButton cancelButton = new DFButton(skin, dfShader, "Cancel");
+        DFButton okButton = new DFButton(skin, dfShader, "OK");
 
         cancelButton.addListener(new ClickListener() {
             @Override

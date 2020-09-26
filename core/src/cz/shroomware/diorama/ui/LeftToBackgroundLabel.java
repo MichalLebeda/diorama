@@ -1,6 +1,5 @@
 package cz.shroomware.diorama.ui;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -9,13 +8,6 @@ public class LeftToBackgroundLabel extends BackgroundLabel {
 
     public LeftToBackgroundLabel(CharSequence text, Skin skin, ShaderProgram dfShader, float alignLeftToX) {
         super(text, skin, dfShader);
-
-        this.alignLeftToX = alignLeftToX;
-        setX(alignLeftToX - getWidthWithPadding());
-    }
-
-    public LeftToBackgroundLabel(CharSequence text, Skin skin, String fontName, Color color, ShaderProgram dfShader, float alignLeftToX) {
-        super(text, skin, fontName, color, dfShader);
 
         this.alignLeftToX = alignLeftToX;
         setX(alignLeftToX - getWidthWithPadding());

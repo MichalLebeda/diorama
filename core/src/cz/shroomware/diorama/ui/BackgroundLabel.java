@@ -18,12 +18,7 @@ public class BackgroundLabel extends DFLabel {
     protected Drawable background;
 
     public BackgroundLabel(CharSequence text, Skin skin, ShaderProgram dfShader) {
-        super(text, skin, dfShader);
-        background = skin.getDrawable(DARK_BACKGROUND_DRAWABLE);
-    }
-
-    public BackgroundLabel(CharSequence text, Skin skin, String fontName, Color color, ShaderProgram dfShader) {
-        super(text, skin, fontName, color, dfShader);
+        super(skin, dfShader, text);
         background = skin.getDrawable(DARK_BACKGROUND_DRAWABLE);
     }
 

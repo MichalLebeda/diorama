@@ -26,8 +26,8 @@ public class Cursor extends SingleRegionGameObject {
     boolean visible = true;
 
     public Cursor(Editor editor,
-                  Level level,
                   EditorResources resources,
+                  Level level,
                   TextureAtlas.AtlasRegion defaultRegion) {
         super(Vector3.Zero, new SingleRegionPrototype(resources, defaultRegion));
         this.editor = editor;

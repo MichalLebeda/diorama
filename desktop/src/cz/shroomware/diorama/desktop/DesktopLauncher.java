@@ -8,7 +8,7 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import java.io.File;
 import java.util.Locale;
 
-import cz.shroomware.diorama.DioramaGame;
+import cz.shroomware.diorama.editor.EditorEngineGame;
 
 public class DesktopLauncher {
     public static void main(String[] arg) {
@@ -22,7 +22,7 @@ public class DesktopLauncher {
         config.setBackBufferConfig(8, 8, 8, 8, 8, 8, 3);
         config.setWindowSizeLimits(640, 480, 16000, 9000);
         config.setTitle("Editor");
-        new Lwjgl3Application(new DioramaGame(), config);
+        new Lwjgl3Application(new EditorEngineGame(), config);
     }
 
     private static void packShadowAtlas() {

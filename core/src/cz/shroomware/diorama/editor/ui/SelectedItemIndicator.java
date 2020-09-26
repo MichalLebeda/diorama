@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.ui;
+package cz.shroomware.diorama.editor.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;

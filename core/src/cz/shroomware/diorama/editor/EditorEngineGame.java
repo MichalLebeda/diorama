@@ -1,6 +1,5 @@
-package cz.shroomware.diorama;
+package cz.shroomware.diorama.editor;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -8,23 +7,25 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import cz.shroomware.diorama.editor.EditorResources;
+import cz.shroomware.diorama.editor.screen.LevelEditorScreen;
+import cz.shroomware.diorama.editor.screen.LogicEditorScreen;
+import cz.shroomware.diorama.editor.screen.ProjectSelectionScreen;
+import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.screen.EditorScreen;
-import cz.shroomware.diorama.screen.LogicEditorScreen;
-import cz.shroomware.diorama.screen.PlayScreen;
-import cz.shroomware.diorama.screen.ProjectSelectionScreen;
+import cz.shroomware.diorama.engine.screen.PlayLevelScreen;
 
-public class DioramaGame extends Game {
-    EditorScreen editorScreen;
+public class EditorEngineGame extends EngineGame {
+    //TODO don't use editorScreen variable
+    LevelEditorScreen editorScreen;
     ProjectSelectionScreen projectSelectionScreen;
-    EditorResources editorResources;
+    //TODO: ask if ok, shadows base Resources resources
+    EditorResources resources;
 
     @Override
     public void create() {
-        TextureAtlas objectAtlas = new TextureAtlas(Gdx.files.internal("atlas/auto.atlas"));
-        TextureAtlas shadowsAtlas = new TextureAtlas(Gdx.files.internal("atlas/shadows.atlas"));
+        super.create();
+
         TextureAtlas uiAtlas = new TextureAtlas(Gdx.files.internal("atlas/ui.atlas"));
 
         TextureRegion darkBackground = uiAtlas.findRegion("black");
@@ -39,28 +40,15 @@ public class DioramaGame extends Game {
             Gdx.app.error("fontShader", "compilation failed:\n" + dfShader.getLog());
         }
 
-        ShaderProgram spriteBatchShader = new ShaderProgram(Gdx.files.internal("shaders/sprite.vert"), Gdx.files.internal("shaders/sprite.frag"));
-        if (!spriteBatchShader.isCompiled()) {
-            Gdx.app.error("spriteBatchShader", "compilation failed:\n" + dfShader.getLog());
-        }
-
-        editorResources = new EditorResources();
-        editorResources.setObjectAtlas(objectAtlas);
-        editorResources.setShadowAtlas(shadowsAtlas);
-        editorResources.setUiAtlas(uiAtlas);
-        editorResources.setDarkBackgroundRegion(darkBackground);
-        editorResources.setSkin(skin);
-        editorResources.setDfShader(dfShader);
-        editorResources.setSpriteBatchShader(spriteBatchShader);
+        resources = new EditorResources(super.resources);
+        resources.setUiAtlas(uiAtlas);
+        resources.setDarkBackgroundRegion(darkBackground);
+        resources.setSkin(skin);
+        resources.setDfShader(dfShader);
 
         projectSelectionScreen = new ProjectSelectionScreen(this);
         setScreen(projectSelectionScreen);
-
-//        Bullet.init();
     }
-
-    int lastWindowedWidth;
-    int lastWindowedHeight;
 
     @Override
     public void render() {
@@ -81,8 +69,8 @@ public class DioramaGame extends Game {
         projectSelectionScreen.dispose();
     }
 
-    public EditorResources getEditorResources() {
-        return editorResources;
+    public EditorResources getResources() {
+        return resources;
     }
 
     public void toggleFullscreen() {
@@ -96,18 +84,19 @@ public class DioramaGame extends Game {
     }
 
     public void openEditor(String filename) {
-        editorScreen = new EditorScreen(this, filename);
+        editorScreen = new LevelEditorScreen(this, filename);
         setScreen(editorScreen);
     }
 
+    //TODO don't use editorScreen variable
     public void returnToEditor() {
         if (editorScreen != null) {
             setScreen(editorScreen);
         }
     }
 
-    public void openGamePreview(String levelFilename, Prototypes prototypes) {
-        setScreen(new PlayScreen(this, prototypes, levelFilename));
+    public void openGame(String levelFilename, Prototypes prototypes) {
+        setScreen(new PlayLevelScreen(this, prototypes, levelFilename));
     }
 
     public void openLogicEditor(String levelName, Logic logic) {

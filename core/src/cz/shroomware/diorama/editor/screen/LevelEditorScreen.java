@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.screen;
+package cz.shroomware.diorama.editor.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -20,22 +20,24 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Date;
 
-import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Cursor;
 import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.EditorTool;
+import cz.shroomware.diorama.editor.ui.Hud;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.ui.Hud;
+import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
-public class EditorScreen extends BaseScreen {
+public class LevelEditorScreen extends BaseLevelScreen {
     protected static final float PAN_PER_PIXEL = 0.02f;
     protected static final float SCROLL_RATIO = 0.4f;
     protected static final float DEGREES_PER_PIXEL = 0.2f;
     protected static final float TRANSLATION_LIMIT = 1.4f;
     protected static final float MAX_CAM_DIST_FROM_GRID = 8;
+    protected EditorEngineGame game;
     protected Editor editor;
     protected EditorTool editorTool;
     protected EditorResources resources;
@@ -53,23 +55,25 @@ public class EditorScreen extends BaseScreen {
     boolean dragging = false;
     float time = 0;
 
-    public EditorScreen(DioramaGame game, String filename) {
-        super(game);
+    public LevelEditorScreen(EditorEngineGame game, String filename) {
+        super(game.getResources());
+        this.game = game;
+
         editor = new Editor(filename);
 
-        resources = game.getEditorResources();
+        resources = game.getResources();
         defaultCursorRegion = resources.getObjectAtlas().findRegion("cursor");
         shadowAtlas = resources.getShadowAtlas();
 
         gameObjectPrototypes = new Prototypes(resources);
 
         level = new Level(filename, gameObjectPrototypes, resources);
-        updateBackgorundColor(level);
+        updatebackgorundcolor(level);
         initCamera(level);
 
         editorTool = new EditorTool(level.getFloor(), level.getGameObjects(), editor);
 
-        cursor = new Cursor(editor, level, resources, defaultCursorRegion);
+        cursor = new Cursor(editor, resources, level, defaultCursorRegion);
 
         hud = new Hud(game, gameObjectPrototypes, editor, level);
 
@@ -300,7 +304,7 @@ public class EditorScreen extends BaseScreen {
                 return true;
             case Input.Keys.P:
                 save();
-                game.openGamePreview(level.getFilename(), gameObjectPrototypes);
+                game.openGame(level.getFilename(), gameObjectPrototypes);
                 return true;
             case Input.Keys.V:
                 level.dumpLogic();

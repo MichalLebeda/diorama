@@ -10,18 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 public class DFTextField extends TextField {
     ShaderProgram dfShader;
 
-    public DFTextField(String text, Skin skin, ShaderProgram dfShader) {
+    public DFTextField(Skin skin, ShaderProgram dfShader, String text) {
         super(text, skin);
-        this.dfShader = dfShader;
-    }
-
-    public DFTextField(String text, Skin skin, String styleName, ShaderProgram dfShader) {
-        super(text, skin, styleName);
-        this.dfShader = dfShader;
-    }
-
-    public DFTextField(String text, TextFieldStyle style, ShaderProgram dfShader) {
-        super(text, style);
         this.dfShader = dfShader;
     }
 

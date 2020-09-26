@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.Identifiable;
 
-public interface LogicallyRepresentable extends Identifiable {
+public interface LogicComponent extends Identifiable {
 
     public Array<Event> getEvents();
 

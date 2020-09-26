@@ -57,11 +57,11 @@ public class Editor {
         return null;
     }
 
+    Mode modeBeforeDeleteToggle = Mode.ITEM;
+
     public void setNextMode() {
         mode = mode.getNextMode();
     }
-
-    Mode modeBeforeDeleteToggle = Mode.ITEM;
 
     public void setPrevMode() {
         mode = mode.getPrevMode();

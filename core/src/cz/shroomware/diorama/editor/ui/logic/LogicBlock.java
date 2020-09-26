@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor.logic;
+package cz.shroomware.diorama.editor.ui.logic;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -18,37 +18,36 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
-import cz.shroomware.diorama.engine.level.logic.LogicallyRepresentable;
+import cz.shroomware.diorama.engine.level.logic.LogicComponent;
 import cz.shroomware.diorama.ui.DFLabel;
 
 public abstract class LogicBlock extends VerticalGroup {
-    protected LogicallyRepresentable logicallyRepresentable;
+    protected LogicComponent logicComponent;
     protected Vector2 relativeDragPos = new Vector2();
     protected Drawable background;
 
     HashMap<Handler, HandlerButton> handlerButtonHashMap = new HashMap<>();
     HashMap<Event, EventButton> eventButtonHashMap = new HashMap<>();
 
-    public LogicBlock(LogicallyRepresentable logicallyRepresentable,
+    public LogicBlock(LogicComponent logicComponent,
                       EditorResources editorResources,
                       Color eventColor,
                       Color handlerColor) {
-        this.logicallyRepresentable = logicallyRepresentable;
+        this.logicComponent = logicComponent;
 
         setTouchable(Touchable.enabled);
         pad(15);
         space(10);
 
-        DFLabel label = new DFLabel(logicallyRepresentable.hasId() ? logicallyRepresentable.getId() : logicallyRepresentable.toString(),
-                editorResources.getSkin(),
-                editorResources.getDfShader());
+        DFLabel label = new DFLabel(editorResources.getSkin(), editorResources.getDfShader(), logicComponent.hasId() ? logicComponent.getId() : logicComponent.toString()
+        );
         addActor(label);
         label.setFontScale(0.4f);
 
         HorizontalGroup horizontalGroup = new HorizontalGroup();
 
         VerticalGroup verticalGroup = new VerticalGroup();
-        Array<Handler> handlers = logicallyRepresentable.getHandlers();
+        Array<Handler> handlers = logicComponent.getHandlers();
         if (handlers != null) {
             for (Handler handler : handlers) {
                 final HandlerButton handlerButton = new HandlerButton(editorResources, handler, handlerColor);
@@ -78,7 +77,7 @@ public abstract class LogicBlock extends VerticalGroup {
         horizontalGroup.addActor(verticalGroup);
 
         verticalGroup = new VerticalGroup();
-        Array<Event> events = logicallyRepresentable.getEvents();
+        Array<Event> events = logicComponent.getEvents();
         if (events != null) {
             for (Event event : events) {
                 final EventButton eventButton = new EventButton(editorResources, event, eventColor);

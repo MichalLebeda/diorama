@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.ui;
+package cz.shroomware.diorama.editor.ui;
 
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.Align;
 
 import cz.shroomware.diorama.editor.EditorResources;
+import cz.shroomware.diorama.ui.BackgroundLabel;
 
 public class Messages extends VerticalGroup {
     EditorResources resources;

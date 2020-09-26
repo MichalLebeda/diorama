@@ -12,12 +12,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import cz.shroomware.diorama.engine.level.logic.gate.AndGate;
+
 public class Logic {
     boolean dirty = false;
-    HashMap<String, LogicallyRepresentable> registered = new HashMap<>();
+    HashMap<String, LogicComponent> registered = new HashMap<>();
     HashMap<Event, ArrayList<Handler>> eventToHandlersConnections = new HashMap<>();
 
-    public Collection<LogicallyRepresentable> getAllParents() {
+    public Collection<LogicComponent> getAllParents() {
         return registered.values();
     }
 
@@ -127,8 +129,8 @@ public class Logic {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("Events:\n");
-        for (LogicallyRepresentable logicallyRepresentable : registered.values()) {
-            Array<Event> events = logicallyRepresentable.getEvents();
+        for (LogicComponent logicComponent : registered.values()) {
+            Array<Event> events = logicComponent.getEvents();
             for (Event event : events) {
                 stringBuilder.append(event.toString()).append("\n");
             }
@@ -136,8 +138,8 @@ public class Logic {
         stringBuilder.append("\n");
 
         stringBuilder.append("Handlers:\n");
-        for (LogicallyRepresentable logicallyRepresentable : registered.values()) {
-            Array<Handler> handlers = logicallyRepresentable.getHandlers();
+        for (LogicComponent logicComponent : registered.values()) {
+            Array<Handler> handlers = logicComponent.getHandlers();
             for (Handler handler : handlers) {
                 stringBuilder.append(handler.toString()).append("\n");
             }
@@ -154,12 +156,12 @@ public class Logic {
         return stringBuilder.toString();
     }
 
-    public void register(LogicallyRepresentable object) {
+    public void register(LogicComponent object) {
         registered.put(object.getId(), object);
         object.onRegister(this);
     }
 
-    public void unregister(LogicallyRepresentable object) {
+    public void unregister(LogicComponent object) {
         registered.remove(object.getId());
 
         Array<Event> events = object.getEvents();
@@ -193,7 +195,7 @@ public class Logic {
             String[] handlerParts = pair[1].split(":");
 
             //TODO: use hashmap for getEvents/handlers
-            LogicallyRepresentable eventObject = registered.get(eventParts[0]);
+            LogicComponent eventObject = registered.get(eventParts[0]);
             Event foundEvent = null;
             Array<Event> events = eventObject.getEvents();
             for (Event event : events) {
@@ -203,7 +205,7 @@ public class Logic {
                 }
             }
 
-            LogicallyRepresentable handlerObject = registered.get(handlerParts[0]);
+            LogicComponent handlerObject = registered.get(handlerParts[0]);
             Handler foundHandler = null;
             Array<Handler> handlers = handlerObject.getHandlers();
             for (Handler handler : handlers) {

@@ -1,25 +1,23 @@
 package cz.shroomware.diorama.ui;
 
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
-import cz.shroomware.diorama.DioramaGame;
-import cz.shroomware.diorama.editor.EditorResources;
 
 public abstract class YesNoDialog extends Dialog {
 
-    public YesNoDialog(final DioramaGame game, String info) {
-        super("", game.getEditorResources().getSkin());
+    public YesNoDialog(Skin skin, ShaderProgram dfShader, String info) {
+        super("", skin);
         padTop(64);
         getTitleTable().clearChildren();
-        EditorResources resources = game.getEditorResources();
-        getTitleTable().add(new DFLabel(info, resources.getSkin(), resources.getDfShader()));
+        getTitleTable().add(new DFLabel(skin, dfShader, info));
 
-        DFButton cancelButton = new DFButton(resources, "No");
-        DFButton okButton = new DFButton(resources, "Yes");
+        DFButton cancelButton = new DFButton(skin, dfShader, "No");
+        DFButton okButton = new DFButton(skin, dfShader, "Yes");
 
         cancelButton.addListener(new ClickListener() {
             @Override

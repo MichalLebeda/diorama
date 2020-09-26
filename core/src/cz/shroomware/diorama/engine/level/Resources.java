@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 public class Resources {
     protected TextureAtlas objectAtlas;
     protected TextureAtlas shadowAtlas;
-    ShaderProgram spriteBatchShader;
+    protected ShaderProgram spriteBatchShader;
 
     public TextureAtlas getObjectAtlas() {
         return objectAtlas;

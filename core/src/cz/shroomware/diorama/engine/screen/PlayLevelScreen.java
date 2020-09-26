@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.screen;
+package cz.shroomware.diorama.engine.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -8,27 +8,29 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import cz.shroomware.diorama.DioramaGame;
+import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
-public class PlayScreen extends BaseScreen implements InputProcessor {
+public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float SPEED = 9.0f;
     protected static final float Y_CAMERA_DISTANCE = 6;
-    Player player;
+    protected EngineGame game;
+    protected Player player;
 
-    public PlayScreen(DioramaGame game, Prototypes prototypes, String filename) {
-        super(game);
-        this.level = new Level(filename, prototypes, game.getEditorResources());
-        updateBackgorundColor(level);
+
+    public PlayLevelScreen(EngineGame game, Prototypes prototypes, String filename) {
+        super(game.getResources());
+        this.level = new Level(filename, prototypes, game.getResources());
+        updatebackgorundcolor(level);
         initCamera(level);
 
         Vector2 offset = new Vector2(-3, +6);
         player = new Player(new Vector3(level.getSize() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0.5f),
                 new Quaternion().setFromAxis(Vector3.X, 90),
-                new SingleRegionPrototype(game.getEditorResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
+                new SingleRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
     }
 
@@ -83,7 +85,7 @@ public class PlayScreen extends BaseScreen implements InputProcessor {
         switch (keycode) {
             case Input.Keys.ESCAPE:
                 dispose();
-                game.returnToEditor();
+                game.returnToLastScreen();
                 return true;
         }
 

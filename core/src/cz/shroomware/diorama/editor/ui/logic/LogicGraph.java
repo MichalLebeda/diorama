@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor.logic;
+package cz.shroomware.diorama.editor.ui.logic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -20,8 +20,7 @@ import java.util.Set;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
-import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.engine.level.logic.LogicallyRepresentable;
+import cz.shroomware.diorama.engine.level.logic.LogicComponent;
 
 public class LogicGraph extends Stage {
     private static final float CLAMP_PAD = 15;
@@ -32,26 +31,24 @@ public class LogicGraph extends Stage {
     private static final Color HANDLER_COLOR_LINE = HANDLER_COLOR.cpy().mul(0.8f);
     private static final Color REMOVE_COLOR = new Color(1, 0.3f, 0.3f, 0.3f);
 
-    Logic logic;
+    LogicEditor logicEditor;
 
-    HashMap<LogicallyRepresentable, LogicBlock> blocks = new HashMap<>();
+    HashMap<LogicComponent, LogicBlock> blocks = new HashMap<>();
     HashMap<Handler, HandlerButton> handlerButtonHashMap = new HashMap<>();
     HashMap<Event, EventButton> eventButtonHashMap = new HashMap<>();
 
     EventButton eventButton = null;
     HandlerButton handlerButton = null;
 
-    Mode mode = Mode.ADD;
-
     ShapeRenderer shapeRenderer;
     Preferences preferences;
 
-    public LogicGraph(String levelName, Logic logic, EditorResources editorResources, ShapeRenderer shapeRenderer) {
+    public LogicGraph(LogicEditor logicEditor, EditorResources editorResources, ShapeRenderer shapeRenderer) {
         super(new ScreenViewport());
-        this.logic = logic;
+        this.logicEditor = logicEditor;
         this.shapeRenderer = shapeRenderer;
 
-        preferences = Gdx.app.getPreferences(levelName);
+        preferences = Gdx.app.getPreferences(logicEditor.getLevelName());
 
         OrthographicCamera camera = (OrthographicCamera) getCamera();
         camera.position.x = preferences.getFloat("camera.x", 0);
@@ -59,9 +56,9 @@ public class LogicGraph extends Stage {
         camera.zoom = preferences.getFloat("camera.zoom", 1);
         camera.update();
 
-        Collection<LogicallyRepresentable> parentsSet = logic.getAllParents();
-        for (LogicallyRepresentable logicallyRepresentable : parentsSet) {
-            LogicBlock block = new LogicBlock(logicallyRepresentable, editorResources, EVENT_COLOR, HANDLER_COLOR) {
+        Collection<LogicComponent> parentsSet = logicEditor.getLogic().getAllParents();
+        for (LogicComponent logicComponent : parentsSet) {
+            LogicBlock block = new LogicBlock(logicComponent, editorResources, EVENT_COLOR, HANDLER_COLOR) {
                 @Override
                 public void onEventClicked(EventButton button) {
                     if (eventButton == null) {
@@ -87,10 +84,10 @@ public class LogicGraph extends Stage {
                     cancelConnection();
                 }
             };
-            float x = preferences.getFloat(logicallyRepresentable.getId() + ".x", 0);
-            float y = preferences.getFloat(logicallyRepresentable.getId() + ".y", 0);
+            float x = preferences.getFloat(logicComponent.getId() + ".x", 0);
+            float y = preferences.getFloat(logicComponent.getId() + ".y", 0);
             block.setPosition(x, y);
-            blocks.put(logicallyRepresentable, block);
+            blocks.put(logicComponent, block);
             eventButtonHashMap.putAll(block.getEventButtonHashMap());
             handlerButtonHashMap.putAll(block.getHandlerButtonHashMap());
             addActor(block);
@@ -105,32 +102,33 @@ public class LogicGraph extends Stage {
     }
 
     public void toggleMode() {
-        if (mode == Mode.ADD) {
-            mode = Mode.REMOVE;
-        } else if (mode == Mode.REMOVE) {
-            mode = Mode.ADD;
+        LogicEditor.Mode mode = logicEditor.getMode();
+        if (mode == LogicEditor.Mode.ADD) {
+            mode = LogicEditor.Mode.DELETE;
+        } else if (mode == LogicEditor.Mode.DELETE) {
+            mode = LogicEditor.Mode.ADD;
         }
     }
 
     private void finishAction() {
-        switch (mode) {
+        switch (logicEditor.getMode()) {
             case ADD:
                 addConnection();
                 break;
-            case REMOVE:
+            case DELETE:
                 removeConnection();
                 break;
         }
     }
 
     private void addConnection() {
-        logic.connect(eventButton.getEvent(), handlerButton.getHandler());
+        logicEditor.getLogic().connect(eventButton.getEvent(), handlerButton.getHandler());
         eventButton = null;
         handlerButton = null;
     }
 
     private void removeConnection() {
-        logic.disconnect(eventButton.getEvent(), handlerButton.getHandler());
+        logicEditor.getLogic().disconnect(eventButton.getEvent(), handlerButton.getHandler());
         eventButton = null;
         handlerButton = null;
     }
@@ -158,11 +156,11 @@ public class LogicGraph extends Stage {
         preferences.putFloat("camera.y", getCamera().position.y);
         preferences.putFloat("camera.zoom", ((OrthographicCamera) getCamera()).zoom);
 
-        for (Map.Entry<LogicallyRepresentable, LogicBlock> entry : blocks.entrySet()) {
-            LogicallyRepresentable logicallyRepresentable = entry.getKey();
+        for (Map.Entry<LogicComponent, LogicBlock> entry : blocks.entrySet()) {
+            LogicComponent logicComponent = entry.getKey();
             LogicBlock logicBlock = entry.getValue();
-            preferences.putFloat(logicallyRepresentable.getId() + ".x", logicBlock.getX());
-            preferences.putFloat(logicallyRepresentable.getId() + ".y", logicBlock.getY());
+            preferences.putFloat(logicComponent.getId() + ".x", logicBlock.getX());
+            preferences.putFloat(logicComponent.getId() + ".y", logicBlock.getY());
         }
 
         preferences.flush();
@@ -199,7 +197,7 @@ public class LogicGraph extends Stage {
     // TODO simplify
     private void drawLineFromEvent(EventButton eventButton, Vector3 cursorPos) {
         Vector2 startPosition = clampToActor(eventButton, cursorPos);
-        switch (mode) {
+        switch (logicEditor.getMode()) {
             case ADD:
                 shapeRenderer.line(startPosition.x, startPosition.y,
                         cursorPos.x,
@@ -207,7 +205,7 @@ public class LogicGraph extends Stage {
                         EVENT_COLOR_LINE,
                         HANDLER_COLOR_LINE);
                 break;
-            case REMOVE:
+            case DELETE:
                 shapeRenderer.line(startPosition.x, startPosition.y,
                         cursorPos.x,
                         cursorPos.y,
@@ -220,7 +218,7 @@ public class LogicGraph extends Stage {
     // TODO simplify
     private void drawLineFromHandler(HandlerButton handlerButton, Vector3 cursorPos) {
         Vector2 startPosition = clampToActor(handlerButton, cursorPos);
-        switch (mode) {
+        switch (logicEditor.getMode()) {
             case ADD:
                 shapeRenderer.line(startPosition.x, startPosition.y,
                         cursorPos.x,
@@ -228,7 +226,7 @@ public class LogicGraph extends Stage {
                         HANDLER_COLOR_LINE,
                         EVENT_COLOR_LINE);
                 break;
-            case REMOVE:
+            case DELETE:
                 shapeRenderer.line(startPosition.x, startPosition.y,
                         cursorPos.x,
                         cursorPos.y,
@@ -266,7 +264,7 @@ public class LogicGraph extends Stage {
     private void drawLines() {
         shapeRenderer.setColor(Color.WHITE);
 
-        Set<Map.Entry<Event, ArrayList<Handler>>> eventToHandlersConnectionsSet = logic.getEventToHandlersConnections().entrySet();
+        Set<Map.Entry<Event, ArrayList<Handler>>> eventToHandlersConnectionsSet = logicEditor.getLogic().getEventToHandlersConnections().entrySet();
         for (Map.Entry<Event, ArrayList<Handler>> entry : eventToHandlersConnectionsSet) {
             HandlerButton handlerButton;
             EventButton eventButton;
@@ -360,10 +358,4 @@ public class LogicGraph extends Stage {
         }
         camera.update();
     }
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    enum Mode {ADD, REMOVE}
 }

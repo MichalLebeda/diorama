@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.editor.logic;
+package cz.shroomware.diorama.editor.ui.logic;
 
 import com.badlogic.gdx.graphics.Color;
 
@@ -10,7 +10,7 @@ public class EventButton extends DFButton {
     protected Event event;
 
     public EventButton(EditorResources resources, Event event, Color color) {
-        super(resources, event.getEventName());
+        super(resources.getSkin(), resources.getDfShader(), event.getEventName());
         this.event = event;
         label.setColor(color);
     }

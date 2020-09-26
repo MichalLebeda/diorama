@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.ui;
+package cz.shroomware.diorama.editor.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
@@ -14,38 +14,42 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.editor.Editor;
+import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
+import cz.shroomware.diorama.ui.BackgroundLabel;
+import cz.shroomware.diorama.ui.LeftToBackgroundLabel;
+import cz.shroomware.diorama.ui.NameDialog;
 
 public class Hud extends Stage {
+    EditorEngineGame game;
     SelectedItemIndicator selectedItemIndicator;
     SelectedModeIndicator selectedModeIndicator;
-    ModeIndicator modeIndicator;
     ScrollPane scrollPane;
-    DioramaGame game;
     LeftToBackgroundLabel projectNameLabel;
     BackgroundLabel unsavedChangesLabel;
     Messages messages;
-//    Image colorIndicator;
+    EditorResources resources;
+    //    Image colorIndicator;
     boolean lastDirtyState = false;
 
-    public Hud(final DioramaGame game, Prototypes prototypes, Editor editor, Level level) {
+    public Hud(final EditorEngineGame game, Prototypes prototypes, Editor editor, Level level) {
         super();
         this.game = game;
-        EditorResources resources = game.getEditorResources();
+        resources = game.getResources();
+
 //        setDebugAll(true);
 
         setViewport(new ScreenViewport());
         //TODO remember why
         getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
-        selectedItemIndicator = new SelectedItemIndicator(editor, game.getEditorResources().getSkin());
+        selectedItemIndicator = new SelectedItemIndicator(editor, resources.getSkin());
         addActor(selectedItemIndicator);
 
         final VerticalGroup itemGroup = new VerticalGroup();
@@ -54,7 +58,7 @@ public class Hud extends Stage {
         itemGroup.space(10);
         for (int i = 0; i < prototypes.getSize(); i++) {
             Prototype prototype = prototypes.getGameObjectPrototype(i);
-            itemGroup.addActor(new Item(game.getEditorResources(), editor, prototype) {
+            itemGroup.addActor(new Item(resources.getSkin(), resources.getDfShader(), editor, prototype) {
                 @Override
                 public float getPrefWidth() {
                     return 260;
@@ -62,20 +66,12 @@ public class Hud extends Stage {
             });
         }
 
-        scrollPane = new ScrollPane(itemGroup, game.getEditorResources().getSkin());
+        scrollPane = new ScrollPane(itemGroup, resources.getSkin());
         scrollPane.pack();
         addActor(scrollPane);
 
-        selectedModeIndicator = new SelectedModeIndicator(editor, game.getEditorResources().getSkin());
+        selectedModeIndicator = new SelectedModeIndicator(editor, resources.getSkin());
         addActor(selectedModeIndicator);
-
-        modeIndicator = new ModeIndicator(
-                resources,
-                editor,
-                selectedModeIndicator.getX() - 10);
-//        modeIndicator.setY(getHeight() - modeIndicator.getHeightWithPadding() - 10);
-//        //TODO: remove
-//        addActor(modeIndicator);
 
         messages = new Messages(resources);
         messages.setWidth(400);
@@ -190,8 +186,6 @@ public class Hud extends Stage {
         unsavedChangesLabel.setX(projectNameLabel.getXWithPadding() + projectNameLabel.getWidthWithPadding() + 10);
         unsavedChangesLabel.setY(projectNameLabel.getYWithPadding());
 
-        modeIndicator.setY(getHeight() - modeIndicator.getHeightWithPadding() - 10);
-
         scrollPane.setHeight(getViewport().getWorldHeight());
         scrollPane.setPosition(
                 getViewport().getWorldWidth() - scrollPane.getWidth(),
@@ -206,7 +200,8 @@ public class Hud extends Stage {
     }
 
     public void openIdAssignDialog(final GameObjects gameObjects, final GameObject gameObject) {
-        NameDialog nameDialog = new NameDialog(game,
+        NameDialog nameDialog = new NameDialog(resources.getSkin(),
+                resources.getDfShader(),
                 "Set Object Tag:",
                 gameObject.hasId() ? gameObject.getId() : "") {
             @Override

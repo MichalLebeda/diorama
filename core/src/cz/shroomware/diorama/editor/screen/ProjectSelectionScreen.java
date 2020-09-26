@@ -1,4 +1,4 @@
-package cz.shroomware.diorama.screen;
+package cz.shroomware.diorama.editor.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -20,8 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import cz.shroomware.diorama.DioramaGame;
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.DFLabel;
@@ -32,13 +32,15 @@ public class ProjectSelectionScreen implements Screen {
     final VerticalGroup verticalGroup;
     ScrollPane scrollPane;
     BackgroundLabel createFileLabel;
-    DioramaGame game;
+    EditorEngineGame game;
+    EditorResources resources;
     Stage stage;
     Color backgroundColor = new Color(0x424242ff);
 
 
-    public ProjectSelectionScreen(final DioramaGame game) {
+    public ProjectSelectionScreen(final EditorEngineGame game) {
         this.game = game;
+        resources = game.getResources();
 
         stage = new Stage(new ScreenViewport());
 //        stage.setDebugAll(true);
@@ -51,9 +53,6 @@ public class ProjectSelectionScreen implements Screen {
 
         scrollPane = new ScrollPane(verticalGroup);
         stage.addActor(scrollPane);
-
-
-        EditorResources resources = game.getEditorResources();
         createFileLabel = new BackgroundLabel(
                 "New File",
                 resources.getSkin(),
@@ -62,7 +61,7 @@ public class ProjectSelectionScreen implements Screen {
         createFileLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                NameDialog dialog = new NameDialog(game, "New Project Name: ", "") {
+                NameDialog dialog = new NameDialog(resources.getSkin(), resources.getDfShader(), "New Project Name: ", "") {
                     @Override
                     public void onAccepted(String name) {
                         game.openEditor(name);
@@ -77,7 +76,7 @@ public class ProjectSelectionScreen implements Screen {
 
     public void refreshList() {
         verticalGroup.clear();
-        final Drawable darkBackground = game.getEditorResources().getSkin().getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
+        final Drawable darkBackground = game.getResources().getSkin().getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
 
         FileHandle[] fileHandles = Utils.getProjectFolderFileHandle().list();
         for (final FileHandle fileHandle : fileHandles) {
@@ -107,12 +106,12 @@ public class ProjectSelectionScreen implements Screen {
                     game.openEditor(fileHandle.name());
                 }
             });
-            final Button button = new Button(game.getEditorResources().getSkin()) {
+            final Button button = new Button(resources.getSkin()) {
                 @Override
                 public void draw(Batch batch, float parentAlpha) {
                     super.draw(batch, parentAlpha);
 
-                    TextureRegion crossRegion = game.getEditorResources().getUiAtlas().findRegion("cross");
+                    TextureRegion crossRegion = resources.getUiAtlas().findRegion("cross");
                     float PAD = 30;
                     batch.draw(crossRegion, getX() + PAD,
                             getY() + PAD,
@@ -123,7 +122,9 @@ public class ProjectSelectionScreen implements Screen {
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    YesNoDialog dialog = new YesNoDialog(game, "Are you sure") {
+                    YesNoDialog dialog = new YesNoDialog(resources.getSkin(),
+                            resources.getDfShader(),
+                            "Are you sure") {
                         @Override
                         public void onAccepted() {
                             fileHandle.delete();
@@ -135,8 +136,7 @@ public class ProjectSelectionScreen implements Screen {
             });
 
             horizontalGroup.addActor(button);
-            EditorResources resources = game.getEditorResources();
-            horizontalGroup.addActor(new DFLabel(fileHandle.name(), resources.getSkin(), resources.getDfShader()));
+            horizontalGroup.addActor(new DFLabel(resources.getSkin(), resources.getDfShader(), fileHandle.name()));
             verticalGroup.addActor(horizontalGroup);
         }
 

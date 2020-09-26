@@ -1,27 +1,29 @@
-package cz.shroomware.diorama.ui;
+package cz.shroomware.diorama.editor.ui;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 
 import cz.shroomware.diorama.editor.Editor;
-import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
+import cz.shroomware.diorama.ui.DFLabel;
 
 public class Item extends HorizontalGroup {
     static final int ITEM_SIZE = 100;
     Prototype prototype;
 
-    public Item(EditorResources resources, final Editor editor, final Prototype prototype) {
+    public Item(Skin skin, ShaderProgram dfShader, final Editor editor, final Prototype prototype) {
         this.prototype = prototype;
         space(20);
         align(Align.right);
-        DFLabel label = new DFLabel(prototype.getName(), resources.getSkin(), resources.getDfShader());
+        DFLabel label = new DFLabel(skin, dfShader, prototype.getName());
         label.setFontScale(0.3f);
         addActor(label);
 

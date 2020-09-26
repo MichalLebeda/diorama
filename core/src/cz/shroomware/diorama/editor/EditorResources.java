@@ -14,6 +14,12 @@ public class EditorResources extends Resources {
     protected TextureRegion cursorRegion;
     protected ShaderProgram dfShader;
 
+    public EditorResources(Resources resources) {
+        objectAtlas = resources.getObjectAtlas();
+        shadowAtlas = resources.getShadowAtlas();
+        spriteBatchShader = resources.getSpriteBatchShader();
+    }
+
     public TextureAtlas getUiAtlas() {
         return uiAtlas;
     }
