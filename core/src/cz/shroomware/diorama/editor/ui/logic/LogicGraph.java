@@ -3,8 +3,10 @@ package cz.shroomware.diorama.editor.ui.logic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -65,57 +67,9 @@ public class LogicGraph extends Stage {
         preferences.flush();
     }
 
-    public void update(boolean savePositions) {
-        if (savePositions) {
-            save();
-        }
-
-        blocks.clear();
-        handlerButtons.clear();
-        eventButtons.clear();
-        clear();
-
-        Collection<LogicComponent> parentsSet = logicEditor.getLogic().getAllParents();
-        for (LogicComponent logicComponent : parentsSet) {
-            LogicBlock block = new LogicBlock(logicComponent, resources, EVENT_COLOR, HANDLER_COLOR) {
-                @Override
-                public void onEventClicked(EventButton button) {
-                    if (eventButton == null) {
-                        eventButton = button;
-                        if (handlerButton != null) {
-                            finishAction();
-                        }
-                    }
-                }
-
-                @Override
-                public void onHandlerClicked(HandlerButton button) {
-                    if (handlerButton == null) {
-                        handlerButton = button;
-                        if (eventButton != null) {
-                            finishAction();
-                        }
-                    }
-                }
-
-                @Override
-                public void onRequestDelete() {
-                    logicEditor.getLogic().unregister(getLogicComponent());
-                    cancelConnection();
-                    update(true);
-                }
-            };
-
-            float x = preferences.getFloat(logicComponent.getId() + ".x", 0);
-            float y = preferences.getFloat(logicComponent.getId() + ".y", 0);
-            block.setPosition(x, y);
-            blocks.put(logicComponent, block);
-            eventButtons.putAll(block.getEventButtonHashMap());
-            handlerButtons.putAll(block.getHandlerButtonHashMap());
-            addActor(block);
-        }
-    }
-
+    float anim = 0;
+    float ANIM_DURATION = 4;
+    Color arrowActualArrowColor;
 
     public void setPosToCamera(LogicComponent component) {
         LogicBlock block = blocks.get(component);
@@ -151,24 +105,6 @@ public class LogicGraph extends Stage {
         handlerButton = null;
     }
 
-    @Override
-    public void draw() {
-        shapeRenderer.setProjectionMatrix(getCamera().combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-        shapeRenderer.setColor(Color.GRAY);
-        shapeRenderer.line(-CROSS_SIZE, 0, CROSS_SIZE, 0);
-        shapeRenderer.line(0, -CROSS_SIZE, 0, CROSS_SIZE);
-
-        shapeRenderer.end();
-
-        super.draw();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        drawLines();
-        shapeRenderer.end();
-    }
-
     public void save() {
         preferences.clear();
 
@@ -186,29 +122,104 @@ public class LogicGraph extends Stage {
         preferences.flush();
     }
 
+    public void update(boolean savePositions) {
+        if (savePositions) {
+            save();
+        }
+
+        blocks.clear();
+        handlerButtons.clear();
+        eventButtons.clear();
+        clear();
+
+        Collection<LogicComponent> parentsSet = logicEditor.getLogic().getAllParents();
+        for (LogicComponent logicComponent : parentsSet) {
+            LogicBlock block = new LogicBlock(logicComponent, resources, EVENT_COLOR, HANDLER_COLOR) {
+                @Override
+                public void onEventClicked(EventButton button) {
+                    if (eventButton == null) {
+                        eventButton = button;
+                        eventButton.getSlot().highlight();
+                        if (handlerButton != null) {
+                            finishAction();
+                        }
+                    }
+                }
+
+                @Override
+                public void onHandlerClicked(HandlerButton button) {
+                    if (handlerButton == null) {
+                        handlerButton = button;
+                        handlerButton.getSlot().highlight();
+                        if (eventButton != null) {
+                            finishAction();
+                        }
+                    }
+                }
+
+                @Override
+                public void onRequestDelete() {
+                    logicEditor.getLogic().unregister(getLogicComponent());
+                    cancelConnection();
+                    update(true);
+                }
+            };
+
+            float x = preferences.getFloat(logicComponent.getId() + ".x", 0);
+            float y = preferences.getFloat(logicComponent.getId() + ".y", 0);
+            block.setPosition(x, y);
+            blocks.put(logicComponent, block);
+            eventButtons.putAll(block.getEventButtonHashMap());
+            handlerButtons.putAll(block.getHandlerButtonHashMap());
+            addActor(block);
+        }
+    }
+
+    @Override
+    public void draw() {
+        anim += Gdx.graphics.getDeltaTime();
+        if (anim >= ANIM_DURATION) {
+            anim = 0;
+        }
+
+        shapeRenderer.setProjectionMatrix(getCamera().combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        shapeRenderer.setColor(Color.GRAY);
+        shapeRenderer.line(-CROSS_SIZE, 0, CROSS_SIZE, 0);
+        shapeRenderer.line(0, -CROSS_SIZE, 0, CROSS_SIZE);
+
+        shapeRenderer.end();
+
+        super.draw();
+
+        shapeRenderer.setProjectionMatrix(getCamera().combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        arrowActualArrowColor = ARROW_COLOR.cpy();
+        if (anim < ANIM_DURATION / 2) {
+            arrowActualArrowColor.a = Interpolation.circleOut.apply(0, 1, anim / ANIM_DURATION * 2);
+        } else {
+            arrowActualArrowColor.a = Interpolation.circleOut.apply(1, 0, (anim - ANIM_DURATION / 2) / ANIM_DURATION * 2);
+        }
+        drawLines();
+        shapeRenderer.end();
+    }
+
     private void drawLine(Actor actorA, Actor actorB) {
         Vector2 aPosition = new Vector2(0, 0);
         Vector2 bPosition = new Vector2(0, 0);
 
         aPosition = actorA.localToStageCoordinates(aPosition);
-        aPosition.add(actorA.getWidth() / 2, actorA.getHeight() / 2);
+        aPosition.add(actorA.getWidth() * actorA.getScaleX() / 2, actorA.getHeight() * actorA.getScaleY() / 2);
 
         bPosition = actorB.localToStageCoordinates(bPosition);
-        bPosition.add(actorB.getWidth() / 2, actorB.getHeight() / 2);
+        bPosition.add(actorB.getWidth() * actorB.getScaleX() / 2, actorB.getHeight() * actorB.getScaleY() / 2);
 
         Vector2 lineStart = aPosition;
         Vector2 lineEnd = bPosition;
-
-        Vector2 arrowPos = aPosition.cpy().add(bPosition).scl(0.5f);
-        Vector2 direction = bPosition.cpy().sub(aPosition).nor();
-        Vector2 arrowEnd = arrowPos.cpy().sub(direction.scl(30));
-
-        shapeRenderer.setColor(ARROW_COLOR);
-        arrowEnd.rotateAround(arrowPos, 30);
-        shapeRenderer.line(arrowPos, arrowEnd);
-
-        arrowEnd.rotateAround(arrowPos, -60);
-        shapeRenderer.line(arrowPos, arrowEnd);
 
         shapeRenderer.line(
                 lineStart.x,
@@ -217,6 +228,20 @@ public class LogicGraph extends Stage {
                 lineEnd.y,
                 EVENT_COLOR,
                 HANDLER_COLOR);
+
+        float length = bPosition.cpy().sub(aPosition).len();
+        float theta = Interpolation.circleOut.apply(0, 1, anim / ANIM_DURATION);
+        Vector2 direction = bPosition.cpy().sub(aPosition).nor();
+        Vector2 arrowPos = direction.cpy().scl(length * (theta));
+        arrowPos.add(aPosition);
+        Vector2 arrowEnd = arrowPos.cpy().sub(direction.scl(30));
+
+        shapeRenderer.setColor(arrowActualArrowColor);
+        arrowEnd.rotateAround(arrowPos, 30);
+        shapeRenderer.line(arrowPos, arrowEnd);
+
+        arrowEnd.rotateAround(arrowPos, -60);
+        shapeRenderer.line(arrowPos, arrowEnd);
     }
 
 
@@ -224,7 +249,7 @@ public class LogicGraph extends Stage {
     private void drawLineFromActor(Actor actor, Vector3 cursorPos, boolean eventFirst) {
         Vector2 startPosition = new Vector2(0, 0);
         startPosition = actor.localToStageCoordinates(startPosition);
-        startPosition.add(actor.getWidth() / 2, actor.getHeight() / 2);
+        startPosition.add(actor.getWidth() * actor.getScaleX() / 2, actor.getHeight() * actor.getScaleY() / 2);
 
 
         switch (logicEditor.getMode()) {
@@ -246,6 +271,12 @@ public class LogicGraph extends Stage {
                     endColor = EVENT_COLOR;
                 }
 
+                shapeRenderer.line(startPosition.x, startPosition.y,
+                        cursorPos.x,
+                        cursorPos.y,
+                        startColor,
+                        endColor);
+
                 shapeRenderer.setColor(ARROW_COLOR);
                 arrowEnd.rotateAround(arrowPos, 30);
                 shapeRenderer.line(arrowPos, arrowEnd);
@@ -253,11 +284,6 @@ public class LogicGraph extends Stage {
                 arrowEnd.rotateAround(arrowPos, -60);
                 shapeRenderer.line(arrowPos, arrowEnd);
 
-                shapeRenderer.line(startPosition.x, startPosition.y,
-                        cursorPos.x,
-                        cursorPos.y,
-                        startColor,
-                        endColor);
                 break;
             case DELETE:
                 shapeRenderer.line(startPosition.x, startPosition.y,
@@ -282,7 +308,7 @@ public class LogicGraph extends Stage {
             ArrayList<Handler> handlers = entry.getValue();
             for (Handler handler : handlers) {
                 handlerButton = handlerButtons.get(handler);
-                drawLine(eventButton.getSlot(), handlerButton.getButton());
+                drawLine(eventButton.getSlot(), handlerButton.getSlot());
             }
         }
 
@@ -292,7 +318,7 @@ public class LogicGraph extends Stage {
         if (eventButton != null && handlerButton == null) {
             drawLineFromActor(eventButton.getSlot(), cursorPos, true);
         } else if (eventButton == null && handlerButton != null) {
-            drawLineFromActor(handlerButton.getButton(), cursorPos, false);
+            drawLineFromActor(handlerButton.getSlot(), cursorPos, false);
         }
         shapeRenderer.end();
     }
