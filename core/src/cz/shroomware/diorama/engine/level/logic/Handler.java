@@ -3,12 +3,14 @@ package cz.shroomware.diorama.engine.level.logic;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 
 public abstract class Handler {
-    cz.shroomware.diorama.engine.level.logic.component.LogicComponent parent;
+ LogicComponent parent;
     String name;
 
-    public Handler(cz.shroomware.diorama.engine.level.logic.component.LogicComponent parent, String name) {
+    public Handler(LogicComponent parent, String name) {
         this.parent = parent;
-        this.name = name;
+        this.name = name
+                .replace(" ", "_")
+                .replace(":", "_");
     }
 
     public String getHandlerName() {
