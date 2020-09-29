@@ -57,6 +57,7 @@ public class GameObjects {
     public void remove(GameObject gameObject) {
         dirty = true;
         gameObjects.removeValue(gameObject, false);
+        idToObject.remove(gameObject.getId());
         if (gameObject.hasBody()) {
             Body body = gameObject.getBody();
             World world = body.getWorld();
