@@ -265,9 +265,7 @@ public class Logic {
 
         size = 0;
         for (ArrayList<Handler> handlers : eventToHandlersConnections.values()) {
-            for (Handler handler : handlers) {
-                size++;
-            }
+            size += handlers.size();
         }
         outputStream.write((size + "\n").getBytes());
         for (Map.Entry<Event, ArrayList<Handler>> entry : eventToHandlersConnections.entrySet()) {
