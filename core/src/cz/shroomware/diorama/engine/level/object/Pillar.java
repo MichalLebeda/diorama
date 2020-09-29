@@ -21,7 +21,7 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public class PillarGameObject extends GameObject {
+public class Pillar extends GameObject {
     Decal left, right, front, back;
     TextureRegion region;
     TextureRegion regionConnectedLeft;
@@ -29,7 +29,7 @@ public class PillarGameObject extends GameObject {
     TextureRegion regionConnectedBoth;
     HexRegion topRegions;
 
-    public PillarGameObject(Vector3 position, PillarPrototype prototype, BoxFactory boxFactory) {
+    public Pillar(Vector3 position, PillarPrototype prototype, BoxFactory boxFactory) {
         super(position, prototype.getTop().get("oooo"), prototype);
 
         region = prototype.getRegion();
@@ -137,9 +137,9 @@ public class PillarGameObject extends GameObject {
         Tile tile;
 
         tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
-        if (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class)) {
+        if (tile != null && tile.hasAttachedObjectOfClass(Pillar.class)) {
             tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
-            if (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class)) {
+            if (tile != null && tile.hasAttachedObjectOfClass(Pillar.class)) {
                 front.setTextureRegion(regionConnectedBoth);
                 back.setTextureRegion(regionConnectedBoth);
             } else {
@@ -148,7 +148,7 @@ public class PillarGameObject extends GameObject {
             }
         } else {
             tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
-            if (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class)) {
+            if (tile != null && tile.hasAttachedObjectOfClass(Pillar.class)) {
                 front.setTextureRegion(regionConnectedRight);
                 back.setTextureRegion(regionConnectedRight);
             } else {
@@ -158,9 +158,9 @@ public class PillarGameObject extends GameObject {
         }
 
         tile = floor.getTileByOffset(tileAttachedTo, 0, -1);
-        if (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class)) {
+        if (tile != null && tile.hasAttachedObjectOfClass(Pillar.class)) {
             tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
-            if (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class)) {
+            if (tile != null && tile.hasAttachedObjectOfClass(Pillar.class)) {
                 left.setTextureRegion(regionConnectedBoth);
                 right.setTextureRegion(regionConnectedBoth);
             } else {
@@ -169,7 +169,7 @@ public class PillarGameObject extends GameObject {
             }
         } else {
             tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
-            if (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class)) {
+            if (tile != null && tile.hasAttachedObjectOfClass(Pillar.class)) {
                 left.setTextureRegion(regionConnectedRight);
                 right.setTextureRegion(regionConnectedRight);
             } else {
@@ -180,13 +180,13 @@ public class PillarGameObject extends GameObject {
 
         boolean up, right, down, left;
         tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
-        up = (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class));
+        up = (tile != null && tile.hasAttachedObjectOfClass(Pillar.class));
         tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
-        right = (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class));
+        right = (tile != null && tile.hasAttachedObjectOfClass(Pillar.class));
         tile = floor.getTileByOffset(tileAttachedTo, 0, -1);
-        down = (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class));
+        down = (tile != null && tile.hasAttachedObjectOfClass(Pillar.class));
         tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
-        left = (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class));
+        left = (tile != null && tile.hasAttachedObjectOfClass(Pillar.class));
 
         decal.setTextureRegion(topRegions.get(up, right, down, left));
     }

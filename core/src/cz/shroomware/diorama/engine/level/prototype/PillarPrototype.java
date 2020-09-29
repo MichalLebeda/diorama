@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 import cz.shroomware.diorama.engine.HexRegion;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.PillarGameObject;
+import cz.shroomware.diorama.engine.level.object.Pillar;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class PillarPrototype extends Prototype {
@@ -33,7 +33,7 @@ public class PillarPrototype extends Prototype {
 
     @Override
     public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
-        return new PillarGameObject(position, this, boxFactory);
+        return new Pillar(position, this, boxFactory);
     }
 
     @Override

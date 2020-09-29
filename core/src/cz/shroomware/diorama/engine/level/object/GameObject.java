@@ -32,12 +32,6 @@ public abstract class GameObject implements LogicComponent {
     protected String id = null;
     protected boolean selected = false;
 
-    protected GameObject(Vector3 position, Quaternion quaternion, TextureRegion region, Prototype prototype) {
-        this(position, region, prototype);
-
-        decal.setRotation(quaternion);
-    }
-
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
         this.prototype = prototype;
 

@@ -19,6 +19,8 @@ public abstract class ParticleEmitter {
 
     int particleLimit = 0;
 
+    boolean emission = true;
+
     //TODO GLOBAL PARTICLE LIMIT
     Array<Particle> particleArray = new Array();
 
@@ -47,7 +49,7 @@ public abstract class ParticleEmitter {
 //        Gdx.app.log("ParticleEmitter", "size: " + particleArray.size);
         timeFromLastParticle += delta;
 
-        if (timeFromLastParticle >= 1f / particlesPerSecond) {
+        if (emission && timeFromLastParticle >= 1f / particlesPerSecond) {
             spawn();
         }
 
@@ -63,9 +65,9 @@ public abstract class ParticleEmitter {
     }
 
     protected void spawn() {
-        Vector3 position = new Vector3(MathUtils.random(x, x + width),
-                MathUtils.random(y, y + depth),
-                MathUtils.random(z, z + height)
+        Vector3 position = new Vector3(MathUtils.randomTriangular(x, x + width),
+                MathUtils.randomTriangular(y, y + depth),
+                MathUtils.randomTriangular(z, z + height)
         );
         Particle particle = createParticle(position);
 //        particle.setPosition(position);
@@ -76,6 +78,14 @@ public abstract class ParticleEmitter {
         while (particleLimitExceeded()) {
             particleArray.removeIndex(0);
         }
+    }
+
+    public void setEmission(boolean emission) {
+        this.emission = emission;
+    }
+
+    public boolean isEmitting() {
+        return emission;
     }
 
     protected boolean particleLimitExceeded() {

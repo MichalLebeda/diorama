@@ -9,6 +9,7 @@ import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.shroomware.diorama.engine.level.prototype.DoorPrototype;
+import cz.shroomware.diorama.engine.level.prototype.FirePrototype;
 import cz.shroomware.diorama.engine.level.prototype.LampPrototype;
 import cz.shroomware.diorama.engine.level.prototype.PillarPrototype;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
@@ -26,6 +27,7 @@ public class Prototypes {
         addGameObjectPrototype(new DoorPrototype(resources));
         addGameObjectPrototype(new PillarPrototype(resources));
         addGameObjectPrototype(new LampPrototype(resources));
+        addGameObjectPrototype(new FirePrototype(resources));
 
         Array<String> blacklist = new Array<>();
         blacklist.add("cursor");
@@ -34,6 +36,7 @@ public class Prototypes {
         blacklist.add("door");
         blacklist.add("pillar");
         blacklist.add("lamp");
+        blacklist.add("fire");
 
         //TODO zjistit proc se neanimovane nenacitaji
         Array<TextureAtlas.AtlasRegion> regions = resources.getObjectAtlas().getRegions();
@@ -76,7 +79,7 @@ public class Prototypes {
                     addGameObjectPrototype(new AtlasRegionPrototype(resources, region));
                 }
             }
-            }
+        }
     }
 
     public int getSize() {

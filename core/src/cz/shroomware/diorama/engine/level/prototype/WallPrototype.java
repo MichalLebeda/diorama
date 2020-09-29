@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 import cz.shroomware.diorama.engine.HexRegion;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.WallObject;
+import cz.shroomware.diorama.engine.level.object.Wall;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class WallPrototype extends Prototype {
@@ -33,7 +33,7 @@ public class WallPrototype extends Prototype {
 
     @Override
     public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
-        return new WallObject(position, this, boxFactory);
+        return new Wall(position, this, boxFactory);
     }
 
     @Override

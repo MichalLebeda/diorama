@@ -14,11 +14,11 @@ import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.TreePrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
-public class TreeGameObject extends AtlasRegionGameObject {
+public class Tree extends GameObject {
     ParticleEmitter particleEmitter;
 
-    public TreeGameObject(Vector3 position, TreePrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype);
+    public Tree(Vector3 position, TreePrototype prototype, BoxFactory boxFactory) {
+        super(position, prototype.getObjectRegion(), prototype);
         particleEmitter = createParticleEmitter(position, prototype);
         attachToBody(createBody(boxFactory));
     }
@@ -26,7 +26,6 @@ public class TreeGameObject extends AtlasRegionGameObject {
     protected Body createBody(BoxFactory boxFactory) {
         body = boxFactory.addCircle(getPosition().x, getPosition().y, 0.4f);
         return body;
-//        body.setUserData(this);
     }
 
     protected ParticleEmitter createParticleEmitter(Vector3 position, final TreePrototype prototype) {

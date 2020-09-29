@@ -26,6 +26,7 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.logic.prototype.AndGatePrototype;
+import cz.shroomware.diorama.engine.level.logic.prototype.OrGatePrototype;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.level.object.Trigger;
@@ -114,6 +115,7 @@ public class Level {
 
         boxFactory = new BoxFactory(world);
         logic = new Logic();
+        logic.addPureLogicComponentPrototype(new OrGatePrototype());
         logic.addPureLogicComponentPrototype(new AndGatePrototype());
         floor = new Floor(resources.getObjectAtlas().findRegion("floor"));
         gameObjects = new GameObjects(logic);

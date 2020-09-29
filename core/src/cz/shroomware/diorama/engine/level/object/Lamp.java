@@ -1,7 +1,6 @@
 package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
@@ -15,13 +14,6 @@ public class Lamp extends GameObject {
     protected boolean on = false;
     protected TextureRegion onRegion;
     protected TextureRegion offRegion;
-
-    public Lamp(Vector3 position, Quaternion quaternion, LampPrototype prototype) {
-        super(position, quaternion, prototype.getOffRegion(), prototype);
-        createHandlers();
-        onRegion = prototype.getOnRegion();
-        offRegion = prototype.getOffRegion();
-    }
 
     public Lamp(Vector3 position, LampPrototype prototype) {
         super(position, prototype.getOffRegion(), prototype);
