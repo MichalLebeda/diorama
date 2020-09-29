@@ -5,14 +5,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.ObjectShadowPair;
 import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
-import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
@@ -20,17 +18,7 @@ public abstract class AnimatedGameObject extends GameObject {
     RegionAnimation animation;
     float time;
 
-    public AnimatedGameObject(Vector3 position, Quaternion quaternion, AnimatedPrototype prototype, BoxFactory boxFactory) {
-        this(position, prototype);
-        decal.setRotation(quaternion);
-    }
-
-    public AnimatedGameObject(Vector3 position, Quaternion quaternion, AnimatedPrototype prototype) {
-        this(position, prototype);
-        decal.setRotation(quaternion);
-    }
-
-    protected AnimatedGameObject(Vector3 position, AnimatedPrototype prototype) {
+    public AnimatedGameObject(Vector3 position, AnimatedPrototype prototype) {
         super(position, prototype.getAnimation().first().getObject(), prototype);
         animation = prototype.getAnimation();
         createShadowSprite();

@@ -1,7 +1,6 @@
 package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
@@ -15,16 +14,10 @@ import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.TreePrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
-public class TreeGameObject extends SingleRegionGameObject {
+public class TreeGameObject extends AtlasRegionGameObject {
     ParticleEmitter particleEmitter;
 
-    public TreeGameObject(Vector3 position, Quaternion quaternion, TreePrototype prototype, BoxFactory boxFactory) {
-        super(position, quaternion, prototype);
-        particleEmitter = createParticleEmitter(position, prototype);
-        attachToBody(createBody(boxFactory));
-    }
-
-    protected TreeGameObject(Vector3 position, final TreePrototype prototype, BoxFactory boxFactory) {
+    public TreeGameObject(Vector3 position, TreePrototype prototype, BoxFactory boxFactory) {
         super(position, prototype);
         particleEmitter = createParticleEmitter(position, prototype);
         attachToBody(createBody(boxFactory));

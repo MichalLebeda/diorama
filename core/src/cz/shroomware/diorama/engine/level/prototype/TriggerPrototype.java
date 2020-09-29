@@ -1,7 +1,6 @@
 package cz.shroomware.diorama.engine.level.prototype;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.engine.level.Resources;
@@ -20,21 +19,12 @@ public class TriggerPrototype extends Prototype {
 
     @Override
     public TextureRegion getIconRegion() {
-        if (dependenciesFulfilled()) {
-            return region;
-        }
-
-        return resources.getObjectAtlas().findRegion("cursor");
+        return region;
     }
 
     @Override
-    public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
-        return new Trigger(new Vector3(x, y, 0), region, this, boxFactory);
-    }
-
-    @Override
-    public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
-        return new Trigger(cursor.getPosition(), region, this, boxFactory);
+    public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
+        return new Trigger(position, this, boxFactory);
     }
 
     @Override
@@ -50,5 +40,9 @@ public class TriggerPrototype extends Prototype {
     @Override
     public boolean isAttached() {
         return true;
+    }
+
+    public TextureRegion getRegion() {
+        return region;
     }
 }

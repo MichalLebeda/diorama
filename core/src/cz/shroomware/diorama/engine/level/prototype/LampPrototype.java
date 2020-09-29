@@ -4,52 +4,51 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.engine.level.Resources;
-import cz.shroomware.diorama.engine.level.object.Door;
 import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.object.Lamp;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
-public class DoorPrototype extends Prototype {
+public class LampPrototype extends Prototype {
+    protected TextureRegion onRegion, offRegion;
     Resources resources;
-    TextureRegion doorRegion;
-    TextureRegion doorPostRegion;
 
-    public DoorPrototype(Resources resources) {
+    public LampPrototype(Resources resources) {
         this.resources = resources;
-        doorRegion = resources.getObjectAtlas().findRegion("door");
-        doorPostRegion = resources.getObjectAtlas().findRegion("door_post");
+        onRegion = resources.getObjectAtlas().findRegion("lamp_on");
+        offRegion = resources.getObjectAtlas().findRegion("lamp_off");
     }
 
-
+    //TODO return null and handle it outside if region not found
     @Override
     public TextureRegion getIconRegion() {
-        return doorRegion;
+        return offRegion;
     }
 
     @Override
     public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
-        return new Door(position, this, boxFactory);
+        return new Lamp(position, this);
     }
 
     @Override
     public String getName() {
-        return "door";
+        return "lamp";
     }
 
     @Override
     public boolean dependenciesFulfilled() {
-        return doorRegion != null && doorPostRegion != null;
+        return onRegion != null & offRegion != null;
     }
 
     @Override
     public boolean isAttached() {
-        return true;
+        return false;
     }
 
-    public TextureRegion getDoorRegion() {
-        return doorRegion;
+    public TextureRegion getOffRegion() {
+        return offRegion;
     }
 
-    public TextureRegion getDoorPostRegion() {
-        return doorPostRegion;
+    public TextureRegion getOnRegion() {
+        return onRegion;
     }
 }

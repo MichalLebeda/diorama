@@ -1,10 +1,8 @@
 package cz.shroomware.diorama.engine.level.prototype;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
-import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
@@ -22,17 +20,11 @@ public abstract class Prototype {
 
 //    public abstract boolean hasShadow();
 
-    public abstract GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory);
-
-    public abstract GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory);
+    public abstract GameObject createAt(Vector3 position, BoxFactory boxFactory);
 
     public abstract String getName();
 
     public abstract boolean dependenciesFulfilled();
 
     public abstract boolean isAttached();
-
-    protected Vector3 onFloorCoords(float x, float y, TextureRegion region) {
-        return new Vector3(x, y, region.getRegionHeight() / Utils.PIXELS_PER_METER / 2f);
-    }
 }

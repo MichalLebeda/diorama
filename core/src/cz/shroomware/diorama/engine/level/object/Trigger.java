@@ -1,7 +1,7 @@
 package cz.shroomware.diorama.engine.level.object;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
@@ -18,8 +18,10 @@ public class Trigger extends GameObject {
     Array<Event> events = new Array<>(Event.class);
     Logic logic;
 
-    public Trigger(Vector3 position, TextureRegion region, TriggerPrototype prototype, BoxFactory boxFactory) {
-        super(position, region, prototype);
+    public Trigger(Vector3 position, TriggerPrototype prototype, BoxFactory boxFactory) {
+        super(position, prototype.getRegion(), prototype);
+
+        decal.setRotationX(0);
 
         attachToBody(createBody(boxFactory));
 
@@ -60,14 +62,24 @@ public class Trigger extends GameObject {
     public void addContact() {
         contacts++;
         if (contacts == 1) {
-            logic.sendEvent(events.get(0));
+            if (logic != null) {
+                logic.sendEvent(events.get(0));
+            }
         }
     }
 
     public void removeContact() {
         contacts--;
         if (contacts == 0) {
-            logic.sendEvent(events.get(1));
+            //TODO generic solution when logic is null (not registered)
+            if (logic != null) {
+                logic.sendEvent(events.get(1));
+            }
         }
+    }
+
+    @Override
+    public void setRotation(Quaternion quaternion) {
+        // Trigger has fixed rotation
     }
 }

@@ -18,8 +18,8 @@ import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
+import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
-import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
@@ -42,6 +42,7 @@ public abstract class GameObject implements LogicComponent {
         this.prototype = prototype;
 
         decal = Decal.newDecal(region, true);
+        decal.rotateX(90);
         decal.setPosition(position);
         decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
         decal.setHeight(region.getRegionHeight() / PIXELS_PER_METER);
@@ -221,7 +222,7 @@ public abstract class GameObject implements LogicComponent {
         body.setUserData(this);
     }
 
-    protected void createShadowSprite(SingleRegionPrototype prototype) {
+    protected void createShadowSprite(AtlasRegionPrototype prototype) {
         TextureRegion shadowRegion = prototype.getShadowRegion();
         if (prototype.getShadowRegion() != null) {
             shadowSprite = new Sprite(shadowRegion);

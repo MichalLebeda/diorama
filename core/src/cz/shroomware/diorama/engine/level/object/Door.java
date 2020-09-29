@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -33,10 +32,9 @@ public class Door extends GameObject {
     Array<Handler> handlers = new Array<>(Handler.class);
 
     public Door(Vector3 position,
-                Quaternion quaternion,
                 DoorPrototype prototype,
                 BoxFactory boxFactory) {
-        super(position, quaternion, prototype.getDoorPostRegion(), prototype);
+        super(position, prototype.getDoorPostRegion(), prototype);
 
         movingPart = Decal.newDecal(prototype.getDoorRegion(), true);
         movingPart.setPosition(position);
@@ -76,17 +74,6 @@ public class Door extends GameObject {
     public void onRegister(Logic logic) {
 
     }
-
-    //    public Door(Vector3 position,
-//                DoorPrototype prototype,
-//                BoxFactory boxFactory) {
-//        super(position, prototype.getDoorPostRegion(), prototype);
-////TODO:
-//
-//        attachToBody(boxFactory.addBoxCenter(decal.getX(), decal.getY(), 1, 0.1f));
-
-
-//    }
 
     public void open(Vector3 openedByPos) {
         if (!open) {

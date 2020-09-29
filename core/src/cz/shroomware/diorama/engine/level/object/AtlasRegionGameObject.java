@@ -2,27 +2,22 @@ package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
+import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public abstract class SingleRegionGameObject extends GameObject {
+public abstract class AtlasRegionGameObject extends GameObject {
+    //TODO add shadows everywhere
 
-    public SingleRegionGameObject(Vector3 position, Quaternion quaternion, SingleRegionPrototype prototype) {
-        super(position, quaternion, prototype.getObjectRegion(), prototype);
-        createShadowSprite(prototype);
-    }
-
-    protected SingleRegionGameObject(Vector3 position, SingleRegionPrototype prototype) {
+    protected AtlasRegionGameObject(Vector3 position, AtlasRegionPrototype prototype) {
         super(position, prototype.getObjectRegion(), prototype);
         createShadowSprite(prototype);
     }
 
-    protected void createShadowSprite(SingleRegionPrototype prototype) {
+    protected void createShadowSprite(AtlasRegionPrototype prototype) {
         TextureRegion shadowRegion = prototype.getShadowRegion();
         if (prototype.getShadowRegion() != null) {
             shadowSprite = new Sprite(shadowRegion);

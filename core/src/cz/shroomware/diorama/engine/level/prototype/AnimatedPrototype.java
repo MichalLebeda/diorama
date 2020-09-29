@@ -1,7 +1,7 @@
 package cz.shroomware.diorama.engine.level.prototype;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.RegionAnimation;
@@ -31,28 +31,8 @@ public class AnimatedPrototype extends Prototype {
     }
 
     @Override
-    public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
-        return new AnimatedGameObject(onFloorCoords(x, y, getAnimation().first().getObject()), quaternion, this) {
-            @Override
-            public Array<Event> getEvents() {
-                return null;
-            }
-
-            @Override
-            public Array<Handler> getHandlers() {
-                return null;
-            }
-
-            @Override
-            public void onRegister(Logic logic) {
-
-            }
-        };
-    }
-
-    @Override
-    public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
-        return new AnimatedGameObject(cursor.getPosition(), cursor.getRotation(), this) {
+    public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
+        return new AnimatedGameObject(position, this) {
             @Override
             public Array<Event> getEvents() {
                 return null;

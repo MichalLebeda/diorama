@@ -28,6 +28,9 @@ public class Item extends HorizontalGroup {
         addActor(label);
 
         TextureRegion iconRegion = prototype.getIconRegion();
+        if (iconRegion == null) {
+            iconRegion = skin.getRegion("cross");
+        }
         Image image = new Image(iconRegion);
 
         image.setSize(IMAGE_SIZE, IMAGE_SIZE);
@@ -38,7 +41,7 @@ public class Item extends HorizontalGroup {
             drawable.setMinHeight((float) iconRegion.getRegionHeight() / (float) iconRegion.getRegionWidth() * IMAGE_SIZE);
         } else {
             drawable.setMinHeight(IMAGE_SIZE);
-            drawable.setMinWidth((float) iconRegion.getRegionWidth() / (float) prototype.getIconRegion().getRegionHeight() * IMAGE_SIZE);
+            drawable.setMinWidth((float) iconRegion.getRegionWidth() / (float) iconRegion.getRegionHeight() * IMAGE_SIZE);
 
 //            padLeft((drawable.getMinHeight() - drawable.getMinWidth()) / 2);
             padRight((drawable.getMinHeight() - drawable.getMinWidth()) / 2);

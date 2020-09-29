@@ -162,7 +162,9 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     private void placeCurrentObjectAtCursorPosition() {
         if (cursor.isPlacingItemAllowed() && editor.hasSelectedPrototype()) {
-            editorTool.addObject(editor.getCurrentlySelectedPrototype().createAtCursor(cursor, level.getBoxFactory()), true);
+            GameObject gameObject = editor.getCurrentlySelectedPrototype().createAt(cursor.getPosition(), level.getBoxFactory());
+            gameObject.setRotation(cursor.getRotation());
+            editorTool.addObject(gameObject, true);
             if (showAddRemoveMessages) {
                 hud.showMessage("ADD " + editor.getCurrentlySelectedPrototype().getName());
             }

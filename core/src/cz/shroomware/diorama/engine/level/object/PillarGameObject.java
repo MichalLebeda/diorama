@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -188,6 +189,11 @@ public class PillarGameObject extends GameObject {
         left = (tile != null && tile.hasAttachedObjectOfClass(PillarGameObject.class));
 
         decal.setTextureRegion(topRegions.get(up, right, down, left));
+    }
+
+    @Override
+    public void setRotation(Quaternion quaternion) {
+        // Pillar has fixed rotation
     }
 
     @Override

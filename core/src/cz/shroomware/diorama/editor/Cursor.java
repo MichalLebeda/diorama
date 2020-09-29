@@ -14,10 +14,10 @@ import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.engine.level.object.SingleRegionGameObject;
-import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
+import cz.shroomware.diorama.engine.level.object.AtlasRegionGameObject;
+import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
-public class Cursor extends SingleRegionGameObject {
+public class Cursor extends AtlasRegionGameObject {
     Decal decal;
     Editor editor;
     Level level;
@@ -29,7 +29,7 @@ public class Cursor extends SingleRegionGameObject {
                   EditorResources resources,
                   Level level,
                   TextureAtlas.AtlasRegion defaultRegion) {
-        super(Vector3.Zero, new SingleRegionPrototype(resources, defaultRegion));
+        super(Vector3.Zero, new AtlasRegionPrototype(resources, defaultRegion));
         this.editor = editor;
         this.level = level;
         this.defaultRegion = defaultRegion;

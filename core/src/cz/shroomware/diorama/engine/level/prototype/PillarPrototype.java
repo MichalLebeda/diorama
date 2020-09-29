@@ -1,7 +1,7 @@
 package cz.shroomware.diorama.engine.level.prototype;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.engine.HexRegion;
 import cz.shroomware.diorama.engine.level.Resources;
@@ -28,21 +28,12 @@ public class PillarPrototype extends Prototype {
 
     @Override
     public TextureRegion getIconRegion() {
-        if (dependenciesFulfilled()) {
             return region;
-        }
-
-        return resources.getObjectAtlas().findRegion("cursor");
     }
 
     @Override
-    public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
-        return new PillarGameObject(onFloorCoords(x, y, region), this, boxFactory);
-    }
-
-    @Override
-    public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
-        return new PillarGameObject(cursor.getPosition(), this, boxFactory);
+    public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
+        return new PillarGameObject(position, this, boxFactory);
     }
 
     @Override

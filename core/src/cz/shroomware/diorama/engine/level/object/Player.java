@@ -1,7 +1,6 @@
 package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -10,17 +9,12 @@ import com.badlogic.gdx.utils.Array;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
+import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
-public class Player extends SingleRegionGameObject {
+public class Player extends AtlasRegionGameObject {
 
-    public Player(Vector3 position, Quaternion quaternion, SingleRegionPrototype prototype, BoxFactory boxFactory) {
-        super(position, quaternion, prototype);
-        attachToBody(createBody(boxFactory));
-    }
-
-    protected Player(Vector3 position, SingleRegionPrototype prototype, BoxFactory boxFactory) {
+    public Player(Vector3 position, AtlasRegionPrototype prototype, BoxFactory boxFactory) {
         super(position, prototype);
         attachToBody(createBody(boxFactory));
     }

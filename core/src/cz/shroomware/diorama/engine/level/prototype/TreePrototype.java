@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Resources;
@@ -12,7 +12,7 @@ import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.TreeGameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
-public class TreePrototype extends SingleRegionPrototype {
+public class TreePrototype extends AtlasRegionPrototype {
     TextureRegion leaveParticle;
     Color leaveParticleColor;
 
@@ -29,13 +29,8 @@ public class TreePrototype extends SingleRegionPrototype {
 //    }
 
     @Override
-    public GameObject createAt(float x, float y, Quaternion quaternion, BoxFactory boxFactory) {
-        return new TreeGameObject(onFloorCoords(x, y, objectRegion), quaternion, this, boxFactory);
-    }
-
-    @Override
-    public GameObject createAtCursor(GameObject cursor, BoxFactory boxFactory) {
-        return new TreeGameObject(cursor.getPosition(), cursor.getRotation(), this, boxFactory);
+    public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
+        return new TreeGameObject(position, this, boxFactory);
     }
 
     public TextureRegion getLeaveParticle() {

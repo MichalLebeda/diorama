@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -143,15 +142,15 @@ public class GameObjects {
 
                 if (name.equals(prototype.getName())) {
 //                        Gdx.app.error("LINE 2", prototype.getName());
-                    Quaternion quaternion = new Quaternion(
-                            Float.parseFloat(attributes[4]),
-                            Float.parseFloat(attributes[5]),
-                            Float.parseFloat(attributes[6]),
-                            Float.parseFloat(attributes[7]));
+//                    Quaternion quaternion = new Quaternion(
+//                            Float.parseFloat(attributes[4]),
+//                            Float.parseFloat(attributes[5]),
+//                            Float.parseFloat(attributes[6]),
+//                            Float.parseFloat(attributes[7]));
                     GameObject object = prototype.createAt(
-                            //TODO add Z
-                            position.x, position.y,
-                            quaternion, boxFactory);
+                            position,
+                            boxFactory);
+//                    object.setRotation(quaternion);
 //                        GameObject object = prototype.createAt(position, quaternion);
 //                        object.setRotation(quaternion);
                     if (prototype.isAttached()) {

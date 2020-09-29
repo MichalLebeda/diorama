@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -12,7 +11,7 @@ import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.Player;
-import cz.shroomware.diorama.engine.level.prototype.SingleRegionPrototype;
+import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
 public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float SPEED = 9.0f;
@@ -30,8 +29,7 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
 
         Vector2 offset = new Vector2(-3, +6);
         player = new Player(new Vector3(level.getSize() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0.5f),
-                new Quaternion().setFromAxis(Vector3.X, 90),
-                new SingleRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
+                new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
     }
 
