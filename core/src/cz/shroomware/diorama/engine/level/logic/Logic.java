@@ -201,7 +201,7 @@ public class Logic {
     public void componentIdChange(LogicComponent component, String oldId) {
         if (oldId != null && !oldId.equals("")) {
             registered.remove(oldId);
-            registered.put(component.getId(), component);
+            register(component);
             Gdx.app.log("Logic", "ID of" + component.getId() + " reregistered because of new ID");
         } else {
             if (registeredWithoutId.contains(component)) {
