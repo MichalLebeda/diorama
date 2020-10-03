@@ -64,31 +64,32 @@ public class Fire extends GameObject {
     }
 
     public void turnOn(boolean on) {
-        time = 0;
-
         if (on) {
             switch (state) {
                 case OFF:
+                    time = 0;
                     state = State.STARTING;
                     break;
                 case STARTING:
                     break;
                 case ENDING:
-                    state = State.ENDING;
+                    time = 0;
+                    state = State.STARTING;
                     break;
                 case FIRE:
             }
         } else {
             switch (state) {
                 case OFF:
-                    state = State.STARTING;
                     break;
                 case STARTING:
+                    time = 0;
                     state = State.ENDING;
                     break;
                 case ENDING:
                     break;
                 case FIRE:
+                    time = 0;
                     state = State.ENDING;
                     break;
             }

@@ -16,7 +16,7 @@ public class FirePrototype extends Prototype {
     TextureRegion particleRegion;
 
     public FirePrototype(Resources resources) {
-        startAnim = new Animation<TextureRegion>(0.03f, resources.getObjectAtlas().findRegions("fire_start"), Animation.PlayMode.NORMAL);
+        startAnim = new Animation<TextureRegion>(0.04f, resources.getObjectAtlas().findRegions("fire_start"), Animation.PlayMode.NORMAL);
         endAnim = new Animation<TextureRegion>(0.1f, resources.getObjectAtlas().findRegions("fire_end"), Animation.PlayMode.NORMAL);
         fireAnim = new Animation<TextureRegion>(0.1f, resources.getObjectAtlas().findRegions("fire_on"), Animation.PlayMode.LOOP);
         particleRegion = resources.getObjectAtlas().findRegion("white");
