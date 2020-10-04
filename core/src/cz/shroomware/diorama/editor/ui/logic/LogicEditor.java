@@ -1,12 +1,13 @@
 package cz.shroomware.diorama.editor.ui.logic;
 
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 
 public class LogicEditor {
     Logic logic;
     String levelName;
 
-    Mode mode = Mode.ADD;
+    Mode mode = Mode.CONNECT;
     Mode modeBeforeDeleteToggle = mode;
 
     public LogicEditor(Logic logic, String levelName) {
@@ -30,13 +31,12 @@ public class LogicEditor {
         mode = mode.getPrevMode();
     }
 
-
     public void toggleDelete() {
-        if (mode == Mode.DELETE) {
+        if (mode == Mode.DISCONNECT) {
             mode = modeBeforeDeleteToggle;
         } else {
             modeBeforeDeleteToggle = mode;
-            mode = Mode.DELETE;
+            mode = Mode.DISCONNECT;
         }
     }
 
@@ -45,7 +45,18 @@ public class LogicEditor {
     }
 
     enum Mode {
-        ADD, DELETE;
+        CONNECT(Utils.CONNECT_MODE_ICON_DRAWABLE),
+        DISCONNECT(Utils.DISCONNECT_MODE_ICON_DRAWABLE);
+
+        private String iconName;
+
+        Mode(String iconName) {
+            this.iconName = iconName;
+        }
+
+        public String getIconName() {
+            return iconName;
+        }
 
         public Mode getNextMode() {
             return Mode.values()[(this.ordinal() + 1) % (Mode.values().length)];

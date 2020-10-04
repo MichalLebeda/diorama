@@ -11,9 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
@@ -30,6 +32,7 @@ public class Hud extends Stage {
     EditorEngineGame game;
     SelectedItemIndicator selectedItemIndicator;
     SelectedModeIndicator selectedModeIndicator;
+    IconButton logicEditorButton;
     ScrollPane scrollPane;
     LeftToBackgroundLabel projectNameLabel;
     BackgroundLabel unsavedChangesLabel;
@@ -38,7 +41,7 @@ public class Hud extends Stage {
     //    Image colorIndicator;
     boolean lastDirtyState = false;
 
-    public Hud(final EditorEngineGame game, Prototypes prototypes, Editor editor, Level level) {
+    public Hud(final EditorEngineGame game, Prototypes prototypes, final Editor editor, final Level level) {
         super();
         this.game = game;
         resources = game.getResources();
@@ -94,6 +97,18 @@ public class Hud extends Stage {
         unsavedChangesLabel = new BackgroundLabel(resources.getSkin(), resources.getDfShader(), " . ");
         unsavedChangesLabel.setVisible(false);
         addActor(unsavedChangesLabel);
+
+        Drawable logicEditorIcon = resources.getSkin().getDrawable(Utils.CONNECT_MODE_ICON_DRAWABLE);
+        logicEditorButton = new IconButton(resources.getSkin(), logicEditorIcon);
+        logicEditorButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.openLogicEditor(level.getFilename(), level.getLogic());
+            }
+        });
+
+        addActor(logicEditorButton);
+
 
 //        colorIndicator = new Image(game.getEditorResources().getUiAtlas().findRegion("white")) {
 //            @Override
@@ -197,6 +212,10 @@ public class Hud extends Stage {
         selectedModeIndicator.setPosition(
                 selectedItemIndicator.getX() - selectedModeIndicator.getWidth() - 10,
                 selectedItemIndicator.getY());
+
+        logicEditorButton.setPosition(
+                selectedModeIndicator.getX() - logicEditorButton.getWidth() - 10,
+                selectedModeIndicator.getY());
     }
 
     public void openIdAssignDialog(final GameObjects gameObjects, final GameObject gameObject) {

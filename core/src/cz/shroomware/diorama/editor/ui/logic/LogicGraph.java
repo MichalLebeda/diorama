@@ -84,10 +84,10 @@ public class LogicGraph extends Stage {
 
     private void finishAction() {
         switch (logicEditor.getMode()) {
-            case ADD:
+            case CONNECT:
                 addConnection();
                 break;
-            case DELETE:
+            case DISCONNECT:
                 removeConnection();
                 break;
         }
@@ -253,7 +253,7 @@ public class LogicGraph extends Stage {
 
 
         switch (logicEditor.getMode()) {
-            case ADD:
+            case CONNECT:
                 Vector2 cursorPosition2 = new Vector2(cursorPos.x, cursorPos.y);
 
                 Vector2 arrowPos = startPosition.cpy().add(cursorPosition2).scl(0.5f);
@@ -285,7 +285,7 @@ public class LogicGraph extends Stage {
                 shapeRenderer.line(arrowPos, arrowEnd);
 
                 break;
-            case DELETE:
+            case DISCONNECT:
                 shapeRenderer.line(startPosition.x, startPosition.y,
                         cursorPos.x,
                         cursorPos.y,

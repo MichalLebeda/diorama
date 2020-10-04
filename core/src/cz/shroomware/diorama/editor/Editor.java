@@ -2,6 +2,7 @@ package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.history.History;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
@@ -77,7 +78,21 @@ public class Editor {
     }
 
     public enum Mode {
-        ITEM, DELETE, TILE, TILE_BUCKET, ID_ASSIGN;
+        ITEM(Utils.ITEM_MODE_ICON_DRAWABLE),
+        DELETE(Utils.DELETE_MODE_ICON_DRAWABLE),
+        TILE(Utils.TILE_MODE_ICON_DRAWABLE),
+        TILE_BUCKET(Utils.TILE_BUCKET_MODE_ICON_DRAWABLE),
+        ID_ASSIGN(Utils.ID_ASSIGN_MODE_ICON_DRAWABLE);
+
+        private String iconName;
+
+        Mode(String iconName) {
+            this.iconName = iconName;
+        }
+
+        public String getIconName() {
+            return iconName;
+        }
 
         public Mode getNextMode() {
             return Mode.values()[(this.ordinal() + 1) % (Mode.values().length)];
