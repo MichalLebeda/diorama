@@ -89,16 +89,24 @@ public class Wall extends GameObject {
         }
     }
 
+    @Override
+    public float getHeight() {
+        return leftDecal.getHeight();
+    }
+
+    @Override
     public void sizeBoundingBox(BoundingBox boundingBox) {
-        Vector3 min = new Vector3();
-        Vector3 max = new Vector3();
-        float[] vertices = frontDecal.getVertices();
-        min.set(vertices[Decal.X1],
-                vertices[Decal.Y1],
-                vertices[Decal.Z1]);
-        max.set(vertices[Decal.X4],
-                vertices[Decal.Y4] + decal.getHeight(),
-                vertices[Decal.Z4]);
+        Vector3 min = getPosition().cpy();
+        Vector3 max = getPosition().cpy();
+
+        min.x -= 0.5f;
+        min.y -= 0.5f;
+        min.z = 0;
+
+        max.x += 0.5f;
+        max.y += 0.5f;
+        max.z = getHeight();
+
         boundingBox.set(min, max);
     }
 
