@@ -65,8 +65,10 @@ public class GameObjects {
             world.destroyBody(body);
         }
 
-        // Unregister object from logic system
-        logic.unregister(gameObject.getLogicComponent());
+        if (gameObject.hasLogicComponent()) {
+            // Unregister object from logic system
+            logic.unregister(gameObject.getLogicComponent());
+        }
     }
 
     public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
