@@ -37,16 +37,17 @@ public class Wall extends GameObject {
 
         decal.setRotationX(0);
         decal.setZ(prototype.getLeftRegion().getRegionHeight() / PIXELS_PER_METER);
+        position.z = decal.getZ() / 2;
 
         leftDecal = Decal.newDecal(prototype.getLeftRegion(), true);
-        leftDecal.setPosition(position.cpy().add(-0.5f, 0, -1));
+        leftDecal.setPosition(position.cpy().add(-0.5f, 0, 0));
         leftDecal.rotateX(90);
         leftDecal.rotateY(90);
         leftDecal.setWidth(leftDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         leftDecal.setHeight(leftDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
         rightDecal = Decal.newDecal(prototype.getRightRegion(), true);
-        rightDecal.setPosition(position.cpy().add(0.5f, 0, -1));
+        rightDecal.setPosition(position.cpy().add(0.5f, 0, 0));
         rightDecal.rotateX(90);
         rightDecal.rotateY(90);
         rightDecal.setWidth(rightDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
@@ -54,12 +55,12 @@ public class Wall extends GameObject {
 
         frontDecal = Decal.newDecal(prototype.getFrontRegion(), true);
         frontDecal.rotateX(90);
-        frontDecal.setPosition(position.cpy().add(0, -0.5f, -1));
+        frontDecal.setPosition(position.cpy().add(0, -0.5f, 0));
         frontDecal.setWidth(frontDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         frontDecal.setHeight(frontDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
         backDecal = Decal.newDecal(prototype.getBackRegion(), true);
-        backDecal.setPosition(position.cpy().add(0, 0.5f, -1));
+        backDecal.setPosition(position.cpy().add(0, 0.5f, 0));
         backDecal.rotateX(90);
         backDecal.setWidth(backDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         backDecal.setHeight(backDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
