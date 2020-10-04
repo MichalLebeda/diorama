@@ -1,6 +1,5 @@
 package cz.shroomware.diorama.engine.level.prototype;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -20,17 +19,11 @@ public class TreePrototype extends AtlasRegionPrototype {
     public TreePrototype(Resources resources, TextureAtlas.AtlasRegion objectRegion) {
         super(resources, objectRegion);
 
-        Gdx.app.error("tre", objectRegion.packedWidth + "");
-
         leaveParticle = resources.getObjectAtlas().findRegion("white");
         Pixmap pixmap = Utils.extractPixmapFromTextureRegion(objectRegion);
         leaveParticleColor = Utils.getDominantOpaqueColor(pixmap);
         leaveParticleColor.mul(1.6f);
     }
-
-//    public TreePrototype(TextureAtlas.AtlasRegion objectRegion) {
-//        super(objectRegion);
-//    }
 
     @Override
     public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
