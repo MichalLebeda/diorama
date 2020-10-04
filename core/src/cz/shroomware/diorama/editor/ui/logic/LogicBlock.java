@@ -22,10 +22,11 @@ import java.util.HashMap;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorResources;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
-import cz.shroomware.diorama.engine.level.logic.component.PureLogicComponent;
+import cz.shroomware.diorama.engine.level.logic.component.LogicOperator;
 import cz.shroomware.diorama.ui.DFLabel;
 
 public abstract class LogicBlock extends VerticalGroup {
@@ -48,10 +49,13 @@ public abstract class LogicBlock extends VerticalGroup {
         pad(15);
         space(10);
 
-        DFLabel label = new DFLabel(editorResources.getSkin(), editorResources.getDfShader(), logicComponent.hasId() ? logicComponent.getId() : logicComponent.toString());
+        Identifier identifier = logicComponent.getIdentifier();
+        DFLabel label = new DFLabel(editorResources.getSkin(),
+                editorResources.getDfShader(),
+                identifier.isSet() ? identifier.getIdString() : logicComponent.toString());
         label.setFontScale(0.4f);
         Table topTable = null;
-        if (logicComponent instanceof PureLogicComponent) {
+        if (logicComponent instanceof LogicOperator) {
             topTable = new Table();
             label.setAlignment(Align.center);
             topTable.setWidth(getWidth());

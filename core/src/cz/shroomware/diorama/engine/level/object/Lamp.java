@@ -2,15 +2,11 @@ package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 
-import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
-import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.LampPrototype;
 
 public class Lamp extends GameObject {
-    protected Array<Handler> handlers = new Array<>();
     protected boolean on = false;
     protected TextureRegion onRegion;
     protected TextureRegion offRegion;
@@ -23,13 +19,13 @@ public class Lamp extends GameObject {
     }
 
     protected void createHandlers() {
-        handlers.add(new Handler(this, "turn_on") {
+        logicComponent.addHandler(new Handler("turn_on") {
             @Override
             public void handle() {
                 turnOn(true);
             }
         });
-        handlers.add(new Handler(this, "turn_off") {
+        logicComponent.addHandler(new Handler("turn_off") {
             @Override
             public void handle() {
                 turnOn(false);
@@ -40,20 +36,5 @@ public class Lamp extends GameObject {
     public void turnOn(boolean on) {
         this.on = on;
         decal.setTextureRegion(on ? onRegion : offRegion);
-    }
-
-    @Override
-    public Array<Event> getEvents() {
-        return null;
-    }
-
-    @Override
-    public Array<Handler> getHandlers() {
-        return handlers;
-    }
-
-    @Override
-    public void onRegister(Logic logic) {
-
     }
 }

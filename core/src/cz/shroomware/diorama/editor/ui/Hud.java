@@ -222,7 +222,7 @@ public class Hud extends Stage {
         NameDialog nameDialog = new NameDialog(resources.getSkin(),
                 resources.getDfShader(),
                 "Set Object Tag:",
-                gameObject.hasId() ? gameObject.getId() : "") {
+                gameObject.getIdentifier().isSet() ? gameObject.getIdentifier().getIdString() : "") {
             @Override
             public void onAccepted(String name) {
                 gameObjects.assignId(gameObject, name, messages);

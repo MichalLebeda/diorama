@@ -14,7 +14,7 @@ import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public abstract class AnimatedGameObject extends GameObject {
+public class AnimatedGameObject extends GameObject {
     RegionAnimation animation;
     float time;
 

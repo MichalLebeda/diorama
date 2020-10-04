@@ -1,14 +1,18 @@
 package cz.shroomware.diorama.engine.level.logic;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 
 public class Event {
-    cz.shroomware.diorama.engine.level.logic.component.LogicComponent parent;
+    LogicComponent parent;
     String name;
 
-    public Event(cz.shroomware.diorama.engine.level.logic.component.LogicComponent parent, String name) {
-        this.parent = parent;
+    public Event(String name) {
         this.name = name;
+    }
+
+    public void setParent(LogicComponent parent) {
+        this.parent = parent;
     }
 
     public String getEventName() {
@@ -21,6 +25,7 @@ public class Event {
 
     @Override
     public String toString() {
-        return (parent.hasId() ? parent.getId() : parent.toString()) + ":" + name;
+        Identifier parentIdentifier = parent.getIdentifier();
+        return (parentIdentifier.isSet() ? parent.getIdentifier().getIdString() : parent.toString()) + ":" + name;
     }
 }

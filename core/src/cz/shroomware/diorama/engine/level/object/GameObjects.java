@@ -49,14 +49,16 @@ public class GameObjects {
         dirty = true;
         gameObjects.add(gameObject);
 
-        // Register object to logic system
-        logic.register(gameObject);
+        if (gameObject.hasLogicComponent()) {
+            // Register object to logic system
+            logic.register(gameObject.getLogicComponent());
+        }
     }
 
     public void remove(GameObject gameObject) {
         dirty = true;
         gameObjects.removeValue(gameObject, false);
-        idToObject.remove(gameObject.getId());
+        idToObject.remove(gameObject.getIdentifier().getIdString());
         if (gameObject.hasBody()) {
             Body body = gameObject.getBody();
             World world = body.getWorld();
@@ -64,7 +66,7 @@ public class GameObjects {
         }
 
         // Unregister object from logic system
-        logic.unregister(gameObject);
+        logic.unregister(gameObject.getLogicComponent());
     }
 
     public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
@@ -195,13 +197,13 @@ public class GameObjects {
                 messages.showMessage("Duplicate ID, using old");
             }
             return false;
-        } else if (idToObject.containsKey(object.getId())) {
+        } else if (idToObject.containsKey(object.getIdentifier().getIdString())) {
             dirty = true;
-            idToObject.remove(object.getId());
+            idToObject.remove(object.getIdentifier().getIdString());
             idToObject.put(id, object);
-            String oldId = object.getId();
-            object.setId(id);
-            logic.componentIdChange(object, oldId);
+            String oldId = object.getIdentifier().getIdString();
+            object.getIdentifier().setIdString(id);
+            logic.componentIdChange(object.getLogicComponent(), oldId);
             if (messages != null) {
                 messages.showMessage("ID Changed");
             }
@@ -209,9 +211,9 @@ public class GameObjects {
         } else {
             dirty = true;
             idToObject.put(id, object);
-            String oldId = object.getId();
-            object.setId(id);
-            logic.componentIdChange(object, oldId);
+            String oldId = object.getIdentifier().getIdString();
+            object.getIdentifier().setIdString(id);
+            logic.componentIdChange(object.getLogicComponent(), oldId);
             if (messages != null) {
                 messages.showMessage("New ID assigned");
             }

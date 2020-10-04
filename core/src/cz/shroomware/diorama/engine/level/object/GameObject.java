@@ -15,6 +15,8 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.Identifiable;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
@@ -23,13 +25,14 @@ import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public abstract class GameObject implements LogicComponent {
+public abstract class GameObject implements Identifiable {
     protected Tile tileAttachedTo;
     protected Prototype prototype;
     protected Decal decal;
     protected Sprite shadowSprite;
     protected Body body = null;
-    protected String id = null;
+    protected Identifier identifier = new Identifier();
+    protected LogicComponent logicComponent = null;
     protected boolean selected = false;
 
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
@@ -40,6 +43,14 @@ public abstract class GameObject implements LogicComponent {
         decal.setPosition(position);
         decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
         decal.setHeight(region.getRegionHeight() / PIXELS_PER_METER);
+    }
+
+    public boolean hasLogicComponent() {
+        return logicComponent != null;
+    }
+
+    public LogicComponent getLogicComponent() {
+        return logicComponent;
     }
 
     public void attachToTile(Tile tileAttachedTo) {
@@ -83,8 +94,8 @@ public abstract class GameObject implements LogicComponent {
     @Override
     public String toString() {
         String string = "";
-        if (hasId()) {
-            string += prototype.getName() + ":" + getId() + " ";
+        if (identifier.isSet()) {
+            string += prototype.getName() + ":" + identifier.getIdString() + " ";
         } else {
             string += prototype.getName() + " ";
         }
@@ -239,26 +250,7 @@ public abstract class GameObject implements LogicComponent {
     }
 
     @Override
-    public boolean hasId() {
-        return id != null && !id.equals("");
+    public Identifier getIdentifier() {
+        return identifier;
     }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    protected void setId(String id) {
-        this.id = id;
-    }
-
-//    @Override
-//    public Array<Event> getEvents() {
-//        return null;
-//    }
-//
-//    @Override
-//    public Array<Handler> getHandlers() {
-//        return null;
-//    }
 }

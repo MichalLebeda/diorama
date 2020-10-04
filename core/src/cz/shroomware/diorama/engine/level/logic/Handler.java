@@ -1,16 +1,20 @@
 package cz.shroomware.diorama.engine.level.logic;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 
 public abstract class Handler {
- LogicComponent parent;
+    LogicComponent parent;
     String name;
 
-    public Handler(LogicComponent parent, String name) {
-        this.parent = parent;
+    public Handler(String name) {
         this.name = name
                 .replace(" ", "_")
                 .replace(":", "_");
+    }
+
+    public void setParent(LogicComponent parent) {
+        this.parent = parent;
     }
 
     public String getHandlerName() {
@@ -23,7 +27,8 @@ public abstract class Handler {
 
     @Override
     public String toString() {
-        return (parent.hasId() ? parent.getId() : parent.toString()) + ":" + name;
+        Identifier parentIdentifier = parent.getIdentifier();
+        return (parentIdentifier.isSet() ? parentIdentifier.getIdString() : parent.toString()) + ":" + name;
     }
 
     public abstract void handle();

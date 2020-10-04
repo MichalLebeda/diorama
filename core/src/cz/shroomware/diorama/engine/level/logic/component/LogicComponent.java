@@ -3,15 +3,53 @@ package cz.shroomware.diorama.engine.level.logic.component;
 import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.Identifiable;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 
-public interface LogicComponent extends Identifiable {
+public class LogicComponent implements Identifiable {
+    protected Logic logic;
+    private Array<Event> events = new Array<>(Event.class);
+    private Array<Handler> handlers = new Array<>(Handler.class);
+    private Identifier parentIdentifier;
 
-    public Array<Event> getEvents();
+    public LogicComponent(Identifier parentIdentifier) {
+        this.parentIdentifier = parentIdentifier;
+    }
 
-    public Array<Handler> getHandlers();
+    @Override
+    public Identifier getIdentifier() {
+        return parentIdentifier;
+    }
 
-    public void onRegister(Logic logic);
+    public void addEvent(Event event) {
+        events.add(event);
+        event.setParent(this);
+    }
+
+    public void addHandler(Handler handler) {
+        handlers.add(handler);
+        handler.setParent(this);
+    }
+
+    public Array<Event> getEvents() {
+        return events;
+    }
+
+    public Array<Handler> getHandlers() {
+        return handlers;
+    }
+
+    public void onRegister(Logic logic) {
+        this.logic = logic;
+    }
+
+    public boolean isRegistered() {
+        return logic != null;
+    }
+
+    public Logic getLogic() {
+        return logic;
+    }
 }

@@ -20,7 +20,8 @@ import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.ui.Messages;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
-import cz.shroomware.diorama.engine.level.logic.prototype.PureLogicComponentPrototype;
+import cz.shroomware.diorama.engine.level.logic.component.LogicOperator;
+import cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.LeftToBackgroundLabel;
 
@@ -35,7 +36,7 @@ public abstract class LogicHud extends Stage {
     Messages messages;
     boolean lastDirtyState = false;
 
-    public LogicHud(final EditorEngineGame game, LogicEditor logicEditor) {
+    public LogicHud(final EditorEngineGame game, final LogicEditor logicEditor) {
         super();
         this.game = game;
         this.logicEditor = logicEditor;
@@ -51,15 +52,15 @@ public abstract class LogicHud extends Stage {
         itemGroup.columnAlign(Align.right);
         itemGroup.pad(10);
         itemGroup.space(10);
-        Collection<PureLogicComponentPrototype> prototypes = logicEditor.getLogic().getNameToPureLogicPrototypes().values();
-        for (PureLogicComponentPrototype prototype : prototypes) {
+        Collection<LogicOperatorPrototype> prototypes = logicEditor.getLogic().getNameToPureLogicPrototypes().values();
+        for (LogicOperatorPrototype prototype : prototypes) {
             final PureLogicItem item = new PureLogicItem(editorResources, prototype);
             item.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
 
-                    LogicComponent component = LogicHud.this.logicEditor.getLogic().createPureLogicComponent(item.getPrototype());
-                    onComponentAdded(component);
+                    LogicOperator logicOperator = LogicHud.this.logicEditor.getLogic().createLogicOperator(item.getPrototype());
+                    onComponentAdded(logicOperator);
                 }
             });
             itemGroup.addActor(item);

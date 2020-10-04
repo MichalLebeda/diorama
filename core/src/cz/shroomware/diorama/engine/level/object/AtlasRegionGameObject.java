@@ -9,10 +9,10 @@ import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
-public abstract class AtlasRegionGameObject extends GameObject {
+public class AtlasRegionGameObject extends GameObject {
     //TODO add shadows everywhere
 
-    protected AtlasRegionGameObject(Vector3 position, AtlasRegionPrototype prototype) {
+    public AtlasRegionGameObject(Vector3 position, AtlasRegionPrototype prototype) {
         super(position, prototype.getObjectRegion(), prototype);
         createShadowSprite(prototype);
     }

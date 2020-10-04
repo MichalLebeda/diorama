@@ -1,50 +1,42 @@
 package cz.shroomware.diorama.engine.level.logic.component;
 
-import com.badlogic.gdx.utils.Array;
-
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
-import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.engine.level.logic.prototype.PureLogicComponentPrototype;
+import cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype;
 
-public class OrGate extends PureLogicComponent {
-    Logic logic = null;
-    String id;
-
+public class OrGate extends LogicOperator {
     Event outputTrue;
     Event outputFalse;
-    Array<Handler> handlers = new Array<>(Handler.class);
-    Array<Event> events = new Array<>(Event.class);
 
     boolean aValue = false;
     boolean bValue = false;
 
-    public OrGate(PureLogicComponentPrototype prototype, String id) {
-        super(prototype, id);
-        this.id = id;
+    public OrGate(LogicOperatorPrototype prototype, Identifier identifier) {
+        super(prototype, identifier);
 
-        handlers.add(new Handler(this, "set_a_true") {
+        addHandler(new Handler("set_a_true") {
             @Override
             public void handle() {
                 aValue = true;
                 eval();
             }
         });
-        handlers.add(new Handler(this, "set_a_false") {
+        addHandler(new Handler("set_a_false") {
             @Override
             public void handle() {
                 aValue = false;
                 eval();
             }
         });
-        handlers.add(new Handler(this, "set_b_true") {
+        addHandler(new Handler("set_b_true") {
             @Override
             public void handle() {
                 bValue = true;
                 eval();
             }
         });
-        handlers.add(new Handler(this, "set_b_false") {
+        addHandler(new Handler("set_b_false") {
             @Override
             public void handle() {
                 bValue = false;
@@ -52,10 +44,10 @@ public class OrGate extends PureLogicComponent {
             }
         });
 
-        outputTrue = new Event(this, "output_true");
-        outputFalse = new Event(this, "output_false");
-        events.add(outputTrue);
-        events.add(outputFalse);
+        outputTrue = new Event("output_true");
+        outputFalse = new Event("output_false");
+        addEvent(outputTrue);
+        addEvent(outputFalse);
     }
 
     private void eval() {
@@ -64,30 +56,5 @@ public class OrGate extends PureLogicComponent {
         } else {
             logic.sendEvent(outputFalse);
         }
-    }
-
-    @Override
-    public Array<Event> getEvents() {
-        return events;
-    }
-
-    @Override
-    public Array<Handler> getHandlers() {
-        return handlers;
-    }
-
-    @Override
-    public void onRegister(Logic logic) {
-        this.logic = logic;
-    }
-
-    @Override
-    public boolean hasId() {
-        return true;
-    }
-
-    @Override
-    public String getId() {
-        return id;
     }
 }

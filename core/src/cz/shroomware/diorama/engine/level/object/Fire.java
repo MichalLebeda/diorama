@@ -5,18 +5,15 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.level.fx.LifespanParticle;
 import cz.shroomware.diorama.engine.level.fx.Particle;
 import cz.shroomware.diorama.engine.level.fx.ParticleEmitter;
-import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
-import cz.shroomware.diorama.engine.level.logic.Logic;
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.FirePrototype;
 
 public class Fire extends GameObject {
-    protected Array<Handler> handlers = new Array<>();
     protected ParticleEmitter particleEmitter;
     protected Animation<TextureRegion> startAnim;
     protected Animation<TextureRegion> endAnim;
@@ -46,14 +43,14 @@ public class Fire extends GameObject {
             }
         };
 
-        handlers.add(new Handler(this, "set_on") {
+        logicComponent = new LogicComponent(identifier);
+        logicComponent.addHandler(new Handler("set_on") {
             @Override
             public void handle() {
                 turnOn(true);
             }
         });
-
-        handlers.add(new Handler(this, "set_off") {
+        logicComponent.addHandler(new Handler("set_off") {
             @Override
             public void handle() {
                 turnOn(false);
@@ -133,21 +130,6 @@ public class Fire extends GameObject {
         super.drawDecal(decalBatch, delta);
 
         particleEmitter.draw(decalBatch, delta);
-    }
-
-    @Override
-    public Array<Event> getEvents() {
-        return null;
-    }
-
-    @Override
-    public Array<Handler> getHandlers() {
-        return handlers;
-    }
-
-    @Override
-    public void onRegister(Logic logic) {
-
     }
 
     enum State {OFF, STARTING, ENDING, FIRE}

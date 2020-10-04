@@ -13,22 +13,23 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
-import cz.shroomware.diorama.engine.level.logic.component.PureLogicComponent;
-import cz.shroomware.diorama.engine.level.logic.prototype.PureLogicComponentPrototype;
+import cz.shroomware.diorama.engine.level.logic.component.LogicOperator;
+import cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype;
 
 public class Logic {
     boolean dirty = false;
     HashMap<String, LogicComponent> registered = new HashMap<>();
     HashMap<Event, ArrayList<Handler>> eventToHandlersConnections = new HashMap<>();
 
-    HashMap<String, PureLogicComponentPrototype> nameToPureLogicPrototypes = new HashMap<>();
-    HashMap<String, PureLogicComponent> idToPureLogicComponent = new HashMap<>();
+    HashMap<String, LogicOperatorPrototype> nameToPureLogicPrototypes = new HashMap<>();
+    HashMap<String, LogicOperator> idToLogicOperator = new HashMap<>();
     HashMap<String, Integer> prototypeNameToLastId = new HashMap<>();
 
     ArrayList<LogicComponent> registeredWithoutId = new ArrayList<>();
 
-    public void addPureLogicComponentPrototype(PureLogicComponentPrototype prototype) {
+    public void addPureLogicComponentPrototype(LogicOperatorPrototype prototype) {
         if (nameToPureLogicPrototypes.containsKey(prototype.getName())) {
             Gdx.app.error("Level", "Prototype already added!!!");
         } else {
@@ -94,7 +95,7 @@ public class Logic {
     }
 
     public void connect(Event event, Handler handler) {
-        if (!event.getParent().hasId() | !handler.getParent().hasId()) {
+        if (!event.getParent().getIdentifier().isSet() | !handler.getParent().getIdentifier().isSet()) {
             Gdx.app.error("Logic", "Cannot connect, missing ID form one of the objects");
             return;
         }
@@ -157,7 +158,7 @@ public class Logic {
             stringBuilder.append("key: ");
             stringBuilder.append(entry.getKey());
             stringBuilder.append(" value: ");
-            stringBuilder.append(entry.getValue().getId());
+            stringBuilder.append(entry.getValue().getIdentifier().getIdString());
             stringBuilder.append("\n");
         }
         stringBuilder.append("\nEvents:\n");
@@ -199,22 +200,25 @@ public class Logic {
      * @param oldId     Old ID of given component
      */
     public void componentIdChange(LogicComponent component, String oldId) {
-        if (oldId != null && !oldId.equals("")) {
+        if (oldId != null && !oldId.isEmpty()) {
             registered.remove(oldId);
             register(component);
-            Gdx.app.log("Logic", "ID of" + component.getId() + " reregistered because of new ID");
+            Gdx.app.log("Logic", "ID of" + component.getIdentifier().getIdString() + " reregistered because of new ID");
         } else {
             if (registeredWithoutId.contains(component)) {
                 registeredWithoutId.remove(component);
-                Gdx.app.log("Logic", "Component has new ID so it is now properly registered: " + component.getId());
+                Gdx.app.log("Logic", "Component has new ID so it is now properly registered: " + component.getIdentifier().getIdString());
                 register(component);
             }
         }
     }
 
     public void register(LogicComponent component) {
-        if (component.getId() != null && !component.getId().equals("")) {
-            registered.put(component.getId(), component);
+        if (component.getIdentifier().isSet()) {
+            if (component instanceof LogicOperator) {
+                idToLogicOperator.put(component.getIdentifier().getIdString(), (LogicOperator) component);
+            }
+            registered.put(component.getIdentifier().getIdString(), component);
             component.onRegister(this);
             dirty = true;
         } else {
@@ -227,39 +231,39 @@ public class Logic {
         return eventToHandlersConnections;
     }
 
-    public void unregister(LogicComponent object) {
-        registered.remove(object.getId());
+    public void unregister(LogicComponent component) {
+        registered.remove(component.getIdentifier().getIdString());
 
-        Array<Event> events = object.getEvents();
+        Array<Event> events = component.getEvents();
         if (events != null) {
             for (Event event : events) {
                 removeAllConnectionsWithEvent(event);
             }
         }
 
-        Array<Handler> handlers = object.getHandlers();
+        Array<Handler> handlers = component.getHandlers();
         if (handlers != null) {
             for (Handler handler : handlers) {
                 removeAllConnectionsWithHandler(handler);
             }
         }
 
-        if (object instanceof PureLogicComponent) {
-            idToPureLogicComponent.remove(object.getId());
+        if (component instanceof LogicOperator) {
+            idToLogicOperator.remove(component.getIdentifier().getIdString());
         }
 
         dirty = true;
     }
 
     public void save(OutputStream outputStream) throws IOException {
-        int size = idToPureLogicComponent.size();
+        int size = idToLogicOperator.size();
 
         String line;
         outputStream.write((size + "\n").getBytes());
-        for (PureLogicComponent component : idToPureLogicComponent.values()) {
+        for (LogicOperator component : idToLogicOperator.values()) {
             line = component.getPrototype().getName();
             line += ":";
-            line += component.getId() + "\n";
+            line += component.getIdentifier().getIdString() + "\n";
             outputStream.write(line.getBytes());
         }
 
@@ -285,8 +289,9 @@ public class Logic {
             line = bufferedReader.readLine();
             String[] parts = line.split(":");
 
-            PureLogicComponentPrototype prototype = nameToPureLogicPrototypes.get(parts[0]);
-            addPureLogicComponent(prototype.create(parts[1]));
+            LogicOperatorPrototype prototype = nameToPureLogicPrototypes.get(parts[0]);
+            Identifier identifier = new Identifier(parts[1]);
+            register(prototype.create(identifier));
 
             String[] idParts = parts[1].split("_");
             prototypeNameToLastId.put(prototype.getName(), Integer.parseInt(idParts[1]));
@@ -331,7 +336,7 @@ public class Logic {
         dirty = false;
     }
 
-    public HashMap<String, PureLogicComponentPrototype> getNameToPureLogicPrototypes() {
+    public HashMap<String, LogicOperatorPrototype> getNameToPureLogicPrototypes() {
         return nameToPureLogicPrototypes;
     }
 
@@ -340,20 +345,20 @@ public class Logic {
         return dirty;
     }
 
-    public PureLogicComponent createPureLogicComponent(PureLogicComponentPrototype prototype) {
+    public LogicOperator createLogicOperator(LogicOperatorPrototype prototype) {
         int index = prototypeNameToLastId.get(prototype.getName()) + 1;
-        String id = prototype.getName() + "_" + index;
-        PureLogicComponent component = prototype.create(id);
-        addPureLogicComponent(component);
+        Identifier identifier = new Identifier(prototype.getName() + "_" + index);
+        LogicOperator operator = prototype.create(identifier);
+        register(operator);
 
         prototypeNameToLastId.put(prototype.getName(), index);
 
-        return component;
+        return operator;
     }
 
-    public void addPureLogicComponent(PureLogicComponent component) {
-        idToPureLogicComponent.put(component.getId(), component);
+//    public void addLogicOperator(LogicOperator component) {
+//        idToLogicOperator.put(component.getIdentifier().getIdString(), component);
 
-        register(component);
-    }
+//        register(component.getLogicComponent());
+//    }
 }

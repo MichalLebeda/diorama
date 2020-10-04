@@ -2,12 +2,8 @@ package cz.shroomware.diorama.engine.level.prototype;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.engine.RegionAnimation;
-import cz.shroomware.diorama.engine.level.logic.Event;
-import cz.shroomware.diorama.engine.level.logic.Handler;
-import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.object.AnimatedGameObject;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
@@ -32,22 +28,7 @@ public class AnimatedPrototype extends Prototype {
 
     @Override
     public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
-        return new AnimatedGameObject(position, this) {
-            @Override
-            public Array<Event> getEvents() {
-                return null;
-            }
-
-            @Override
-            public Array<Handler> getHandlers() {
-                return null;
-            }
-
-            @Override
-            public void onRegister(Logic logic) {
-
-            }
-        };
+        return new AnimatedGameObject(position, this);
     }
 
     @Override
