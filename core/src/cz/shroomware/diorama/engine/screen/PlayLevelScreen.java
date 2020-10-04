@@ -24,7 +24,7 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
         super(game.getResources());
         this.game = game;
         this.level = new Level(filename, prototypes, game.getResources());
-        updatebackgorundcolor(level);
+        updateBackgroundColor(level);
         initCamera(level);
 
         Vector2 offset = new Vector2(-3, +6);

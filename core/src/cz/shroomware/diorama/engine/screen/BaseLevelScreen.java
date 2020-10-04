@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 import cz.shroomware.diorama.Utils;
@@ -17,6 +18,7 @@ import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Resources;
 
 public abstract class BaseLevelScreen implements Screen, InputProcessor {
+    protected ShaderProgram spriteBatchShader;
     protected Level level;
     protected Color backgroundColor;
     protected SpriteBatch spriteBatch;
@@ -27,12 +29,12 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
     protected boolean boxDebug = false;
 
     protected BaseLevelScreen(Resources resources) {
+        spriteBatchShader = resources.getSpriteBatchShader();
         spriteBatch = new SpriteBatch();
-        spriteBatch.setShader(resources.getSpriteBatchShader());
         decalBatch = new MinimalisticDecalBatch();
     }
 
-    protected void updatebackgorundcolor(Level level) {
+    protected void updateBackgroundColor(Level level) {
         // Use dominant floor color as background
         Pixmap pixmap = Utils.extractPixmapFromTextureRegion(level.getFloor().getTileAtIndex(0, 0));
         backgroundColor = Utils.getDominantColor(pixmap);
@@ -75,6 +77,7 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
 
         level.step(delta);
 
+        spriteBatch.setShader(spriteBatchShader);
         drawWorld(delta);
 
         if (boxDebug) {

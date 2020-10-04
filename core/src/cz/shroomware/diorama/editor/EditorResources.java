@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.editor;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -16,6 +17,7 @@ public class EditorResources extends Resources {
     protected TextureRegion cursorRegion;
     protected ShaderProgram dfShader;
     protected Drawable slotDrawable;
+    protected BitmapFont font;
 
     public EditorResources(Resources resources) {
         objectAtlas = resources.getObjectAtlas();
@@ -43,6 +45,11 @@ public class EditorResources extends Resources {
 
     public void setSkin(Skin skin) {
         this.skin = skin;
+        this.font = skin.getFont("default-font");
+    }
+
+    public BitmapFont getFont() {
+        return font;
     }
 
     public TextureRegion getDarkBackgroundRegion() {

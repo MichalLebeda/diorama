@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.LampPrototype;
 
 public class Lamp extends GameObject {
@@ -13,12 +14,8 @@ public class Lamp extends GameObject {
 
     public Lamp(Vector3 position, LampPrototype prototype) {
         super(position, prototype.getOffRegion(), prototype);
-        createHandlers();
-        onRegion = prototype.getOnRegion();
-        offRegion = prototype.getOffRegion();
-    }
 
-    protected void createHandlers() {
+        logicComponent = new LogicComponent(identifier);
         logicComponent.addHandler(new Handler("turn_on") {
             @Override
             public void handle() {
@@ -31,6 +28,9 @@ public class Lamp extends GameObject {
                 turnOn(false);
             }
         });
+
+        onRegion = prototype.getOnRegion();
+        offRegion = prototype.getOffRegion();
     }
 
     public void turnOn(boolean on) {

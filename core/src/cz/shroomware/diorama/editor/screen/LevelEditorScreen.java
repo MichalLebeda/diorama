@@ -5,8 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
@@ -29,6 +31,7 @@ import cz.shroomware.diorama.editor.ui.Hud;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
+import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
 public class LevelEditorScreen extends BaseLevelScreen {
@@ -46,6 +49,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
     protected TextureAtlas.AtlasRegion defaultCursorRegion;
     protected Cursor cursor;
     protected Hud hud;
+    protected OrthographicCamera screenCamera;
     protected Prototypes gameObjectPrototypes;
     protected Vector2 lastDragScreenPos = new Vector2();
     protected Vector3 cameraLastDragWorldPos;
@@ -68,7 +72,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
         gameObjectPrototypes = new Prototypes(resources);
 
         level = new Level(filename, gameObjectPrototypes, resources);
-        updatebackgorundcolor(level);
+        updateBackgroundColor(level);
         initCamera(level);
 
         editorTool = new EditorTool(level.getFloor(), level.getGameObjects(), editor);
@@ -85,6 +89,13 @@ public class LevelEditorScreen extends BaseLevelScreen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+    @Override
+    protected void initCamera(Level level) {
+        super.initCamera(level);
+
+        screenCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override
@@ -123,6 +134,10 @@ public class LevelEditorScreen extends BaseLevelScreen {
     public void render(float delta) {
         super.render(delta);
 
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            drawIdLabel();
+        }
+
         hud.setDirty(level.isDirty());
         hud.act();
         if (!takingScreenshot) {
@@ -137,6 +152,42 @@ public class LevelEditorScreen extends BaseLevelScreen {
             currentlyHighlightedObject.setSelected(false);
             currentlyHighlightedObject = null;
         }
+    }
+
+    protected void drawIdLabel() {
+        spriteBatch.setShader(resources.getDfShader());
+        spriteBatch.setProjectionMatrix(screenCamera.combined);
+
+        spriteBatch.begin();
+
+        GameObjects gameObjects = level.getGameObjects();
+        BitmapFont font = resources.getFont();
+        float size = 20;
+
+        for (int i = 0; i < gameObjects.getSize(); i++) {
+            GameObject object = gameObjects.get(i);
+
+            Vector3 position = object.getPosition().cpy();
+            position = camera.project(position);
+
+            if (i == gameObjects.getSize() - 1) {
+                Gdx.app.error("pos", object.getPrototype().getName() + " " + position.toString());
+            }
+            if (object.getIdentifier().isSet()) {
+                resources.getSlotDrawable().draw(spriteBatch,
+                        position.x - size / 2,
+                        position.y - size / 2,
+                        size,
+                        size);
+
+                font.draw(spriteBatch,
+                        object.getIdentifier().getIdString(),
+                        position.x,
+                        position.y);
+            }
+        }
+
+        spriteBatch.end();
     }
 
     protected void clampCameraPos(Camera camera) {
@@ -457,6 +508,11 @@ public class LevelEditorScreen extends BaseLevelScreen {
         camera.viewportWidth = calculateCameraViewportWidth();
         camera.viewportHeight = calculateCameraViewportHeight();
         camera.update();
+
+        screenCamera.viewportWidth = width;
+        screenCamera.viewportHeight = height;
+        screenCamera.position.set(((float) width) / 2, ((float) height / 2), 0);
+        screenCamera.update();
 
         hud.resize(width, height);
     }

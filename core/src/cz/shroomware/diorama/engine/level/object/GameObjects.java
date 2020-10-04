@@ -220,4 +220,12 @@ public class GameObjects {
             return true;
         }
     }
+
+    public int getSize() {
+        return gameObjects.size;
+    }
+
+    public GameObject get(int i) {
+        return gameObjects.get(i);
+    }
 }

@@ -26,13 +26,13 @@ import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public abstract class GameObject implements Identifiable {
-    protected Tile tileAttachedTo;
     protected Prototype prototype;
     protected Decal decal;
     protected Sprite shadowSprite;
+    protected Tile tileAttachedTo = null;
+    protected LogicComponent logicComponent = null;
     protected Body body = null;
     protected Identifier identifier = new Identifier();
-    protected LogicComponent logicComponent = null;
     protected boolean selected = false;
 
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
