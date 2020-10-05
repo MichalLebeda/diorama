@@ -294,7 +294,11 @@ public class Logic {
             register(prototype.create(identifier));
 
             String[] idParts = parts[1].split("_");
-            prototypeNameToLastId.put(prototype.getName(), Integer.parseInt(idParts[1]));
+            int biggestIndex = prototypeNameToLastId.get(prototype.getName());
+            int biggestIndexCandidate = Integer.parseInt(idParts[1]);
+            if (biggestIndexCandidate > biggestIndex) {
+                prototypeNameToLastId.put(prototype.getName(), biggestIndexCandidate);
+            }
         }
 
         int connectionAmount = Integer.parseInt(bufferedReader.readLine());
@@ -347,6 +351,7 @@ public class Logic {
 
     public LogicOperator createLogicOperator(LogicOperatorPrototype prototype) {
         int index = prototypeNameToLastId.get(prototype.getName()) + 1;
+        Gdx.app.log("Logic", "Last operator id: " + index);
         Identifier identifier = new Identifier(prototype.getName() + "_" + index);
         LogicOperator operator = prototype.create(identifier);
         register(operator);
