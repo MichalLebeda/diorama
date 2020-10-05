@@ -447,14 +447,14 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        //let hud handle this if event occurred on top of menu
+        // Let hud handle this if event occurred on top of menu
         Vector2 pos = new Vector2(screenX, screenY);
         pos = hud.screenToStageCoordinates(pos);
         if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
-            hud.setScrollFocus(true);
+            hud.setScrollFocus(pos.x, pos.y);
             cursor.hide();
         } else {
-            hud.setScrollFocus(false);
+            hud.cancelScrollFocus();
             cursor.show();
         }
 

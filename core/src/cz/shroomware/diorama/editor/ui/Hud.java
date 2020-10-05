@@ -232,11 +232,11 @@ public class Hud extends Stage {
         nameDialog.show(this);
     }
 
-    public void setScrollFocus(boolean focus) {
-        if (focus) {
-            setScrollFocus(scrollPane);
-        } else {
-            setScrollFocus(null);
-        }
+    public void setScrollFocus(float x, float y) {
+        setScrollFocus(hit(x, y, true));
+    }
+
+    public void cancelScrollFocus() {
+        setScrollFocus(null);
     }
 }

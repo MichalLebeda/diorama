@@ -184,12 +184,12 @@ public abstract class LogicHud extends Stage {
                 getHeight() - logicSelectedModeIndicator.getHeight() - 10);
     }
 
-    public void setScrollFocus(boolean focus) {
-        if (focus) {
-            setScrollFocus(scrollPane);
-        } else {
-            setScrollFocus(null);
-        }
+    public void setScrollFocus(float x, float y) {
+        setScrollFocus(hit(x, y, true));
+    }
+
+    public void cancelScrollFocus() {
+        setScrollFocus(null);
     }
 
     public abstract void onComponentAdded(LogicComponent component);

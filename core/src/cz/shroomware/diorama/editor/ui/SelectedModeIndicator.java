@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -24,6 +25,18 @@ public class SelectedModeIndicator extends IconButton {
                 } else {
                     editor.setNextMode();
                 }
+            }
+        });
+
+        addListener(new InputListener() {
+            @Override
+            public boolean scrolled(InputEvent event, float x, float y, int amount) {
+                if (amount > 0) {
+                    editor.setPrevMode();
+                } else if (amount < 0) {
+                    editor.setNextMode();
+                }
+                return super.scrolled(event, x, y, amount);
             }
         });
     }
