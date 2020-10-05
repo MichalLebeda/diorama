@@ -3,18 +3,16 @@ package cz.shroomware.diorama.editor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.AtlasRegionGameObject;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
 public class Cursor extends AtlasRegionGameObject {
-    Decal decal;
     Editor editor;
     Level level;
     TextureRegion defaultRegion;
@@ -29,10 +27,6 @@ public class Cursor extends AtlasRegionGameObject {
         this.editor = editor;
         this.level = level;
         this.defaultRegion = defaultRegion;
-        decal = Decal.newDecal(defaultRegion, true);
-        decal.setWidth(defaultRegion.getRegionWidth() / 16f);
-        decal.setHeight(defaultRegion.getRegionHeight() / 16f);
-        decal.rotateX(90);
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch) {
@@ -73,13 +67,15 @@ public class Cursor extends AtlasRegionGameObject {
         }
     }
 
-    public void moveTo(Vector3 worldPos) {
-        // round to texels
-        worldPos.x = Utils.round(worldPos.x, 1f / 16f);
-        if (decal.getTextureRegion().getRegionWidth() % 2 == 1) {
-            worldPos.x += 0.5f / 16f;
+    @Override
+    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
+        if ((editor.hasSelectedPrototype() && editor.getCurrentlySelectedPrototype().isAttached())
+                || editor.getHardSnap()) {
+            worldPos.x = ((int) worldPos.x) + 0.5f;
+            worldPos.y = ((int) worldPos.y) + 0.5f;
         }
-        worldPos.y = Utils.round(worldPos.y, 1f / 16f);
+//            intersection.z = ((int) intersection.z) + 0.5f;
+        worldPos = super.setPositionPixelPerfect(worldPos);
 
         if (level.isInBounds(worldPos.x, worldPos.y)) {
             allowPlacingItem();
@@ -87,8 +83,7 @@ public class Cursor extends AtlasRegionGameObject {
             forbidPlacingItem();
         }
 
-        decal.setPosition(worldPos);
-        decal.translate(0, 0, decal.getHeight() / 2);
+        return worldPos;
     }
 
     private void updateRegion(TextureRegion region) {

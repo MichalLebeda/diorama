@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -252,5 +253,31 @@ public abstract class GameObject implements Identifiable {
     @Override
     public Identifier getIdentifier() {
         return identifier;
+    }
+
+    public void setX(float x) {
+        decal.setX(x);
+    }
+
+    public void setY(float y) {
+        decal.setX(y);
+    }
+
+    public void setPosition(float x, float y) {
+        decal.setPosition(x, y, decal.getZ());
+    }
+
+    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
+        // round to texels
+        // TODO MOVE OUTSIDE
+        worldPos.x = Utils.round(worldPos.x, 1f / 16f);
+        if (decal.getTextureRegion().getRegionWidth() % 2 == 1) {
+            worldPos.x += 0.5f / 16f;
+        }
+        worldPos.y = Utils.round(worldPos.y, 1f / 16f);
+
+        decal.setPosition(worldPos.x, worldPos.y, decal.getHeight() / 2);
+
+        return worldPos;
     }
 }

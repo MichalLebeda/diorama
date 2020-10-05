@@ -10,6 +10,7 @@ public class Editor {
     private Prototype currentlySelectedPrototype;
     private Mode mode = Mode.ITEM;
     private History history = new History();
+    private boolean hardSnap = false;
 
     public Editor(String filename) {
         if (filename == null) {
@@ -100,5 +101,13 @@ public class Editor {
         public Mode getPrevMode() {
             return Mode.values()[(Mode.values().length + this.ordinal() - 1) % (Mode.values().length)];
         }
+    }
+
+    public void toggleHardSnap() {
+        hardSnap = !hardSnap;
+    }
+
+    public boolean getHardSnap() {
+        return hardSnap;
     }
 }

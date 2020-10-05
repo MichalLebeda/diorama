@@ -1,6 +1,7 @@
 package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
@@ -101,10 +102,6 @@ public class EditorTool {
         }
     }
 
-    /*
-     * GameObjects part
-     */
-
     public void addObject(GameObject gameObject, boolean useHistory) {
         if (gameObject.getPrototype().isAttached()) {
             Vector3 position = gameObject.getPosition();
@@ -145,5 +142,34 @@ public class EditorTool {
 
             floor.updateSurroundings();
         }
+    }
+
+    public void moveObject(float x, float y, GameObject gameObject) {
+        if (gameObject.getPrototype().isAttached()) {
+            x = ((int) x) + 0.5f;
+            y = ((int) y) + 0.5f;
+
+            if (floor.isInBounds(x, y)) {
+                gameObject.setPosition(x, y);
+                gameObject.getTileAttachedTo().attachObject(null);
+                Tile tile = floor.getTileAtWorld(x, y);
+                tile.attachObject(gameObject);
+            }
+        } else {
+            if (editor.getHardSnap()) {
+
+                //MOVE ROUND TO SEPARATE METHOD
+                x = ((int) x) + 0.5f;
+                y = ((int) y) + 0.5f;
+
+                if (floor.isInBounds(x, y)) {
+                    gameObject.setPosition(x, y);
+                }
+            } else {
+                gameObject.setPositionPixelPerfect(new Vector2(x, y));
+            }
+        }
+
+        gameObjects.setDirty();
     }
 }

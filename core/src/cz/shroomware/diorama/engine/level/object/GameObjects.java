@@ -66,7 +66,7 @@ public class GameObjects {
         }
 
         if (gameObject.hasLogicComponent()) {
-            // Unregister object from logic system
+            // Unregister object from the logic system
             logic.unregister(gameObject.getLogicComponent());
         }
     }
@@ -229,5 +229,9 @@ public class GameObjects {
 
     public GameObject get(int i) {
         return gameObjects.get(i);
+    }
+
+    public void setDirty() {
+        this.dirty = true;
     }
 }
