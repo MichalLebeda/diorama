@@ -25,7 +25,7 @@ public class Editor {
 
     public void setCurrentlySelectedPrototype(Prototype currentlySelectedPrototype) {
         this.currentlySelectedPrototype = currentlySelectedPrototype;
-        if (isMode(Editor.Mode.DELETE) || isMode(Mode.ID_ASSIGN)) {
+        if (mode != Mode.TILE && mode != Mode.TILE_BUCKET) {
             setMode(Editor.Mode.ITEM);
         }
     }
@@ -79,6 +79,7 @@ public class Editor {
 
     public enum Mode {
         ITEM(Utils.ITEM_MODE_ICON_DRAWABLE),
+        ITEM_MOVE(Utils.ITEM_MOVE_MODE_ICON_DRAWABLE),
         DELETE(Utils.DELETE_MODE_ICON_DRAWABLE),
         TILE(Utils.TILE_MODE_ICON_DRAWABLE),
         TILE_BUCKET(Utils.TILE_BUCKET_MODE_ICON_DRAWABLE),
