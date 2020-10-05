@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.history.actions.BucketTileAction;
 import cz.shroomware.diorama.editor.history.actions.DeleteGameObjectAction;
 import cz.shroomware.diorama.editor.history.actions.PlaceGameObjectAction;
@@ -166,10 +167,14 @@ public class EditorTool {
                     gameObject.setPosition(x, y);
                 }
             } else {
-                gameObject.setPositionPixelPerfect(new Vector2(x, y));
+                Vector2 position = new Vector2(x, y);
+                position = Utils.roundPosition(position, gameObject.getWidth());
+                gameObject.setPosition(position);
             }
         }
 
         gameObjects.setDirty();
     }
+
+
 }

@@ -401,12 +401,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        Vector3 intersection;
-        Ray ray = camera.getPickRay(screenX, screenY);
-        intersection = ray.direction.cpy().add(ray.origin);
-        Intersector.intersectRayPlane(ray,
-                new Plane(Vector3.Z, Vector3.X),
-                intersection);
+        Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
 
         if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
@@ -431,22 +426,21 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 camera.translate(transform);
                 clampCameraPos(camera);
 
-                cameraLastDragWorldPos = intersection.add(transform);
-                cameraLastDragWorldPos.z = 0;
+                cursor.setPosition(intersection.x, intersection.y);
             }
         }
 
-        //let hud handle this if event occurred on top of menu
+        // Let hud handle this if event occurred on top of menu
         Vector2 pos = new Vector2(screenX, screenY);
         pos = hud.screenToStageCoordinates(pos);
         if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
             cursor.hide();
             return false;
         } else {
-            // fixes item jitter when moving/rotating camera
+            // Fixes item jitter when moving/rotating camera
             camera.update();
             cursor.show();
-            moveCursorTo(new Vector2(screenX, screenY));
+            cursor.setPosition(intersection.x, intersection.y);
             return true;
         }
     }
@@ -466,20 +460,12 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         if (editor.isMode(Editor.Mode.ITEM_MOVE)) {
             if (movedObject != null) {
-                //TODO MOVE SOMEWHERE
-                Vector2 screenCoordinates = new Vector2(screenX, screenY);
-                Vector3 intersection = new Vector3();
-
-                Ray ray = camera.getPickRay(screenCoordinates.x, screenCoordinates.y);
-
-                Intersector.intersectRayPlane(ray,
-                        new Plane(Vector3.Z, Vector3.X),
-                        intersection);
-
+                Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
                 editorTool.moveObject(intersection.x, intersection.y, movedObject);
             }
         } else {
-            moveCursorTo(new Vector2(screenX, screenY));
+            Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
+            cursor.setPosition(intersection.x, intersection.y);
         }
         return true;
     }
@@ -502,16 +488,14 @@ public class LevelEditorScreen extends BaseLevelScreen {
         return level.findIntersectingWithRay(ray, camera.position);
     }
 
-    private void moveCursorTo(Vector2 screenCoordinates) {
+    private Vector3 getRayIntersectionWithFloor(int x, int y) {
         Vector3 intersection = new Vector3();
-        //TODO: move outside for further use
-        Ray ray = camera.getPickRay(screenCoordinates.x, screenCoordinates.y);
+        Ray ray = camera.getPickRay(x, y);
 
         Intersector.intersectRayPlane(ray,
                 new Plane(Vector3.Z, Vector3.X),
                 intersection);
-
-        cursor.setPositionPixelPerfect(new Vector2(intersection.x, intersection.y));
+        return intersection;
     }
 
     @Override
@@ -526,17 +510,11 @@ public class LevelEditorScreen extends BaseLevelScreen {
         clampCameraPos(camera);
 
         if (editor.isMode(Editor.Mode.ITEM_MOVE) && movedObject != null) {
-            Vector2 screenCoordinates = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-            Vector3 intersection = new Vector3();
-
-            Ray ray = camera.getPickRay(screenCoordinates.x, screenCoordinates.y);
-
-            Intersector.intersectRayPlane(ray,
-                    new Plane(Vector3.Z, Vector3.X),
-                    intersection);
+            Vector3 intersection = getRayIntersectionWithFloor(Gdx.input.getX(), Gdx.input.getY());
             editorTool.moveObject(intersection.x, intersection.y, movedObject);
         } else {
-            moveCursorTo(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+            Vector3 intersection = getRayIntersectionWithFloor(Gdx.input.getX(), Gdx.input.getY());
+            cursor.setPosition(intersection.x, intersection.y);
         }
         return true;
     }

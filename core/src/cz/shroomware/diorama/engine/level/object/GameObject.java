@@ -255,29 +255,27 @@ public abstract class GameObject implements Identifiable {
         return identifier;
     }
 
-    public void setX(float x) {
-        decal.setX(x);
-    }
-
-    public void setY(float y) {
-        decal.setX(y);
-    }
-
     public void setPosition(float x, float y) {
-        decal.setPosition(x, y, decal.getZ());
+        decal.setX(x);
+        decal.setY(y);
     }
 
-    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
-        // round to texels
-        // TODO MOVE OUTSIDE
-        worldPos.x = Utils.round(worldPos.x, 1f / 16f);
-        if (decal.getTextureRegion().getRegionWidth() % 2 == 1) {
-            worldPos.x += 0.5f / 16f;
-        }
-        worldPos.y = Utils.round(worldPos.y, 1f / 16f);
-
-        decal.setPosition(worldPos.x, worldPos.y, decal.getHeight() / 2);
-
-        return worldPos;
+    public void setPosition(Vector2 position) {
+        decal.setX(position.x);
+        decal.setY(position.y);
     }
+
+//    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
+//        // round to texels
+//        // TODO MOVE OUTSIDE
+//        worldPos.x = Utils.round(worldPos.x, 1f / 16f);
+//        if (decal.getTextureRegion().getRegionWidth() % 2 == 1) {
+//            worldPos.x += 0.5f / 16f;
+//        }
+//        worldPos.y = Utils.round(worldPos.y, 1f / 16f);
+//
+//        decal.setPosition(worldPos.x, worldPos.y, decal.getHeight() / 2);
+//
+//        return worldPos;
+//    }
 }

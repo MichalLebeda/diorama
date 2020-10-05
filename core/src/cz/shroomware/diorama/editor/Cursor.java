@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.AtlasRegionGameObject;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
@@ -68,22 +69,26 @@ public class Cursor extends AtlasRegionGameObject {
     }
 
     @Override
-    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
+    public void setPosition(float x, float y) {
+        this.setPosition(new Vector2(x, y));
+    }
+
+    @Override
+    public void setPosition(Vector2 worldPos) {
         if ((editor.hasSelectedPrototype() && editor.getCurrentlySelectedPrototype().isAttached())
                 || editor.getHardSnap()) {
             worldPos.x = ((int) worldPos.x) + 0.5f;
             worldPos.y = ((int) worldPos.y) + 0.5f;
+        } else {
+            worldPos = Utils.roundPosition(worldPos, getWidth());
+            super.setPosition(worldPos);
         }
-//            intersection.z = ((int) intersection.z) + 0.5f;
-        worldPos = super.setPositionPixelPerfect(worldPos);
 
         if (level.isInBounds(worldPos.x, worldPos.y)) {
             allowPlacingItem();
         } else {
             forbidPlacingItem();
         }
-
-        return worldPos;
     }
 
     private void updateRegion(TextureRegion region) {

@@ -18,7 +18,6 @@ public class LampPrototype extends Prototype {
         offRegion = resources.getObjectAtlas().findRegion("lamp_off");
     }
 
-    //TODO return null and handle it outside if region not found
     @Override
     public TextureRegion getIconRegion() {
         return offRegion;

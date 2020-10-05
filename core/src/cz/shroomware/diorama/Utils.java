@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -132,8 +133,6 @@ public class Utils {
                 if (pixel == 0) {
                     continue;
                 }
-                //TODO cleanup
-//                Gdx.app.log("color", Integer.toHexString(pixel));
                 if (occurrences.containsKey(pixel)) {
                     Integer occurrence = occurrences.get(pixel);
                     //TODO: could be done better but looks clean so...
@@ -158,5 +157,17 @@ public class Utils {
 
     public static FileHandle getFileHandle(String filename) {
         return getProjectFolderFileHandle().child(filename);
+    }
+
+    //TODO: handle rotation
+    public static Vector2 roundPosition(Vector2 worldPos, float width) {
+        worldPos = worldPos.cpy();
+        worldPos.x = Utils.round(worldPos.x, 1f / 16f);
+        if ((int) width % 2 == 1) {
+            worldPos.x += 0.5f / 16f;
+        }
+        worldPos.y = Utils.round(worldPos.y, 1f / 16f);
+
+        return worldPos;
     }
 }
