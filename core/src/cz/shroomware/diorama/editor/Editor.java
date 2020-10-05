@@ -7,16 +7,14 @@ import cz.shroomware.diorama.editor.history.History;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 public class Editor {
-    protected Prototype currentlySelectedPrototype;
-    Mode mode = Mode.ITEM;
-    History history = new History();
-    String filename;
+    private Prototype currentlySelectedPrototype;
+    private Mode mode = Mode.ITEM;
+    private History history = new History();
 
     public Editor(String filename) {
         if (filename == null) {
             throw new NullPointerException();
         }
-        this.filename = filename;
     }
 
     public Prototype getCurrentlySelectedPrototype() {
