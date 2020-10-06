@@ -32,6 +32,7 @@ public class Hud extends Stage {
     EditorEngineGame game;
     SelectedItemIndicator selectedItemIndicator;
     SelectedModeIndicator selectedModeIndicator;
+    SnapIndicator snapIndicator;
     IconButton logicEditorButton;
     ScrollPane scrollPane;
     LeftToBackgroundLabel projectNameLabel;
@@ -75,6 +76,9 @@ public class Hud extends Stage {
 
         selectedModeIndicator = new SelectedModeIndicator(editor, resources.getSkin());
         addActor(selectedModeIndicator);
+
+        snapIndicator = new SnapIndicator(editor, resources.getSkin());
+        addActor(snapIndicator);
 
         messages = new Messages(resources);
         messages.setWidth(400);
@@ -213,9 +217,13 @@ public class Hud extends Stage {
                 selectedItemIndicator.getX() - selectedModeIndicator.getWidth() - 10,
                 selectedItemIndicator.getY());
 
-        logicEditorButton.setPosition(
+        snapIndicator.setPosition(
                 selectedModeIndicator.getX() - logicEditorButton.getWidth() - 10,
                 selectedModeIndicator.getY());
+
+        logicEditorButton.setPosition(
+                snapIndicator.getX() - snapIndicator.getWidth() - 10,
+                snapIndicator.getY());
     }
 
     public void openIdAssignDialog(final GameObjects gameObjects, final GameObject gameObject) {
