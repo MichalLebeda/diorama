@@ -81,8 +81,9 @@ public class Cursor extends AtlasRegionGameObject {
             worldPos.y = ((int) worldPos.y) + 0.5f;
         } else {
             worldPos = Utils.roundPosition(worldPos, getWidth());
-            super.setPosition(worldPos);
         }
+
+        super.setPosition(worldPos);
 
         if (level.isInBounds(worldPos.x, worldPos.y)) {
             allowPlacingItem();

@@ -184,8 +184,9 @@ public abstract class LogicHud extends Stage {
                 getHeight() - logicSelectedModeIndicator.getHeight() - 10);
     }
 
+    //FIXME: DOESN'T WORK
     public void setScrollFocus(float x, float y) {
-        setScrollFocus(hit(x, y, true));
+        setScrollFocus(hit(x, y, false));
     }
 
     public void cancelScrollFocus() {

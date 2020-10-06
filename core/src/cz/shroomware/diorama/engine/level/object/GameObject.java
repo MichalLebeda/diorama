@@ -258,11 +258,13 @@ public abstract class GameObject implements Identifiable {
     public void setPosition(float x, float y) {
         decal.setX(x);
         decal.setY(y);
+        decal.setZ(getHeight() / 2);
     }
 
     public void setPosition(Vector2 position) {
         decal.setX(position.x);
         decal.setY(position.y);
+        decal.setZ(getHeight() / 2);
     }
 
 //    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
