@@ -1,6 +1,5 @@
 package cz.shroomware.diorama.engine.level.object;
 
-import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -37,13 +36,14 @@ public class Trigger extends GameObject {
     }
 
     @Override
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
+    public void update(float delta) {
+        super.update(delta);
+
         if (contacts > 0) {
             decal.setZ(0.004f);
         } else {
             decal.setZ(1f / Utils.PIXELS_PER_METER);
         }
-        super.drawDecal(decalBatch, delta);
     }
 
     public void addContact() {

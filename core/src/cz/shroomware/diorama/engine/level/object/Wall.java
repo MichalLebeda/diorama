@@ -116,8 +116,8 @@ public class Wall extends GameObject {
     }
 
     @Override
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
-        super.drawDecal(decalBatch, delta);
+    public void drawDecal(MinimalisticDecalBatch decalBatch) {
+        super.drawDecal(decalBatch);
         if (!left) {
             decalBatch.add(leftDecal);
         }

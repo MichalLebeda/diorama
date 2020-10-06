@@ -78,13 +78,7 @@ public abstract class GameObject implements Identifiable {
         boundingBox.set(min, max);
     }
 
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
-        //TODO: remove
-//        if (!selected && tileAttachedTo != null) {
-//            decal.setColor(Color.ORANGE);
-//
-//        }
-//
+    public void update(float delta) {
         if (hasBody()) {
             if (body.getType() != BodyDef.BodyType.StaticBody && body.isAwake()) {
                 positionDirty = true;
@@ -96,6 +90,15 @@ public abstract class GameObject implements Identifiable {
             forceUpdatePosition();
             positionDirty = false;
         }
+    }
+
+    public void drawDecal(MinimalisticDecalBatch decalBatch) {
+        //TODO: remove
+//        if (!selected && tileAttachedTo != null) {
+//            decal.setColor(Color.ORANGE);
+//
+//        }
+//
         decalBatch.add(decal);
     }
 

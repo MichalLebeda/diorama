@@ -114,9 +114,9 @@ public class Door extends GameObject {
     }
 
     @Override
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
-        super.drawDecal(decalBatch, delta);
-        decalBatch.add(movingPart);
+    public void update(float delta) {
+        super.update(delta);
+
         if (animation) {
             time += delta;
             if (time >= ANIM_DURATION) {
@@ -127,6 +127,13 @@ public class Door extends GameObject {
             relativeAngle = Interpolation.bounceOut.apply(startRelativeAngle, targetRelativeAngle, alpha);
             setAngleRelative(relativeAngle);
         }
+    }
+
+    @Override
+    public void drawDecal(MinimalisticDecalBatch decalBatch) {
+        super.drawDecal(decalBatch);
+
+        decalBatch.add(movingPart);
     }
 
     @Override

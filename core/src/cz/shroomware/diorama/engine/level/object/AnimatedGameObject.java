@@ -3,7 +3,6 @@ package cz.shroomware.diorama.engine.level.object;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
@@ -39,14 +38,16 @@ public class AnimatedGameObject extends GameObject {
     }
 
     @Override
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
+    public void update(float delta) {
+        super.update(delta);
+
         time += delta;
+
         decal.setTextureRegion(animation.getKeyFrame(time).getObject());
         TextureRegion shadowRegion = animation.getKeyFrame(time).getShadow();
         if (shadowRegion != null) {
             shadowSprite.setRegion(shadowRegion);
         }
-        super.drawDecal(decalBatch, delta);
     }
 
     @Override

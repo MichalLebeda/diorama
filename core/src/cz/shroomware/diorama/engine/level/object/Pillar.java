@@ -119,8 +119,9 @@ public class Pillar extends GameObject {
     }
 
     @Override
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
-        super.drawDecal(decalBatch, delta);
+    public void drawDecal(MinimalisticDecalBatch decalBatch) {
+        super.drawDecal(decalBatch);
+
         decalBatch.add(leftDecal);
         decalBatch.add(rightDecal);
         decalBatch.add(frontDecal);

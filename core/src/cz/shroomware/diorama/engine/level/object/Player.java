@@ -1,7 +1,5 @@
 package cz.shroomware.diorama.engine.level.object;
 
-import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -22,23 +20,7 @@ public class Player extends AtlasRegionGameObject {
         return body;
     }
 
-    public void update() {
-        Vector2 bodyPos = body.getPosition();
-        decal.setX(bodyPos.x);
-        decal.setY(bodyPos.y);
-    }
-
-
-    @Override
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
-        super.drawDecal(decalBatch, delta);
-    }
-
     public void setVelocity(float x, float y) {
         body.setLinearVelocity(x, y);
-    }
-
-    public Vector2 getBodyPosition() {
-        return body.getPosition();
     }
 }

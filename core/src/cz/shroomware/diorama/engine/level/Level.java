@@ -196,9 +196,10 @@ public class Level {
 //        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glDepthMask(false);
-        gameObjects.drawShadows(spriteBatch);
 
-        gameObjects.drawObjects(decalBatch, delta);
+        gameObjects.update(delta);
+        gameObjects.drawShadows(spriteBatch);
+        gameObjects.drawObjects(decalBatch);
 
         clouds.draw(decalBatch, delta);
     }

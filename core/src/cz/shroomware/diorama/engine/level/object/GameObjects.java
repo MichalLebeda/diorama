@@ -33,15 +33,21 @@ public class GameObjects {
         this.logic = logic;
     }
 
+    public void update(float delta) {
+        for (GameObject object : gameObjects) {
+            object.update(delta);
+        }
+    }
+
     public void drawShadows(Batch batch) {
         for (GameObject object : gameObjects) {
             object.drawShadow(batch);
         }
     }
 
-    public void drawObjects(MinimalisticDecalBatch decalBatch, float delta) {
+    public void drawObjects(MinimalisticDecalBatch decalBatch) {
         for (GameObject object : gameObjects) {
-            object.drawDecal(decalBatch, delta);
+            object.drawDecal(decalBatch);
         }
     }
 

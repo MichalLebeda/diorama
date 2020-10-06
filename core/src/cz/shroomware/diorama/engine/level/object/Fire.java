@@ -96,7 +96,9 @@ public class Fire extends GameObject {
     }
 
     @Override
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
+    public void update(float delta) {
+        super.update(delta);
+
         switch (state) {
             case OFF:
                 break;
@@ -127,9 +129,14 @@ public class Fire extends GameObject {
                 break;
         }
 
-        super.drawDecal(decalBatch, delta);
+        particleEmitter.update(delta);
+    }
 
-        particleEmitter.draw(decalBatch, delta);
+    @Override
+    public void drawDecal(MinimalisticDecalBatch decalBatch) {
+        super.drawDecal(decalBatch);
+
+        particleEmitter.draw(decalBatch);
     }
 
     enum State {OFF, STARTING, ENDING, FIRE}

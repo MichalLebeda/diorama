@@ -19,6 +19,8 @@ public abstract class ParticleEmitter {
 
     int particleLimit = 0;
 
+    float delta;
+
     boolean emission = true;
 
     //TODO GLOBAL PARTICLE LIMIT
@@ -45,14 +47,18 @@ public abstract class ParticleEmitter {
         this.depth = depth;
     }
 
-    public void draw(MinimalisticDecalBatch decalBatch, float delta) {
+    public void update(float delta) {
+        // Performance tweak, wont have to iterate particles twice
+        this.delta = delta;
 //        Gdx.app.log("ParticleEmitter", "size: " + particleArray.size);
         timeFromLastParticle += delta;
 
         if (emission && timeFromLastParticle >= 1f / particlesPerSecond) {
             spawn();
         }
+    }
 
+    public void draw(MinimalisticDecalBatch decalBatch) {
         for (int i = 0; i < particleArray.size; i++) {
             Particle particle = particleArray.get(i);
             if (particle.toRemove()) {

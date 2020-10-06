@@ -44,9 +44,16 @@ public class Tree extends GameObject {
     }
 
     @Override
-    public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
-        super.drawDecal(decalBatch, delta);
+    public void update(float delta) {
+        super.update(delta);
 
-        particleEmitter.draw(decalBatch, delta);
+        particleEmitter.update(delta);
+    }
+
+    @Override
+    public void drawDecal(MinimalisticDecalBatch decalBatch) {
+        super.drawDecal(decalBatch);
+
+        particleEmitter.draw(decalBatch);
     }
 }

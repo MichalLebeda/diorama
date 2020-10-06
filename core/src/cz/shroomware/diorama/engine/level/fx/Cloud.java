@@ -46,7 +46,8 @@ public class Cloud {
         decalBatch.add(decal);
 
         if (Utils.RAIN) {
-            particleEmitter.draw(decalBatch, delta);
+            particleEmitter.update(delta);
+            particleEmitter.draw(decalBatch);
         }
     }
 }
