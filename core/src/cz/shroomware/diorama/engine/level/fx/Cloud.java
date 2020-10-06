@@ -40,13 +40,19 @@ public class Cloud {
         particleEmitter.setParticleLimit(10);
     }
 
-    public void draw(MinimalisticDecalBatch decalBatch, float delta) {
+    public void update(float delta) {
         time += delta;
         decal.setX(origPos.x + (float) Math.sin(time * speed) / 30f);
-        decalBatch.add(decal);
 
         if (Utils.RAIN) {
             particleEmitter.update(delta);
+        }
+    }
+
+    public void draw(MinimalisticDecalBatch decalBatch) {
+        decalBatch.add(decal);
+
+        if (Utils.RAIN) {
             particleEmitter.draw(decalBatch);
         }
     }

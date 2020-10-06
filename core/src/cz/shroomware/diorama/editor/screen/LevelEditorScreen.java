@@ -121,7 +121,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
         spriteBatch.getShader().setUniformf("u_background_color", backgroundColor);
         spriteBatch.getShader().setUniformf("time", time / 10f);
-        level.step(delta);
+
+        level.update(delta);
         level.draw(spriteBatch, decalBatch, delta);
 
         if (takingScreenshot) {

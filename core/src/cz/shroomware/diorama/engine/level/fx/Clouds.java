@@ -49,9 +49,15 @@ public class Clouds {
         }
     }
 
-    public void draw(MinimalisticDecalBatch decalBatch, float delta) {
+    public void update(float delta) {
         for (Cloud cloud : array) {
-            cloud.draw(decalBatch, delta);
+            cloud.update(delta);
+        }
+    }
+
+    public void draw(MinimalisticDecalBatch decalBatch) {
+        for (Cloud cloud : array) {
+            cloud.draw(decalBatch);
         }
     }
 }

@@ -184,8 +184,11 @@ public class Level {
         this.filename = filename;
     }
 
-    public void step(float delta) {
+    public void update(float delta) {
         world.step(delta, 6, 2);
+
+        gameObjects.update(delta);
+        clouds.update(delta);
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
@@ -197,11 +200,9 @@ public class Level {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glDepthMask(false);
 
-        gameObjects.update(delta);
         gameObjects.drawShadows(spriteBatch);
         gameObjects.drawObjects(decalBatch);
-
-        clouds.draw(decalBatch, delta);
+        clouds.draw(decalBatch);
     }
 
     public boolean isInBounds(float x, float y) {

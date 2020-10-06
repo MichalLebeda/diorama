@@ -53,7 +53,9 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
             player.setVelocity(SPEED, 0);
         }
 
-        camera.position.set(player.getPosition().cpy().add(0, -Y_CAMERA_DISTANCE, 4));
+        level.update(delta);
+
+        camera.position.set(player.getBody().getPosition().cpy().add(0, -Y_CAMERA_DISTANCE), 4);
         camera.lookAt(player.getPosition());
         camera.update();
 
