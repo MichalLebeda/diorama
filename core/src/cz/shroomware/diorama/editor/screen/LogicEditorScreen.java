@@ -207,6 +207,9 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        if (hud.hit(screenX, screenY, false) != null) {
+            hud.setScrollFocus(screenX, screenY);
+        }
         return false;
     }
 
