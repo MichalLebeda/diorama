@@ -128,4 +128,10 @@ public class Door extends GameObject {
             setAngleRelative(relativeAngle);
         }
     }
+
+    @Override
+    protected void updatePosition(float originX, float originY) {
+        super.updatePosition(originX, originY);
+        movingPart.setPosition(originX, originY, movingPart.getZ());
+    }
 }

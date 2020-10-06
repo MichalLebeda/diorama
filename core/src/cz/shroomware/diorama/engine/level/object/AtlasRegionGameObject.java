@@ -7,8 +7,6 @@ import com.badlogic.gdx.math.Vector3;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
-import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
-
 public class AtlasRegionGameObject extends GameObject {
     //TODO add shadows everywhere
 
@@ -22,7 +20,8 @@ public class AtlasRegionGameObject extends GameObject {
         if (prototype.getShadowRegion() != null) {
             shadowSprite = new Sprite(shadowRegion);
             shadowSprite.setSize(decal.getWidth() * Utils.SHADOW_SCALE, -((float) shadowSprite.getRegionHeight() / (float) shadowSprite.getRegionWidth() * decal.getWidth() * Utils.SHADOW_SCALE));
-            shadowSprite.setPosition(decal.getX() - shadowSprite.getWidth() / 2, decal.getY() - shadowSprite.getHeight() - 0.01f / PIXELS_PER_METER);
         }
+
+        positionDirty = true;
     }
 }

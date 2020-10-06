@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.history.History;
+import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 
 public class Editor {
@@ -11,6 +12,7 @@ public class Editor {
     private Mode mode = Mode.ITEM;
     private History history = new History();
     private boolean hardSnap = false;
+    private GameObject movedObject;
 
     public Editor(String filename) {
         if (filename == null) {
@@ -39,6 +41,9 @@ public class Editor {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+        if (mode != Mode.ITEM_MOVE) {
+            movedObject = null;
+        }
     }
 
     public boolean isMode(Mode mode) {
@@ -60,11 +65,11 @@ public class Editor {
     Mode modeBeforeDeleteToggle = Mode.ITEM;
 
     public void setNextMode() {
-        mode = mode.getNextMode();
+        setMode(mode.getNextMode());
     }
 
     public void setPrevMode() {
-        mode = mode.getPrevMode();
+        setMode(mode.getPrevMode());
     }
 
     public void toggleDelete() {
@@ -109,5 +114,21 @@ public class Editor {
 
     public boolean getHardSnap() {
         return hardSnap;
+    }
+
+    public boolean isMovingObject() {
+        return movedObject != null;
+    }
+
+    public GameObject getMovedObject() {
+        return movedObject;
+    }
+
+    public void stopMove() {
+        this.movedObject = null;
+    }
+
+    public void setMovedObject(GameObject object) {
+        this.movedObject = object;
     }
 }

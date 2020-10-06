@@ -85,6 +85,8 @@ public class Cursor extends AtlasRegionGameObject {
 
         super.setPosition(worldPos);
 
+        decal.setZ(getHeight() / 2);
+
         if (level.isInBounds(worldPos.x, worldPos.y)) {
             allowPlacingItem();
         } else {

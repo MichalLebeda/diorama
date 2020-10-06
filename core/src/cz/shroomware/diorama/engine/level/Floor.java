@@ -172,4 +172,43 @@ public class Floor {
             }
         }
     }
+
+    public void updateAround(Tile tile) {
+        Tile neighborTile;
+
+        neighborTile = getTileByOffset(tile, -1, 0);
+        if (neighborTile != null) {
+            if (neighborTile.hasAttachedObject()) {
+                neighborTile.getAttachedGameObject().updateSurroundings(this);
+            }
+        }
+
+        neighborTile = getTileByOffset(tile, 1, 0);
+        if (neighborTile != null) {
+            if (neighborTile.hasAttachedObject()) {
+                neighborTile.getAttachedGameObject().updateSurroundings(this);
+            }
+        }
+
+        neighborTile = getTileByOffset(tile, 0, -1);
+        if (neighborTile != null) {
+            if (neighborTile.hasAttachedObject()) {
+                neighborTile.getAttachedGameObject().updateSurroundings(this);
+            }
+        }
+
+        neighborTile = getTileByOffset(tile, 0, 1);
+        if (neighborTile != null) {
+            if (neighborTile.hasAttachedObject()) {
+                neighborTile.getAttachedGameObject().updateSurroundings(this);
+            }
+        }
+    }
+
+    public void updateAround(int xIndex, int yIndex) {
+        Tile tile = getTileAtIndex(xIndex, yIndex);
+        if (tile != null) {
+            updateAround(tile);
+        }
+    }
 }

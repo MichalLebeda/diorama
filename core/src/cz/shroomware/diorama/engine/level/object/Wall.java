@@ -36,18 +36,14 @@ public class Wall extends GameObject {
         topRegions = prototype.getTop();
 
         decal.setRotationX(0);
-        decal.setZ(prototype.getLeftRegion().getRegionHeight() / PIXELS_PER_METER);
-        position.z = decal.getZ() / 2;
 
         leftDecal = Decal.newDecal(prototype.getLeftRegion(), true);
-        leftDecal.setPosition(position.cpy().add(-0.5f, 0, 0));
         leftDecal.rotateX(90);
         leftDecal.rotateY(90);
         leftDecal.setWidth(leftDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         leftDecal.setHeight(leftDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
         rightDecal = Decal.newDecal(prototype.getRightRegion(), true);
-        rightDecal.setPosition(position.cpy().add(0.5f, 0, 0));
         rightDecal.rotateX(90);
         rightDecal.rotateY(90);
         rightDecal.setWidth(rightDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
@@ -55,17 +51,17 @@ public class Wall extends GameObject {
 
         frontDecal = Decal.newDecal(prototype.getFrontRegion(), true);
         frontDecal.rotateX(90);
-        frontDecal.setPosition(position.cpy().add(0, -0.5f, 0));
         frontDecal.setWidth(frontDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         frontDecal.setHeight(frontDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
         backDecal = Decal.newDecal(prototype.getBackRegion(), true);
-        backDecal.setPosition(position.cpy().add(0, 0.5f, 0));
         backDecal.rotateX(90);
         backDecal.setWidth(backDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         backDecal.setHeight(backDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
         attachToBody(createBody(boxFactory));
+
+        positionDirty = true;
     }
 
     protected Body createBody(BoxFactory boxFactory) {
@@ -196,5 +192,14 @@ public class Wall extends GameObject {
         left = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
 
         decal.setTextureRegion(topRegions.get(up, right, down, left));
+    }
+
+    @Override
+    protected void updatePosition(float originX, float originY) {
+        decal.setPosition(originX, originY, leftDecal.getHeight());
+        leftDecal.setPosition(originX - 0.5f, originY, leftDecal.getHeight() / 2);
+        rightDecal.setPosition(originX + 0.5f, originY, rightDecal.getHeight() / 2);
+        frontDecal.setPosition(originX, originY - 0.5f, frontDecal.getHeight() / 2);
+        backDecal.setPosition(originX, originY + 0.5f, backDecal.getHeight() / 2);
     }
 }

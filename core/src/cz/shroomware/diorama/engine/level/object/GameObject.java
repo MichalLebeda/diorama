@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.engine.level.object;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.Identifiable;
@@ -35,6 +37,7 @@ public abstract class GameObject implements Identifiable {
     protected Body body = null;
     protected Identifier identifier = new Identifier();
     protected boolean selected = false;
+    protected boolean positionDirty = false;
 
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
         this.prototype = prototype;
@@ -82,6 +85,17 @@ public abstract class GameObject implements Identifiable {
 //
 //        }
 //
+        if (hasBody()) {
+            if (body.getType() != BodyDef.BodyType.StaticBody && body.isAwake()) {
+                positionDirty = true;
+                Gdx.app.log("GameObject", prototype.getName() + " active");
+            }
+        }
+
+        if (positionDirty) {
+            forceUpdatePosition();
+            positionDirty = false;
+        }
         decalBatch.add(decal);
     }
 
@@ -256,15 +270,44 @@ public abstract class GameObject implements Identifiable {
     }
 
     public void setPosition(float x, float y) {
-        decal.setX(x);
-        decal.setY(y);
-        decal.setZ(getHeight() / 2);
+        if (hasBody()) {
+            body.setTransform(x, y, body.getAngle());
+        } else {
+            decal.setX(x);
+            decal.setY(y);
+        }
+
+        positionDirty = true;
     }
 
     public void setPosition(Vector2 position) {
-        decal.setX(position.x);
-        decal.setY(position.y);
-        decal.setZ(getHeight() / 2);
+        if (hasBody()) {
+            body.setTransform(position.x, position.y, body.getAngle());
+        } else {
+            decal.setX(position.x);
+            decal.setY(position.y);
+        }
+
+        positionDirty = true;
+    }
+
+    protected void updatePosition(float originX, float originY) {
+        if (body != null) {
+            decal.setX(originX);
+            decal.setY(originY);
+        }
+        if (shadowSprite != null) {
+            shadowSprite.setPosition(originX - shadowSprite.getWidth() / 2, originY - shadowSprite.getHeight() - 0.01f / PIXELS_PER_METER);
+        }
+    }
+
+    public void forceUpdatePosition() {
+        if (hasBody()) {
+            Vector2 bodyPosition = body.getPosition();
+            updatePosition(bodyPosition.x, bodyPosition.y);
+        } else {
+            updatePosition(decal.getX(), decal.getY());
+        }
     }
 
 //    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {

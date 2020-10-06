@@ -28,6 +28,7 @@ public class Player extends AtlasRegionGameObject {
         decal.setY(bodyPos.y);
     }
 
+
     @Override
     public void drawDecal(MinimalisticDecalBatch decalBatch, float delta) {
         super.drawDecal(decalBatch, delta);

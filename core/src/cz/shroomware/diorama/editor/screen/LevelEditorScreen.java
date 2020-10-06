@@ -54,7 +54,6 @@ public class LevelEditorScreen extends BaseLevelScreen {
     protected Vector2 lastDragScreenPos = new Vector2();
     protected Vector3 cameraLastDragWorldPos;
     protected GameObject currentlyHighlightedObject;
-    protected GameObject movedObject;
     protected boolean takingScreenshot;
     protected boolean showAddRemoveMessages = false;
     boolean dragging = false;
@@ -115,7 +114,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
             selectObjectUnderCursor(Gdx.input.getX(), Gdx.input.getY());
         }
 
-        if (editor.isMode(Editor.Mode.ITEM_MOVE) && movedObject == null) {
+        if (editor.isMode(Editor.Mode.ITEM_MOVE) && !editor.isMovingObject()) {
             selectObjectUnderCursor(Gdx.input.getX(), Gdx.input.getY());
         }
 
@@ -229,84 +228,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
         }
     }
 
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        dragging = false;
-        //let hud handle this if event occurred on top of menu
-        Vector2 pos = new Vector2(screenX, screenY);
-        pos = hud.screenToStageCoordinates(pos);
-        if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
-            return false;
-        }
-
-        lastDragScreenPos.set(screenX, screenY);
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                Vector3 intersection;
-                Ray ray = camera.getPickRay(screenX, screenY);
-                intersection = ray.direction.cpy().add(ray.origin);
-                Intersector.intersectRayPlane(ray,
-                        new Plane(Vector3.Z, Vector3.X),
-                        intersection);
-
-                dragging = true;
-                cameraLastDragWorldPos = intersection;
-                cameraLastDragWorldPos.z = 0;
-
-                return true;
-            } else if (editor.isMode(Editor.Mode.ITEM)) {
-                    placeCurrentObjectAtCursorPosition();
-                    return true;
-            } else if (editor.isMode(Editor.Mode.DELETE)) {
-                GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
-                if (gameObject != null) {
-                    editorTool.removeObject(gameObject, true);
-                    if (showAddRemoveMessages) {
-                        hud.showMessage("DEL " + gameObject.getName());
-                    }
-                }
-                return true;
-            } else if (editor.isMode(Editor.Mode.ID_ASSIGN)) {
-                GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
-                if (gameObject != null) {
-                    hud.openIdAssignDialog(level.getGameObjects(), gameObject);
-                }
-                return true;
-            } else if (editor.isMode(Editor.Mode.TILE)) {
-                if (editor.getCurrentlySelectedPrototype() != null) {
-                    Vector3 intersection;
-                    Ray ray = camera.getPickRay(screenX, screenY);
-                    intersection = ray.direction.cpy().add(ray.origin);
-                    Intersector.intersectRayPlane(ray,
-                            new Plane(Vector3.Z, Vector3.X),
-                            intersection);
-
-                    editorTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeIcon());
-                }
-            } else if (editor.isMode(Editor.Mode.TILE_BUCKET)) {
-                if (editor.getCurrentlySelectedPrototype() != null) {
-                    Vector3 intersection;
-                    Ray ray = camera.getPickRay(screenX, screenY);
-                    intersection = ray.direction.cpy().add(ray.origin);
-                    Intersector.intersectRayPlane(ray,
-                            new Plane(Vector3.Z, Vector3.X),
-                            intersection);
-
-                    editorTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeIcon());
-                }
-            } else if (editor.isMode(Editor.Mode.ITEM_MOVE)) {
-                if (movedObject == null) {
-                    selectObjectUnderCursor(screenX, screenY);
-                    movedObject = currentlyHighlightedObject;
-                } else {
-                    movedObject = null;
-                    currentlyHighlightedObject = null;
-                }
-            }
-        }
-
-        return false;
-    }
+    Plane floorPlane = new Plane(Vector3.Z, Vector3.Zero);
 
     @Override
     public boolean keyDown(int keycode) {
@@ -399,6 +321,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
         return false;
     }
 
+    Vector3 offset = new Vector3();
+
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
@@ -425,8 +349,6 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 }
                 camera.translate(transform);
                 clampCameraPos(camera);
-
-                cursor.setPosition(intersection.x, intersection.y);
             }
         }
 
@@ -441,33 +363,123 @@ public class LevelEditorScreen extends BaseLevelScreen {
             camera.update();
             cursor.show();
             cursor.setPosition(intersection.x, intersection.y);
-            return true;
         }
+
+        if (editor.isMode(Editor.Mode.ITEM_MOVE) && editor.isMovingObject()) {
+            if (editor.isMovingObject()) {
+                intersection = getRayIntersectionWithFloor(screenX, screenY);
+
+                Ray ray = camera.getPickRay(screenX, screenY);
+                ray.origin.z -= offset.z;
+                Intersector.intersectRayPlane(ray, floorPlane, intersection);
+
+                editorTool.moveObject(intersection.x + offset.x,
+                        intersection.y + offset.y,
+                        editor.getMovedObject());
+            }
+        }
+
+        return true;
     }
 
     @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        // Let hud handle this if event occurred on top of menu
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        dragging = false;
+        //let hud handle this if event occurred on top of menu
         Vector2 pos = new Vector2(screenX, screenY);
         pos = hud.screenToStageCoordinates(pos);
         if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
-            hud.setScrollFocus(pos.x, pos.y);
-            cursor.hide();
-        } else {
-            hud.cancelScrollFocus();
-            cursor.show();
+            return false;
         }
 
-        if (editor.isMode(Editor.Mode.ITEM_MOVE)) {
-            if (movedObject != null) {
-                Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
-                editorTool.moveObject(intersection.x, intersection.y, movedObject);
+        lastDragScreenPos.set(screenX, screenY);
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                Vector3 intersection;
+                Ray ray = camera.getPickRay(screenX, screenY);
+                intersection = ray.direction.cpy().add(ray.origin);
+                Intersector.intersectRayPlane(ray,
+                        floorPlane,
+                        intersection);
+
+                dragging = true;
+                cameraLastDragWorldPos = intersection;
+                cameraLastDragWorldPos.z = 0;
+
+                return true;
+            } else if (editor.isMode(Editor.Mode.ITEM)) {
+                placeCurrentObjectAtCursorPosition();
+                return true;
+            } else if (editor.isMode(Editor.Mode.DELETE)) {
+                GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
+                if (gameObject != null) {
+                    editorTool.removeObject(gameObject, true);
+                    if (showAddRemoveMessages) {
+                        hud.showMessage("DEL " + gameObject.getName());
+                    }
+                }
+                return true;
+            } else if (editor.isMode(Editor.Mode.ID_ASSIGN)) {
+                GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
+                if (gameObject != null) {
+                    hud.openIdAssignDialog(level.getGameObjects(), gameObject);
+                }
+                return true;
+            } else if (editor.isMode(Editor.Mode.TILE)) {
+                if (editor.getCurrentlySelectedPrototype() != null) {
+                    Vector3 intersection;
+                    Ray ray = camera.getPickRay(screenX, screenY);
+                    intersection = ray.direction.cpy().add(ray.origin);
+                    Intersector.intersectRayPlane(ray,
+                            floorPlane,
+                            intersection);
+
+                    editorTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeIcon());
+                    return true;
+                }
+            } else if (editor.isMode(Editor.Mode.TILE_BUCKET)) {
+                if (editor.getCurrentlySelectedPrototype() != null) {
+                    //TODO use general method
+                    Vector3 intersection;
+                    Ray ray = camera.getPickRay(screenX, screenY);
+                    intersection = ray.direction.cpy().add(ray.origin);
+                    Intersector.intersectRayPlane(ray,
+                            floorPlane,
+                            intersection);
+
+                    editorTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeIcon());
+                    return true;
+                }
+            } else if (editor.isMode(Editor.Mode.ITEM_MOVE)) {
+                if (editor.isMovingObject()) {
+                    editor.stopMove();
+                    currentlyHighlightedObject = null;
+
+                    return true;
+                } else {
+                    selectObjectUnderCursor(screenX, screenY);
+                    if (currentlyHighlightedObject == null) {
+                        return false;
+                    }
+
+                    Ray ray = camera.getPickRay(screenX, screenY);
+                    Plane objectPlane = new Plane(camera.direction, currentlyHighlightedObject.getPosition());
+
+                    Vector3 intersection = new Vector3();
+                    Intersector.intersectRayPlane(ray, objectPlane, intersection);
+
+                    offset.x = currentlyHighlightedObject.getPosition().x - intersection.x;
+                    offset.y = currentlyHighlightedObject.getPosition().y - intersection.y;
+                    offset.z = intersection.z;
+
+                    editor.setMovedObject(currentlyHighlightedObject);
+
+                    return true;
+                }
             }
-        } else {
-            Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
-            cursor.setPosition(intersection.x, intersection.y);
         }
-        return true;
+
+        return false;
     }
 
     protected void selectObjectUnderCursor(int screenX, int screenY) {
@@ -488,13 +500,43 @@ public class LevelEditorScreen extends BaseLevelScreen {
         return level.findIntersectingWithRay(ray, camera.position);
     }
 
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        // Let hud handle this if event occurred on top of menu
+        Vector2 pos = new Vector2(screenX, screenY);
+        pos = hud.screenToStageCoordinates(pos);
+        if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
+            hud.setScrollFocus(pos.x, pos.y);
+            cursor.hide();
+        } else {
+            hud.cancelScrollFocus();
+            cursor.show();
+        }
+
+        if (editor.isMode(Editor.Mode.ITEM_MOVE)) {
+            if (editor.isMovingObject()) {
+                Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
+
+                Ray ray = camera.getPickRay(screenX, screenY);
+                ray.origin.z -= offset.z;
+                Intersector.intersectRayPlane(ray, floorPlane, intersection);
+
+                editorTool.moveObject(intersection.x + offset.x,
+                        intersection.y + offset.y,
+                        editor.getMovedObject());
+            }
+        } else {
+            Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
+            cursor.setPosition(intersection.x, intersection.y);
+        }
+        return true;
+    }
+
     private Vector3 getRayIntersectionWithFloor(int x, int y) {
         Vector3 intersection = new Vector3();
         Ray ray = camera.getPickRay(x, y);
 
-        Intersector.intersectRayPlane(ray,
-                new Plane(Vector3.Z, Vector3.X),
-                intersection);
+        Intersector.intersectRayPlane(ray, floorPlane, intersection);
         return intersection;
     }
 
@@ -509,11 +551,23 @@ public class LevelEditorScreen extends BaseLevelScreen {
         camera.position.add(camera.direction.cpy().nor().scl(-SCROLL_RATIO * amount));//TODO FIX ztratu focusu pri kliknuti na pane
         clampCameraPos(camera);
 
-        if (editor.isMode(Editor.Mode.ITEM_MOVE) && movedObject != null) {
-            Vector3 intersection = getRayIntersectionWithFloor(Gdx.input.getX(), Gdx.input.getY());
-            editorTool.moveObject(intersection.x, intersection.y, movedObject);
+        int screenX = Gdx.input.getX();
+        int screenY = Gdx.input.getY();
+
+        if (editor.isMode(Editor.Mode.ITEM_MOVE) && editor.isMovingObject()) {
+            if (editor.isMovingObject()) {
+                Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
+
+                Ray ray = camera.getPickRay(screenX, screenY);
+                ray.origin.z -= offset.z;
+                Intersector.intersectRayPlane(ray, floorPlane, intersection);
+
+                editorTool.moveObject(intersection.x + offset.x,
+                        intersection.y + offset.y,
+                        editor.getMovedObject());
+            }
         } else {
-            Vector3 intersection = getRayIntersectionWithFloor(Gdx.input.getX(), Gdx.input.getY());
+            Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
             cursor.setPosition(intersection.x, intersection.y);
         }
         return true;

@@ -151,10 +151,21 @@ public class EditorTool {
             y = ((int) y) + 0.5f;
 
             if (floor.isInBounds(x, y)) {
-                gameObject.setPosition(x, y);
-                gameObject.getTileAttachedTo().attachObject(null);
                 Tile tile = floor.getTileAtWorld(x, y);
-                tile.attachObject(gameObject);
+                GameObject attachedObject = tile.getAttachedGameObject();
+                if (attachedObject == null) {
+                    gameObject.setPosition(x, y);
+
+                    Tile lastAttachedTile = gameObject.getTileAttachedTo();
+                    lastAttachedTile.detachObject();
+
+                    gameObject.attachToTile(tile);
+                    tile.attachObject(gameObject);
+
+                    floor.updateAround(lastAttachedTile);
+                    floor.updateAround(tile);
+                    gameObject.updateSurroundings(floor);
+                }
             }
         } else {
             if (editor.getHardSnap()) {
@@ -167,14 +178,14 @@ public class EditorTool {
                     gameObject.setPosition(x, y);
                 }
             } else {
-                Vector2 position = new Vector2(x, y);
-                position = Utils.roundPosition(position, gameObject.getWidth());
-                gameObject.setPosition(position);
+                if (floor.isInBounds(x, y)) {
+                    Vector2 position = new Vector2(x, y);
+                    //TODO what about rotation?
+                    position = Utils.roundPosition(position, gameObject.getWidth());
+                    gameObject.setPosition(position);
+                }
             }
         }
-
         gameObjects.setDirty();
     }
-
-
 }
