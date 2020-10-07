@@ -1,24 +1,30 @@
 package cz.shroomware.diorama.engine.level.object;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
-import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.TriggerPrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Trigger extends GameObject {
+    TextureRegion regionUp;
+    TextureRegion regionDown;
     int contacts = 0;
     Event pressedEvent;
     Event releasedEvent;
 
     public Trigger(Vector3 position, TriggerPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype.getRegion(), prototype);
+        super(position, prototype.getUpRegion(), prototype);
+
+        regionUp = prototype.getUpRegion();
+        regionDown = prototype.getDownRegion();
 
         decal.setRotationX(0);
+        decal.setZ(0.001f);
 
         attachToBody(createBody(boxFactory));
 
@@ -40,9 +46,9 @@ public class Trigger extends GameObject {
         super.update(delta);
 
         if (contacts > 0) {
-            decal.setZ(0.004f);
+            decal.setTextureRegion(regionDown);
         } else {
-            decal.setZ(1f / Utils.PIXELS_PER_METER);
+            decal.setTextureRegion(regionUp);
         }
     }
 

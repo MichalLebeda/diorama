@@ -73,6 +73,8 @@ public class Cursor extends AtlasRegionGameObject {
         this.setPosition(new Vector2(x, y));
     }
 
+    float zOffset = 0;
+
     @Override
     public void setPosition(Vector2 worldPos) {
         if ((editor.hasSelectedPrototype() && editor.getCurrentlySelectedPrototype().isAttached())
@@ -85,12 +87,23 @@ public class Cursor extends AtlasRegionGameObject {
 
         super.setPosition(worldPos);
 
-        decal.setZ(getHeight() / 2);
+        updateZ();
 
         if (level.isInBounds(worldPos.x, worldPos.y)) {
             allowPlacingItem();
         } else {
             forbidPlacingItem();
+        }
+    }
+
+    public void incrementZOffset() {
+        zOffset += 1 / Utils.PIXELS_PER_METER;
+    }
+
+    public void decrementZOffset() {
+        zOffset -= 1 / Utils.PIXELS_PER_METER;
+        if (zOffset < 0) {
+            zOffset = 0;
         }
     }
 
@@ -138,5 +151,9 @@ public class Cursor extends AtlasRegionGameObject {
 
     public void rotateY(float angle) {
         decal.rotateY(angle);
+    }
+
+    public void updateZ() {
+        decal.setZ(getHeight() / 2 + zOffset);
     }
 }

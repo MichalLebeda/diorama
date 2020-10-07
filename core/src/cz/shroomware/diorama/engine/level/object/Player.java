@@ -23,4 +23,9 @@ public class Player extends AtlasRegionGameObject {
     public void setVelocity(float x, float y) {
         body.setLinearVelocity(x, y);
     }
+
+    @Override
+    protected void updatePosition(float originX, float originY) {
+        super.updatePosition(originX, originY);
+    }
 }

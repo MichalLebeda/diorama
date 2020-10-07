@@ -10,16 +10,18 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class TriggerPrototype extends Prototype {
     Resources resources;
-    TextureRegion region;
+    TextureRegion regionUp;
+    TextureRegion regionDown;
 
     public TriggerPrototype(Resources resources) {
         this.resources = resources;
-        region = resources.getObjectAtlas().findRegion("wall_top_oooo");
+        regionUp = resources.getObjectAtlas().findRegion("trigger_up");
+        regionDown = resources.getObjectAtlas().findRegion("trigger_down");
     }
 
     @Override
     public TextureRegion getIconRegion() {
-        return region;
+        return regionUp;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class TriggerPrototype extends Prototype {
 
     @Override
     public boolean dependenciesFulfilled() {
-        return region != null;
+        return regionUp != null && regionDown != null;
     }
 
     @Override
@@ -42,7 +44,11 @@ public class TriggerPrototype extends Prototype {
         return true;
     }
 
-    public TextureRegion getRegion() {
-        return region;
+    public TextureRegion getUpRegion() {
+        return regionUp;
+    }
+
+    public TextureRegion getDownRegion() {
+        return regionDown;
     }
 }

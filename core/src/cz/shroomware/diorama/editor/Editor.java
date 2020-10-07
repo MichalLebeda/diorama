@@ -12,6 +12,7 @@ public class Editor {
     private Mode mode = Mode.ITEM;
     private History history = new History();
     private boolean hardSnap = false;
+    private boolean showLabels = false;
     private GameObject movedObject;
 
     public Editor(String filename) {
@@ -114,6 +115,14 @@ public class Editor {
 
     public boolean getHardSnap() {
         return hardSnap;
+    }
+
+    public void toggleLabels() {
+        showLabels = !showLabels;
+    }
+
+    public boolean getShowLabels() {
+        return showLabels;
     }
 
     public boolean isMovingObject() {

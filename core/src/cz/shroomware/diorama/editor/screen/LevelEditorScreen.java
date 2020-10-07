@@ -141,7 +141,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
     public void render(float delta) {
         super.render(delta);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        if (editor.getShowLabels()) {
             drawIdLabel();
         }
 
@@ -238,6 +238,9 @@ public class LevelEditorScreen extends BaseLevelScreen {
         }
         //TODO make every function working through GUI
         switch (keycode) {
+            case Input.Keys.L:
+                editor.toggleLabels();
+                return true;
             case Input.Keys.X:
                 editor.toggleDelete();
                 return true;
@@ -547,6 +550,17 @@ public class LevelEditorScreen extends BaseLevelScreen {
         pos = hud.screenToStageCoordinates(pos);
         if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
             return false;
+        }
+
+        if (editor.isMode(Editor.Mode.ITEM) && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            if (amount > 0) {
+                cursor.decrementZOffset();
+            } else {
+                cursor.incrementZOffset();
+            }
+
+            cursor.updateZ();
+            return true;
         }
 
         camera.position.add(camera.direction.cpy().nor().scl(-SCROLL_RATIO * amount));//TODO FIX ztratu focusu pri kliknuti na pane
