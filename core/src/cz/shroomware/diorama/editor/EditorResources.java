@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import cz.shroomware.diorama.engine.level.Resources;
 
+//TODO: refactor
 public class EditorResources extends Resources {
     protected TextureAtlas uiAtlas;
     protected Skin skin;

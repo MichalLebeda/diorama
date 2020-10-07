@@ -13,10 +13,12 @@ import cz.shroomware.diorama.editor.ui.IconButton;
 //TODO: inherit from same parent as SelectedModeIndicator
 public class LogicSelectedModeIndicator extends IconButton {
     protected LogicEditor logicEditor;
+    protected Skin skin;
 
     public LogicSelectedModeIndicator(final LogicEditor logicEditor, Skin skin) {
         super(skin, skin.getDrawable(logicEditor.getMode().getIconName()));
         this.logicEditor = logicEditor;
+        this.skin = skin;
 
         addListener(new ClickListener() {
             @Override

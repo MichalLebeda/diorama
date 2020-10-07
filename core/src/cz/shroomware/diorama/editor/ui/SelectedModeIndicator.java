@@ -12,10 +12,12 @@ import cz.shroomware.diorama.editor.Editor;
 
 public class SelectedModeIndicator extends IconButton {
     protected Editor editor;
+    protected Skin skin;
 
     public SelectedModeIndicator(final Editor editor, Skin skin) {
         super(skin, skin.getDrawable(editor.getMode().getIconName()));
         this.editor = editor;
+        this.skin = skin;
 
         addListener(new ClickListener() {
             @Override

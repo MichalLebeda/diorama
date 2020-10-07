@@ -3,13 +3,12 @@ package cz.shroomware.diorama.editor.ui.logic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -22,6 +21,7 @@ import java.util.HashMap;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorResources;
+import cz.shroomware.diorama.editor.ui.IconButton;
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.Handler;
@@ -33,7 +33,7 @@ public abstract class LogicBlock extends VerticalGroup {
     protected LogicComponent logicComponent;
     protected Vector2 relativeDragPos = new Vector2();
     protected Drawable background;
-    protected Button deleteButton = null;
+    protected IconButton deleteButton = null;
 
     HashMap<Handler, HandlerButton> handlerButtonHashMap = new HashMap<>();
     HashMap<Event, EventButton> eventButtonHashMap = new HashMap<>();
@@ -61,21 +61,12 @@ public abstract class LogicBlock extends VerticalGroup {
             topTable.setWidth(getWidth());
             topTable.add(label).center().grow();
 
-            //TODO SEPARATE CLASS
-            deleteButton = new Button(editorResources.getSkin()) {
-                @Override
-                public void draw(Batch batch, float parentAlpha) {
-                    super.draw(batch, parentAlpha);
-
-                    TextureRegion crossRegion = editorResources.getUiAtlas().findRegion("cross");
-                    float PAD = 20;
-                    batch.draw(crossRegion, getX() + PAD,
-                            getY() + PAD,
-                            getWidth() - 2 * PAD,
-                            getHeight() - 2 * PAD);
-                }
-            };
-
+            Skin skin = editorResources.getSkin();
+            deleteButton = new IconButton(
+                    skin.getDrawable("default-round"),
+                    skin.getDrawable("default-round-down"),
+                    skin.getDrawable("cross"));
+            deleteButton.setIconSize(32);
             deleteButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {

@@ -10,35 +10,46 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import cz.shroomware.diorama.Utils;
 
-//TODO base indicators on this class
 public class IconButton extends Actor {
-    private static final float ICON_SIZE = 64;
+    private static final float DEFAULT_ICON_SIZE = 64;
     private static final float BORDER_WIDTH = 20;
+    protected float iconSize = DEFAULT_ICON_SIZE;
     protected Drawable background;
     protected Drawable backgroundPressed;
     protected Drawable currentBackground;
     protected Drawable drawable;
-    protected Skin skin;
 
     public IconButton(Skin skin, Drawable drawable) {
+        this(skin.getDrawable(Utils.DARK_BACKGROUND_DRAWABLE),
+                skin.getDrawable(Utils.DARK_BACKGROUND_PRESSED_DRAWABLE),
+                drawable);
+    }
+
+    public IconButton(Drawable background, Drawable backgroundPressed, Drawable drawable) {
+        this.background = background;
+        this.backgroundPressed = backgroundPressed;
         this.drawable = drawable;
-        this.background = skin.getDrawable(Utils.DARK_BACKGROUND_DRAWABLE);
-        this.backgroundPressed = skin.getDrawable(Utils.DARK_BACKGROUND_PRESSED_DRAWABLE);
-        this.skin = skin;
-        currentBackground = background;
-        setSize(ICON_SIZE + 2 * BORDER_WIDTH, ICON_SIZE + 2 * BORDER_WIDTH);
+        currentBackground = this.background;
+        setSize(iconSize + 2 * BORDER_WIDTH, iconSize + 2 * BORDER_WIDTH);
 
         addListener(new ActorGestureListener() {
             @Override
             public void touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                currentBackground = backgroundPressed;
+                currentBackground = IconButton.this.backgroundPressed;
+                event.cancel();
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                currentBackground = background;
+                currentBackground = IconButton.this.background;
+                event.cancel();
             }
         });
+    }
+
+    public void setIconSize(float iconSize) {
+        this.iconSize = iconSize;
+        setSize(iconSize + 2 * BORDER_WIDTH, iconSize + 2 * BORDER_WIDTH);
     }
 
     @Override
@@ -56,7 +67,7 @@ public class IconButton extends Actor {
     }
 
     protected void drawIcon(Batch batch) {
-        drawable.draw(batch, getX() + BORDER_WIDTH, getY() + BORDER_WIDTH, ICON_SIZE, ICON_SIZE);
+        drawable.draw(batch, getX() + BORDER_WIDTH, getY() + BORDER_WIDTH, iconSize, iconSize);
     }
 
     public void setDrawable(Drawable drawable) {
