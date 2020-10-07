@@ -1,6 +1,7 @@
 package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.history.History;
@@ -14,6 +15,7 @@ public class Editor {
     private boolean hardSnap = false;
     private boolean showLabels = false;
     private GameObject movedObject;
+    private Vector2 snapOffset = new Vector2();
 
     public Editor(String filename) {
         if (filename == null) {
@@ -29,6 +31,42 @@ public class Editor {
         this.currentlySelectedPrototype = currentlySelectedPrototype;
         if (mode != Mode.TILE && mode != Mode.TILE_BUCKET) {
             setMode(Editor.Mode.ITEM);
+        }
+    }
+
+    public float getSnapOffsetX() {
+        return snapOffset.x;
+    }
+
+    public float getSnapOffsetY() {
+        return snapOffset.y;
+    }
+
+    public void incrementXOffset() {
+        snapOffset.x += 1f / Utils.PIXELS_PER_METER;
+        if (snapOffset.x > 0.5f) {
+            snapOffset.x = -0.5f;
+        }
+    }
+
+    public void decrementXOffset() {
+        snapOffset.x -= 1f / Utils.PIXELS_PER_METER;
+        if (snapOffset.x < -0.5f) {
+            snapOffset.x = 0.5f;
+        }
+    }
+
+    public void incrementYOffset() {
+        snapOffset.y += 1f / Utils.PIXELS_PER_METER;
+        if (snapOffset.y > 0.5f) {
+            snapOffset.y = -0.5f;
+        }
+    }
+
+    public void decrementYOffset() {
+        snapOffset.y -= 1f / Utils.PIXELS_PER_METER;
+        if (snapOffset.y < -0.5f) {
+            snapOffset.y = 0.5f;
         }
     }
 

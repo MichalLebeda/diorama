@@ -51,6 +51,12 @@ public class Tree extends GameObject {
     }
 
     @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+        //TODO: set particle emitter position
+    }
+
+    @Override
     public void drawDecal(MinimalisticDecalBatch decalBatch) {
         super.drawDecal(decalBatch);
 

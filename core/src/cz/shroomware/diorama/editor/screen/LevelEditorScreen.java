@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -142,7 +143,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
         super.render(delta);
 
         if (editor.getShowLabels()) {
-            drawIdLabel();
+            drawIdLabels();
         }
 
         hud.setDirty(level.isDirty());
@@ -161,7 +162,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
         }
     }
 
-    protected void drawIdLabel() {
+    protected void drawIdLabels() {
         spriteBatch.setShader(resources.getDfShader());
         spriteBatch.setProjectionMatrix(screenCamera.combined);
 
@@ -175,11 +176,13 @@ public class LevelEditorScreen extends BaseLevelScreen {
             GameObject object = gameObjects.get(i);
 
             Vector3 position = object.getPosition().cpy();
+            Plane plane = new Plane(camera.direction, camera.position);
+            if (plane.testPoint(position) == Plane.PlaneSide.Back) {
+                continue;
+            }
+
             position = camera.project(position);
 
-            if (i == gameObjects.getSize() - 1) {
-                Gdx.app.error("pos", object.getPrototype().getName() + " " + position.toString());
-            }
             if (object.getIdentifier().isSet()) {
                 resources.getSlotDrawable().draw(spriteBatch,
                         position.x - size / 2,
@@ -187,6 +190,25 @@ public class LevelEditorScreen extends BaseLevelScreen {
                         size,
                         size);
 
+                font.setColor(Color.BLACK);
+                font.draw(spriteBatch,
+                        object.getIdentifier().getIdString(),
+                        position.x + 2,
+                        position.y);
+                font.draw(spriteBatch,
+                        object.getIdentifier().getIdString(),
+                        position.x - 2,
+                        position.y);
+                font.draw(spriteBatch,
+                        object.getIdentifier().getIdString(),
+                        position.x,
+                        position.y + 2);
+                font.draw(spriteBatch,
+                        object.getIdentifier().getIdString(),
+                        position.x,
+                        position.y - 2);
+
+                font.setColor(Color.WHITE);
                 font.draw(spriteBatch,
                         object.getIdentifier().getIdString(),
                         position.x,
@@ -241,11 +263,14 @@ public class LevelEditorScreen extends BaseLevelScreen {
             case Input.Keys.L:
                 editor.toggleLabels();
                 return true;
-            case Input.Keys.X:
+            case Input.Keys.D:
                 editor.toggleDelete();
                 return true;
             case Input.Keys.G:
                 editor.setMode(Editor.Mode.TILE_BUCKET);
+                return true;
+            case Input.Keys.B:
+                editor.setMode(Editor.Mode.TILE);
                 return true;
             case Input.Keys.F:
                 takingScreenshot = true;
@@ -380,6 +405,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 editorTool.moveObject(intersection.x + offset.x,
                         intersection.y + offset.y,
                         editor.getMovedObject());
+                cursor.setPosition(intersection.x + offset.x, intersection.y + offset.y);
             }
         }
 
@@ -519,15 +545,16 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         if (editor.isMode(Editor.Mode.ITEM_MOVE)) {
             if (editor.isMovingObject()) {
-                Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
 
                 Ray ray = camera.getPickRay(screenX, screenY);
                 ray.origin.z -= offset.z;
+                Vector3 intersection = new Vector3();
                 Intersector.intersectRayPlane(ray, floorPlane, intersection);
 
                 editorTool.moveObject(intersection.x + offset.x,
                         intersection.y + offset.y,
                         editor.getMovedObject());
+                cursor.setPosition(intersection.x + offset.x, intersection.y + offset.y);
             }
         } else {
             Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
@@ -563,25 +590,74 @@ public class LevelEditorScreen extends BaseLevelScreen {
             return true;
         }
 
-        camera.position.add(camera.direction.cpy().nor().scl(-SCROLL_RATIO * amount));//TODO FIX ztratu focusu pri kliknuti na pane
-        clampCameraPos(camera);
-
         int screenX = Gdx.input.getX();
         int screenY = Gdx.input.getY();
 
+        if (editor.getHardSnap() && (editor.isMode(Editor.Mode.ITEM)
+                || editor.isMode(Editor.Mode.ITEM_MOVE))) {
+            if (Gdx.input.isKeyPressed(Input.Keys.X)) {
+                float oldXOffset = editor.getSnapOffsetX();
+
+                if (amount > 0) {
+                    editor.decrementXOffset();
+                } else if (amount < 0) {
+                    editor.incrementXOffset();
+                }
+
+                if (editor.isMovingObject()) {
+                    editorTool.transformObject(
+                            editor.getSnapOffsetX() - oldXOffset,
+                            0,
+                            editor.getMovedObject());
+                }
+
+                if (editor.isMode(Editor.Mode.ITEM)) {
+                    Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
+                    cursor.setPosition(intersection.x, intersection.y);
+                }
+                return true;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.Y)) {
+                float oldYOffset = editor.getSnapOffsetY();
+
+                if (amount > 0) {
+                    editor.decrementYOffset();
+                } else if (amount < 0) {
+                    editor.incrementYOffset();
+                }
+
+                if (editor.isMovingObject()) {
+                    editorTool.transformObject(0,
+                            editor.getSnapOffsetY() - oldYOffset,
+                            editor.getMovedObject());
+                }
+
+                if (editor.isMode(Editor.Mode.ITEM)) {
+                    Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
+                    cursor.setPosition(intersection.x, intersection.y);
+                }
+                return true;
+            }
+        }
+
+        camera.position.add(camera.direction.cpy().nor().scl(-SCROLL_RATIO * amount));//TODO FIX ztratu focusu pri kliknuti na pane
+        clampCameraPos(camera);
+
         if (editor.isMode(Editor.Mode.ITEM_MOVE) && editor.isMovingObject()) {
             if (editor.isMovingObject()) {
-                Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
 
                 Ray ray = camera.getPickRay(screenX, screenY);
                 ray.origin.z -= offset.z;
+                Vector3 intersection = new Vector3();
                 Intersector.intersectRayPlane(ray, floorPlane, intersection);
 
                 editorTool.moveObject(intersection.x + offset.x,
                         intersection.y + offset.y,
                         editor.getMovedObject());
+                cursor.setPosition(intersection.x + offset.x, intersection.y + offset.y);
             }
         } else {
+            //TODO: improve this part
             Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
             cursor.setPosition(intersection.x, intersection.y);
         }

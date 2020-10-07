@@ -145,6 +145,10 @@ public class EditorTool {
         }
     }
 
+    public void transformObject(float x, float y, GameObject gameObject) {
+        gameObject.setPosition(gameObject.getX() + x, gameObject.getY() + y);
+    }
+
     public void moveObject(float x, float y, GameObject gameObject) {
         if (gameObject.getPrototype().isAttached()) {
             x = ((int) x) + 0.5f;
@@ -169,10 +173,9 @@ public class EditorTool {
             }
         } else {
             if (editor.getHardSnap()) {
-
                 //MOVE ROUND TO SEPARATE METHOD
-                x = ((int) x) + 0.5f;
-                y = ((int) y) + 0.5f;
+                x = ((int) x) + 0.5f + editor.getSnapOffsetX();
+                y = ((int) y) + 0.5f + editor.getSnapOffsetY();
 
                 if (floor.isInBounds(x, y)) {
                     gameObject.setPosition(x, y);

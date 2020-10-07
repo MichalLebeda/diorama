@@ -313,6 +313,14 @@ public abstract class GameObject implements Identifiable {
         }
     }
 
+    public float getX() {
+        return getPosition().x;
+    }
+
+    public float getY() {
+        return getPosition().y;
+    }
+
 //    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
 //        // round to texels
 //        // TODO MOVE OUTSIDE

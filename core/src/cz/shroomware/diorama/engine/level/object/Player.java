@@ -11,6 +11,8 @@ public class Player extends AtlasRegionGameObject {
     public Player(Vector3 position, AtlasRegionPrototype prototype, BoxFactory boxFactory) {
         super(position, prototype);
         attachToBody(createBody(boxFactory));
+
+        decal.setZ(decal.getHeight() / 2);
     }
 
     protected Body createBody(BoxFactory boxFactory) {

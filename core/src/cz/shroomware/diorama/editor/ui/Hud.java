@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -33,6 +34,10 @@ public class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
     SelectedModeIndicator selectedModeIndicator;
     SnapIndicator snapIndicator;
+    Button minusButtonX;
+    Button plusButtonX;
+    Button minusButtonY;
+    Button plusButtonY;
     IconButton logicEditorButton;
     ScrollPane scrollPane;
     LeftToBackgroundLabel projectNameLabel;
@@ -113,6 +118,46 @@ public class Hud extends Stage {
 
         addActor(logicEditorButton);
 
+        float size = 36;
+        plusButtonX = new Button(resources.getSkin());
+        plusButtonX.setSize(size, size);
+        plusButtonX.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editor.incrementXOffset();
+            }
+        });
+        addActor(plusButtonX);
+
+        minusButtonX = new Button(resources.getSkin());
+        minusButtonX.setSize(size, size);
+        minusButtonX.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editor.decrementXOffset();
+            }
+        });
+        addActor(minusButtonX);
+
+        plusButtonY = new Button(resources.getSkin());
+        plusButtonY.setSize(size, size);
+        plusButtonY.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editor.incrementYOffset();
+            }
+        });
+        addActor(plusButtonY);
+
+        minusButtonY = new Button(resources.getSkin());
+        minusButtonY.setSize(size, size);
+        minusButtonY.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editor.decrementYOffset();
+            }
+        });
+        addActor(minusButtonY);
 
 //        colorIndicator = new Image(game.getEditorResources().getUiAtlas().findRegion("white")) {
 //            @Override
@@ -220,6 +265,12 @@ public class Hud extends Stage {
         snapIndicator.setPosition(
                 selectedModeIndicator.getX() - logicEditorButton.getWidth() - 10,
                 selectedModeIndicator.getY());
+
+        minusButtonX.setPosition(snapIndicator.getX(), snapIndicator.getY() - minusButtonX.getHeight() - 10);
+        plusButtonX.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonX.getWidth(), minusButtonX.getY());
+
+        minusButtonY.setPosition(snapIndicator.getX(), plusButtonX.getY() - minusButtonY.getHeight() - 10);
+        plusButtonY.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonY.getWidth(), minusButtonY.getY());
 
         logicEditorButton.setPosition(
                 snapIndicator.getX() - snapIndicator.getWidth() - 10,

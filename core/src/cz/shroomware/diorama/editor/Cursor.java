@@ -65,6 +65,11 @@ public class Cursor extends AtlasRegionGameObject {
             case TILE_BUCKET:
                 spriteBatch.draw(defaultRegion, (int) getPosition().x, (int) getPosition().y, 1, 1);
                 break;
+            case ITEM_MOVE:
+                if (editor.getHardSnap()) {
+                    spriteBatch.draw(defaultRegion, (int) getPosition().x, (int) getPosition().y, 1, 1);
+                }
+                break;
         }
     }
 
@@ -77,10 +82,12 @@ public class Cursor extends AtlasRegionGameObject {
 
     @Override
     public void setPosition(Vector2 worldPos) {
-        if ((editor.hasSelectedPrototype() && editor.getCurrentlySelectedPrototype().isAttached())
-                || editor.getHardSnap()) {
+        if ((editor.hasSelectedPrototype() && editor.getCurrentlySelectedPrototype().isAttached())) {
             worldPos.x = ((int) worldPos.x) + 0.5f;
             worldPos.y = ((int) worldPos.y) + 0.5f;
+        } else if (editor.getHardSnap()) {
+            worldPos.x = ((int) worldPos.x) + 0.5f + editor.getSnapOffsetX();
+            worldPos.y = ((int) worldPos.y) + 0.5f + editor.getSnapOffsetY();
         } else {
             worldPos = Utils.roundPosition(worldPos, getWidth());
         }

@@ -28,7 +28,7 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
         initCamera(level);
 
         Vector2 offset = new Vector2(-3, +6);
-        player = new Player(new Vector3(level.getSize() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0.5f),
+        player = new Player(new Vector3(level.getSize() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0),
                 new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
     }
