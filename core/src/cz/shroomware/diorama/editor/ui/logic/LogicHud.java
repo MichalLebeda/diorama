@@ -54,7 +54,7 @@ public abstract class LogicHud extends Stage {
         itemGroup.space(10);
         Collection<LogicOperatorPrototype> prototypes = logicEditor.getLogic().getNameToPureLogicPrototypes().values();
         for (LogicOperatorPrototype prototype : prototypes) {
-            final PureLogicItem item = new PureLogicItem(editorResources, prototype);
+            final PureLogicBlock item = new PureLogicBlock(editorResources, prototype);
             item.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
