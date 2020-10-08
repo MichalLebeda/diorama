@@ -13,6 +13,7 @@ import cz.shroomware.diorama.Utils;
 public class IconButton extends Actor {
     private static final float DEFAULT_ICON_SIZE = 64;
     private static final float BORDER_WIDTH = 20;
+    protected float borderWidth = BORDER_WIDTH;
     protected float iconSize = DEFAULT_ICON_SIZE;
     protected Drawable background;
     protected Drawable backgroundPressed;
@@ -30,7 +31,7 @@ public class IconButton extends Actor {
         this.backgroundPressed = backgroundPressed;
         this.drawable = drawable;
         currentBackground = this.background;
-        setSize(iconSize + 2 * BORDER_WIDTH, iconSize + 2 * BORDER_WIDTH);
+        setSize(iconSize + 2 * borderWidth, iconSize + 2 * borderWidth);
 
         addListener(new ActorGestureListener() {
             @Override
@@ -49,7 +50,7 @@ public class IconButton extends Actor {
 
     public void setIconSize(float iconSize) {
         this.iconSize = iconSize;
-        setSize(iconSize + 2 * BORDER_WIDTH, iconSize + 2 * BORDER_WIDTH);
+        setSize(iconSize + 2 * borderWidth, iconSize + 2 * borderWidth);
     }
 
     @Override
@@ -67,12 +68,17 @@ public class IconButton extends Actor {
     }
 
     protected void drawIcon(Batch batch) {
-        drawable.draw(batch, getX() + BORDER_WIDTH, getY() + BORDER_WIDTH, iconSize, iconSize);
+        drawable.draw(batch, getX() + borderWidth, getY() + borderWidth, iconSize, iconSize);
     }
 
     public void setDrawable(Drawable drawable) {
         if (drawable != null) {
             this.drawable = drawable;
         }
+    }
+
+    public void setBorderWidth(float borderWidth) {
+        this.borderWidth = borderWidth;
+        setSize(iconSize + 2 * borderWidth, iconSize + 2 * borderWidth);
     }
 }

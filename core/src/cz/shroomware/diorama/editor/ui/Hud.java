@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -34,10 +33,10 @@ public class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
     SelectedModeIndicator selectedModeIndicator;
     SnapIndicator snapIndicator;
-    Button minusButtonX;
-    Button plusButtonX;
-    Button minusButtonY;
-    Button plusButtonY;
+    IconButton minusButtonX;
+    IconButton plusButtonX;
+    IconButton minusButtonY;
+    IconButton plusButtonY;
     IconButton logicEditorButton;
     ScrollPane scrollPane;
     LeftToBackgroundLabel projectNameLabel;
@@ -118,9 +117,13 @@ public class Hud extends Stage {
 
         addActor(logicEditorButton);
 
-        float size = 36;
-        plusButtonX = new Button(resources.getSkin());
+        float size = 18;
+        float iconSize = 20;
+        float borderWidth = 12;
+        plusButtonX = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("plus"));
+        plusButtonX.setBorderWidth(borderWidth);
         plusButtonX.setSize(size, size);
+        plusButtonX.setIconSize(iconSize);
         plusButtonX.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -129,8 +132,10 @@ public class Hud extends Stage {
         });
         addActor(plusButtonX);
 
-        minusButtonX = new Button(resources.getSkin());
+        minusButtonX = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("minus"));
+        minusButtonX.setBorderWidth(borderWidth);
         minusButtonX.setSize(size, size);
+        minusButtonX.setIconSize(iconSize);
         minusButtonX.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -139,8 +144,10 @@ public class Hud extends Stage {
         });
         addActor(minusButtonX);
 
-        plusButtonY = new Button(resources.getSkin());
+        plusButtonY = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("plus"));
+        plusButtonY.setBorderWidth(borderWidth);
         plusButtonY.setSize(size, size);
+        plusButtonY.setIconSize(iconSize);
         plusButtonY.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -149,8 +156,10 @@ public class Hud extends Stage {
         });
         addActor(plusButtonY);
 
-        minusButtonY = new Button(resources.getSkin());
+        minusButtonY = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("minus"));
+        minusButtonY.setBorderWidth(borderWidth);
         minusButtonY.setSize(size, size);
+        minusButtonY.setIconSize(iconSize);
         minusButtonY.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -266,11 +275,11 @@ public class Hud extends Stage {
                 selectedModeIndicator.getX() - logicEditorButton.getWidth() - 10,
                 selectedModeIndicator.getY());
 
-        minusButtonX.setPosition(snapIndicator.getX(), snapIndicator.getY() - minusButtonX.getHeight() - 10);
-        plusButtonX.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonX.getWidth(), minusButtonX.getY());
+        minusButtonX.setPosition(snapIndicator.getX() + 5, snapIndicator.getY() - minusButtonX.getHeight() - 10);
+        plusButtonX.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonX.getWidth() - 5, minusButtonX.getY());
 
-        minusButtonY.setPosition(snapIndicator.getX(), plusButtonX.getY() - minusButtonY.getHeight() - 10);
-        plusButtonY.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonY.getWidth(), minusButtonY.getY());
+        minusButtonY.setPosition(snapIndicator.getX() + 5, plusButtonX.getY() - minusButtonY.getHeight() - 10);
+        plusButtonY.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonY.getWidth() - 5, minusButtonY.getY());
 
         logicEditorButton.setPosition(
                 snapIndicator.getX() - snapIndicator.getWidth() - 10,
