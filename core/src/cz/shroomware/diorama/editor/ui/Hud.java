@@ -33,6 +33,7 @@ public class Hud extends Stage {
     SelectedItemIndicator selectedItemIndicator;
     SelectedModeIndicator selectedModeIndicator;
     SnapIndicator snapIndicator;
+    ShowLabelsIndicator showLabelsIndicator;
     IconButton minusButtonX;
     IconButton plusButtonX;
     IconButton minusButtonY;
@@ -83,6 +84,9 @@ public class Hud extends Stage {
 
         snapIndicator = new SnapIndicator(editor, resources.getSkin());
         addActor(snapIndicator);
+
+        showLabelsIndicator = new ShowLabelsIndicator(editor, resources.getSkin());
+        addActor(showLabelsIndicator);
 
         messages = new Messages(resources);
         messages.setWidth(400);
@@ -272,8 +276,12 @@ public class Hud extends Stage {
                 selectedItemIndicator.getY());
 
         snapIndicator.setPosition(
-                selectedModeIndicator.getX() - logicEditorButton.getWidth() - 10,
+                selectedModeIndicator.getX() - snapIndicator.getWidth() - 10,
                 selectedModeIndicator.getY());
+
+        showLabelsIndicator.setPosition(
+                snapIndicator.getX() - showLabelsIndicator.getWidth() - 10,
+                snapIndicator.getY());
 
         minusButtonX.setPosition(snapIndicator.getX() + 5, snapIndicator.getY() - minusButtonX.getHeight() - 10);
         plusButtonX.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonX.getWidth() - 5, minusButtonX.getY());
@@ -282,8 +290,8 @@ public class Hud extends Stage {
         plusButtonY.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonY.getWidth() - 5, minusButtonY.getY());
 
         logicEditorButton.setPosition(
-                snapIndicator.getX() - snapIndicator.getWidth() - 10,
-                snapIndicator.getY());
+                showLabelsIndicator.getX() - logicEditorButton.getWidth() - 10,
+                showLabelsIndicator.getY());
     }
 
     public void openIdAssignDialog(final GameObjects gameObjects, final GameObject gameObject) {

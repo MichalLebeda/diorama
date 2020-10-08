@@ -36,6 +36,10 @@ public class Utils {
 
     public static final String SNAP_OFF_ICON_DRAWABLE = "snap_off_icon";
 
+    public static final String LABELS_ON_ICON_DRAWABLE = "labels_on_icon";
+
+    public static final String LABELS_OFF_ICON_DRAWABLE = "labels_off_icon";
+
     public static final float PIXELS_PER_METER = 16f;
 
     public static final float SHADOW_SCALE = 2;
