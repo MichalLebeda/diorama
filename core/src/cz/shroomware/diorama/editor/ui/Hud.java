@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -34,21 +35,29 @@ public class Hud extends Stage {
     SelectedModeIndicator selectedModeIndicator;
     SnapIndicator snapIndicator;
     ShowLabelsIndicator showLabelsIndicator;
+
+    Table snapTable;
     IconButton minusButtonX;
     IconButton plusButtonX;
     IconButton minusButtonY;
     IconButton plusButtonY;
+    BackgroundLabel xOffsetLabel;
+    BackgroundLabel yOffsetLabel;
+
     IconButton logicEditorButton;
     ScrollPane scrollPane;
     LeftToBackgroundLabel projectNameLabel;
     BackgroundLabel unsavedChangesLabel;
     Messages messages;
     EditorResources resources;
+    Editor editor;
     //    Image colorIndicator;
     boolean lastDirtyState = false;
 
     public Hud(final EditorEngineGame game, Prototypes prototypes, final Editor editor, final Level level) {
         super();
+
+        this.editor = editor;
         this.game = game;
         resources = game.getResources();
 
@@ -121,6 +130,9 @@ public class Hud extends Stage {
 
         addActor(logicEditorButton);
 
+        snapTable = new Table();
+        addActor(snapTable);
+
         float size = 18;
         float iconSize = 20;
         float borderWidth = 12;
@@ -134,7 +146,12 @@ public class Hud extends Stage {
                 editor.incrementXOffset();
             }
         });
-        addActor(plusButtonX);
+        snapTable.add(plusButtonX);
+
+        xOffsetLabel = new BackgroundLabel(resources.getSkin(),
+                resources.getDfShader(),
+                Integer.toString((int) (editor.getSnapOffsetX() / (1 / Utils.PIXELS_PER_METER))));
+        snapTable.add(xOffsetLabel).pad(30).padTop(20).padBottom(20);
 
         minusButtonX = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("minus"));
         minusButtonX.setBorderWidth(borderWidth);
@@ -146,7 +163,9 @@ public class Hud extends Stage {
                 editor.decrementXOffset();
             }
         });
-        addActor(minusButtonX);
+        snapTable.add(minusButtonX);
+
+        snapTable.row();
 
         plusButtonY = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("plus"));
         plusButtonY.setBorderWidth(borderWidth);
@@ -158,7 +177,12 @@ public class Hud extends Stage {
                 editor.incrementYOffset();
             }
         });
-        addActor(plusButtonY);
+        snapTable.add(plusButtonY);
+
+        yOffsetLabel = new BackgroundLabel(resources.getSkin(),
+                resources.getDfShader(),
+                Integer.toString((int) (editor.getSnapOffsetY() / (1 / Utils.PIXELS_PER_METER))));
+        snapTable.add(yOffsetLabel).pad(30);
 
         minusButtonY = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("minus"));
         minusButtonY.setBorderWidth(borderWidth);
@@ -170,7 +194,7 @@ public class Hud extends Stage {
                 editor.decrementYOffset();
             }
         });
-        addActor(minusButtonY);
+        snapTable.add(minusButtonY);
 
 //        colorIndicator = new Image(game.getEditorResources().getUiAtlas().findRegion("white")) {
 //            @Override
@@ -216,6 +240,18 @@ public class Hud extends Stage {
 
     @Override
     public void draw() {
+        if (editor.getHardSnap()) {
+            snapTable.setVisible(true);
+            xOffsetLabel.setText(Integer.toString((int) (editor.getSnapOffsetX() / (1 / Utils.PIXELS_PER_METER))));
+            yOffsetLabel.setText(Integer.toString((int) (editor.getSnapOffsetY() / (1 / Utils.PIXELS_PER_METER))));
+
+            snapTable.pack();
+            snapTable.setPosition(snapIndicator.getX() + snapIndicator.getWidth() / 2 - snapTable.getWidth() / 2,
+                    snapIndicator.getY() - snapTable.getHeight() - 10);
+        } else {
+            snapTable.setVisible(false);
+        }
+
         super.draw();
     }
 
@@ -282,12 +318,6 @@ public class Hud extends Stage {
         showLabelsIndicator.setPosition(
                 snapIndicator.getX() - showLabelsIndicator.getWidth() - 10,
                 snapIndicator.getY());
-
-        minusButtonX.setPosition(snapIndicator.getX() + 5, snapIndicator.getY() - minusButtonX.getHeight() - 10);
-        plusButtonX.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonX.getWidth() - 5, minusButtonX.getY());
-
-        minusButtonY.setPosition(snapIndicator.getX() + 5, plusButtonX.getY() - minusButtonY.getHeight() - 10);
-        plusButtonY.setPosition(snapIndicator.getX() + snapIndicator.getWidth() - plusButtonY.getWidth() - 5, minusButtonY.getY());
 
         logicEditorButton.setPosition(
                 showLabelsIndicator.getX() - logicEditorButton.getWidth() - 10,

@@ -19,6 +19,9 @@ public class Cursor extends AtlasRegionGameObject {
     TextureRegion defaultRegion;
     boolean itemPlacingAllowed = true;
     boolean visible = true;
+    int floorCursorX;
+    int floorCursorY;
+    float zOffset = 0;
 
     public Cursor(Editor editor,
                   EditorResources resources,
@@ -41,6 +44,17 @@ public class Cursor extends AtlasRegionGameObject {
             decal.setColor(1, 1, 1, 0.2f);
         }
 
+        // Revert offset for floor cursor
+        floorCursorX = (int) (getPosition().x - editor.getSnapOffsetX());
+        floorCursorY = (int) (getPosition().y - editor.getSnapOffsetY());
+
+        // May be redundant but fixes decal position when user turns snap on,
+        // but no mouse movement occurred yet
+        // TODO: Proper solution would be to handle onSnapOn event.
+        if (editor.getHardSnap()) {
+            setPosition(floorCursorX + 0.5f, floorCursorY + 0.5f);
+        }
+
         switch (editor.getMode()) {
             case DELETE:
 //                if (decal.getTextureRegion() != defaultRegion) {
@@ -57,50 +71,32 @@ public class Cursor extends AtlasRegionGameObject {
                 } else if (decal.getTextureRegion() != selectedPrototypeObjectRegion) {
                     updateRegion(selectedPrototypeObjectRegion);
                 }
+                if (editor.getHardSnap()) {
+                    drawFloorCursor(spriteBatch);
+                }
                 decalBatch.add(decal);
                 break;
             case TILE:
-                spriteBatch.draw(defaultRegion, (int) getPosition().x, (int) getPosition().y, 1, 1);
+                drawFloorCursor(spriteBatch);
                 break;
             case TILE_BUCKET:
-                spriteBatch.draw(defaultRegion, (int) getPosition().x, (int) getPosition().y, 1, 1);
+                drawFloorCursor(spriteBatch);
                 break;
             case ITEM_MOVE:
-                if (editor.getHardSnap()) {
-                    spriteBatch.draw(defaultRegion, (int) getPosition().x, (int) getPosition().y, 1, 1);
+                if (editor.getHardSnap() && editor.isMovingObject()) {
+                    drawFloorCursor(spriteBatch);
                 }
                 break;
         }
     }
 
+    public void drawFloorCursor(SpriteBatch spriteBatch) {
+        spriteBatch.draw(defaultRegion, floorCursorX, floorCursorY, 1, 1);
+    }
+
     @Override
     public void setPosition(float x, float y) {
         this.setPosition(new Vector2(x, y));
-    }
-
-    float zOffset = 0;
-
-    @Override
-    public void setPosition(Vector2 worldPos) {
-        if ((editor.hasSelectedPrototype() && editor.getCurrentlySelectedPrototype().isAttached())) {
-            worldPos.x = ((int) worldPos.x) + 0.5f;
-            worldPos.y = ((int) worldPos.y) + 0.5f;
-        } else if (editor.getHardSnap()) {
-            worldPos.x = ((int) worldPos.x) + 0.5f + editor.getSnapOffsetX();
-            worldPos.y = ((int) worldPos.y) + 0.5f + editor.getSnapOffsetY();
-        } else {
-            worldPos = Utils.roundPosition(worldPos, getWidth());
-        }
-
-        super.setPosition(worldPos);
-
-        updateZ();
-
-        if (level.isInBounds(worldPos.x, worldPos.y)) {
-            allowPlacingItem();
-        } else {
-            forbidPlacingItem();
-        }
     }
 
     public void incrementZOffset() {
@@ -154,6 +150,29 @@ public class Cursor extends AtlasRegionGameObject {
 
     public Vector3 getPosition() {
         return decal.getPosition();
+    }
+
+    @Override
+    public void setPosition(Vector2 worldPos) {
+        if ((editor.hasSelectedPrototype() && editor.getCurrentlySelectedPrototype().isAttached())) {
+            worldPos.x = ((int) worldPos.x) + 0.5f;
+            worldPos.y = ((int) worldPos.y) + 0.5f;
+        } else if (editor.getHardSnap()) {
+            worldPos.x = ((int) worldPos.x) + 0.5f + editor.getSnapOffsetX();
+            worldPos.y = ((int) worldPos.y) + 0.5f + editor.getSnapOffsetY();
+        } else {
+            worldPos = Utils.roundPosition(worldPos, getWidth());
+        }
+
+        super.setPosition(worldPos);
+
+        updateZ();
+
+        if (level.isInBounds(worldPos.x, worldPos.y)) {
+            allowPlacingItem();
+        } else {
+            forbidPlacingItem();
+        }
     }
 
     public void updateZ() {

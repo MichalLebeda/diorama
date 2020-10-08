@@ -39,28 +39,28 @@ public class Editor {
     public void incrementXOffset() {
         snapOffset.x += 1f / Utils.PIXELS_PER_METER;
         if (snapOffset.x > 0.5f) {
-            snapOffset.x = -0.5f;
+            snapOffset.x = 0.5f;
         }
     }
 
     public void decrementXOffset() {
         snapOffset.x -= 1f / Utils.PIXELS_PER_METER;
         if (snapOffset.x < -0.5f) {
-            snapOffset.x = 0.5f;
+            snapOffset.x = -0.5f;
         }
     }
 
     public void incrementYOffset() {
         snapOffset.y += 1f / Utils.PIXELS_PER_METER;
         if (snapOffset.y > 0.5f) {
-            snapOffset.y = -0.5f;
+            snapOffset.y = 0.5f;
         }
     }
 
     public void decrementYOffset() {
         snapOffset.y -= 1f / Utils.PIXELS_PER_METER;
         if (snapOffset.y < -0.5f) {
-            snapOffset.y = 0.5f;
+            snapOffset.y = -0.5f;
         }
     }
 
