@@ -15,25 +15,28 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.ui.ProjectButton;
+import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.ui.BackgroundLabel;
-import cz.shroomware.diorama.ui.NameDialog;
+import cz.shroomware.diorama.ui.NewLevelDialog;
 
-public class ProjectSelectionScreen implements Screen {
-    final VerticalGroup verticalGroup;
-    ScrollPane scrollPane;
-    BackgroundLabel createFileLabel;
-    EditorEngineGame game;
-    EditorResources resources;
-    Stage stage;
-    Color backgroundColor = new Color(0x424242ff);
+public class LevelSelectionScreen implements Screen {
+    private VerticalGroup verticalGroup;
+    private ScrollPane scrollPane;
+    private BackgroundLabel createLevelLabel;
+    private EditorEngineGame game;
+    private EditorResources resources;
+    private Stage stage;
+    private Color backgroundColor = new Color(0x424242ff);
+    private Project project;
 
 
-    public ProjectSelectionScreen(final EditorEngineGame game) {
+    public LevelSelectionScreen(final EditorEngineGame game, final Project project) {
         this.game = game;
+        this.project = project;
+
         resources = game.getResources();
 
         stage = new Stage(new ScreenViewport());
@@ -47,32 +50,32 @@ public class ProjectSelectionScreen implements Screen {
 
         scrollPane = new ScrollPane(verticalGroup);
         stage.addActor(scrollPane);
-        createFileLabel = new BackgroundLabel(
-                resources.getSkin(), resources.getDfShader(), "New File"
+        createLevelLabel = new BackgroundLabel(
+                resources.getSkin(), resources.getDfShader(), "New Level"
         );
 
-        createFileLabel.addListener(new ClickListener() {
+        createLevelLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                NameDialog dialog = new NameDialog(resources.getSkin(), resources.getDfShader(), "New Project Name: ", "") {
+                NewLevelDialog dialog = new NewLevelDialog(resources.getSkin(), resources.getDfShader(), LevelSelectionScreen.this.project, "level_") {
                     @Override
-                    public void onAccepted(String name) {
-                        game.openEditor(name);
+                    public void onAccepted(String name, int width, int height) {
+                        game.openEditorWithNewLevel(LevelSelectionScreen.this.project, name, width, height);
                     }
                 };
                 dialog.show(stage);
                 super.clicked(event, x, y);
             }
         });
-        stage.addActor(createFileLabel);
+        stage.addActor(createLevelLabel);
     }
 
     public void refreshList() {
         verticalGroup.clear();
 
-        FileHandle[] fileHandles = Utils.getProjectFolderFileHandle().list();
+        FileHandle[] fileHandles = project.getFileHandle().list();
         for (final FileHandle fileHandle : fileHandles) {
-            ProjectButton horizontalGroup = new ProjectButton(game, fileHandle) {
+            ProjectButton horizontalGroup = new ProjectButton(game, project, fileHandle) {
                 @Override
                 public void onDelete(ProjectButton button) {
                     verticalGroup.removeActor(button);
@@ -106,9 +109,9 @@ public class ProjectSelectionScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
 
-        createFileLabel.setPosition(
-                stage.getWidth() - createFileLabel.getWidthWithPadding() - 10,
-                stage.getHeight() - createFileLabel.getHeightWithPadding() - 10);
+        createLevelLabel.setPosition(
+                stage.getWidth() - createLevelLabel.getWidthWithPadding() - 10,
+                stage.getHeight() - createLevelLabel.getHeightWithPadding() - 10);
 
         //TODO: remove this workaround
         refreshList();

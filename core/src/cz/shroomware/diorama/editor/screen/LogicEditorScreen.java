@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -34,10 +35,10 @@ public class LogicEditorScreen implements Screen, InputProcessor {
     OrthographicCamera camera;
     InputMultiplexer inputMultiplexer;
 
-    public LogicEditorScreen(EditorEngineGame game, String levelName, Logic logic) {
+    public LogicEditorScreen(EditorEngineGame game, FileHandle fileHandle, Logic logic) {
         this.game = game;
 
-        logicEditor = new LogicEditor(logic, levelName);
+        logicEditor = new LogicEditor(logic, fileHandle);
 
         shapeRenderer = new ShapeRenderer();
         graph = new LogicGraph(logicEditor, game.getResources(), shapeRenderer);

@@ -1,26 +1,33 @@
 package cz.shroomware.diorama.editor.ui.logic;
 
+import com.badlogic.gdx.files.FileHandle;
+
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 
 public class LogicEditor {
     Logic logic;
-    String levelName;
+    FileHandle fileHandle;
 
     Mode mode = Mode.CONNECT;
     Mode modeBeforeDeleteToggle = mode;
 
-    public LogicEditor(Logic logic, String levelName) {
+    public LogicEditor(Logic logic, FileHandle fileHandle) {
         this.logic = logic;
-        this.levelName = levelName;
+        this.fileHandle = fileHandle;
     }
 
     public Logic getLogic() {
         return logic;
     }
 
-    public String getLevelName() {
-        return levelName;
+//    public String getLevelName() {
+//        return levelName;
+//    }
+
+
+    public FileHandle getLevelFileHandle() {
+        return fileHandle;
     }
 
     public void setNextMode() {

@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
+import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.ui.DFLabel;
 import cz.shroomware.diorama.ui.YesNoDialog;
 
@@ -21,7 +22,7 @@ public abstract class ProjectButton extends HorizontalGroup {
     Drawable background;
     Drawable backgroundPressed;
 
-    public ProjectButton(final EditorEngineGame game, final FileHandle projectFileHandle) {
+    public ProjectButton(final EditorEngineGame game, final Project project, final FileHandle levelFileHandle) {
         final EditorResources resources = game.getResources();
         final Skin skin = resources.getSkin();
 
@@ -36,7 +37,7 @@ public abstract class ProjectButton extends HorizontalGroup {
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.openEditor(projectFileHandle.name());
+                game.openEditor(project, levelFileHandle.name());
             }
         });
         addListener(new ActorGestureListener() {
@@ -64,7 +65,7 @@ public abstract class ProjectButton extends HorizontalGroup {
                         "Are you sure") {
                     @Override
                     public void onAccepted() {
-                        projectFileHandle.delete();
+                        levelFileHandle.delete();
                         onDelete(ProjectButton.this);
                     }
                 };
@@ -72,7 +73,7 @@ public abstract class ProjectButton extends HorizontalGroup {
             }
         });
         addActor(button);
-        addActor(new DFLabel(skin, resources.getDfShader(), projectFileHandle.name()));
+        addActor(new DFLabel(skin, resources.getDfShader(), levelFileHandle.name()));
     }
 
     @Override

@@ -2,15 +2,17 @@ package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import cz.shroomware.diorama.editor.screen.LevelEditorScreen;
+import cz.shroomware.diorama.editor.screen.LevelSelectionScreen;
 import cz.shroomware.diorama.editor.screen.LogicEditorScreen;
-import cz.shroomware.diorama.editor.screen.ProjectSelectionScreen;
 import cz.shroomware.diorama.engine.EngineGame;
+import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.screen.PlayLevelScreen;
@@ -18,7 +20,7 @@ import cz.shroomware.diorama.engine.screen.PlayLevelScreen;
 public class EditorEngineGame extends EngineGame {
     //TODO don't use editorScreen variable
     LevelEditorScreen editorScreen;
-    ProjectSelectionScreen projectSelectionScreen;
+    LevelSelectionScreen levelSelectionScreen;
     //TODO: ask if ok, shadows base Resources resources
     EditorResources resources;
 
@@ -46,8 +48,9 @@ public class EditorEngineGame extends EngineGame {
         resources.setSkin(skin);
         resources.setDfShader(dfShader);
 
-        projectSelectionScreen = new ProjectSelectionScreen(this);
-        setScreen(projectSelectionScreen);
+        Project project = new Project("test_proj");
+        levelSelectionScreen = new LevelSelectionScreen(this, project);
+        setScreen(levelSelectionScreen);
     }
 
     @Override
@@ -66,7 +69,7 @@ public class EditorEngineGame extends EngineGame {
             editorScreen.dispose();
         }
 
-        projectSelectionScreen.dispose();
+        levelSelectionScreen.dispose();
     }
 
     public EditorResources getResources() {
@@ -83,8 +86,13 @@ public class EditorEngineGame extends EngineGame {
         }
     }
 
-    public void openEditor(String filename) {
-        editorScreen = new LevelEditorScreen(this, filename);
+    public void openEditor(Project project, String filename) {
+        editorScreen = new LevelEditorScreen(this, project, filename);
+        setScreen(editorScreen);
+    }
+
+    public void openEditorWithNewLevel(Project project, String filename, int width, int height) {
+        editorScreen = new LevelEditorScreen(this, project, filename, width, height);
         setScreen(editorScreen);
     }
 
@@ -95,15 +103,15 @@ public class EditorEngineGame extends EngineGame {
         }
     }
 
-    public void openGame(String levelFilename, Prototypes prototypes) {
-        setScreen(new PlayLevelScreen(this, prototypes, levelFilename));
+    public void openGame(FileHandle fileHandle, Prototypes prototypes) {
+        setScreen(new PlayLevelScreen(this, prototypes, fileHandle));
     }
 
-    public void openLogicEditor(String levelName, Logic logic) {
+    public void openLogicEditor(FileHandle levelName, Logic logic) {
         setScreen(new LogicEditorScreen(this, levelName, logic));
     }
 
     public void openSelection() {
-        setScreen(projectSelectionScreen);
+        setScreen(levelSelectionScreen);
     }
 }

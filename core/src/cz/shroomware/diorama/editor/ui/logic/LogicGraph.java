@@ -54,7 +54,7 @@ public class LogicGraph extends Stage {
         this.resources = resources;
         this.shapeRenderer = shapeRenderer;
 
-        preferences = Gdx.app.getPreferences(logicEditor.getLevelName());
+        preferences = Gdx.app.getPreferences(logicEditor.getLevelFileHandle().name());
 
         OrthographicCamera camera = (OrthographicCamera) getCamera();
         camera.position.x = preferences.getFloat("camera.x", 0);

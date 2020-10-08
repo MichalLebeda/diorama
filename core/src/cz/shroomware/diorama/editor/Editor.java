@@ -17,12 +17,6 @@ public class Editor {
     private GameObject movedObject;
     private Vector2 snapOffset = new Vector2();
 
-    public Editor(String filename) {
-        if (filename == null) {
-            throw new NullPointerException();
-        }
-    }
-
     public Prototype getCurrentlySelectedPrototype() {
         return currentlySelectedPrototype;
     }

@@ -1,8 +1,5 @@
 package cz.shroomware.diorama;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
@@ -42,33 +39,6 @@ public class Utils {
     public static final float PIXELS_PER_METER = 16f;
 
     public static final float SHADOW_SCALE = 2;
-
-    //TODO Create multiplatform way of getting folders
-    public static FileHandle getProjectFolderFileHandle() {
-        Application.ApplicationType type = Gdx.app.getType();
-
-        FileHandle fileHandle = Gdx.files.external("Documents/PixelLab/");
-        if (!fileHandle.exists()) {
-            fileHandle.mkdirs();
-        }
-        return fileHandle;
-
-//        switch (type){
-//            case Desktop:
-//                FileHandle fileHandle =  Gdx.files.local("PixelLab/");
-//                if(!fileHandle.exists()){
-//                    fileHandle.mkdirs();
-//                }
-//                return fileHandle;
-//            case Android:
-//                FileHandle fileHandle =  Gdx.files.local("PixelLab/");
-//                if(!fileHandle.exists()){
-//                    fileHandle.mkdirs();
-//                }
-//                return fileHandle;
-//        }
-//        return Gdx.files
-    }
 
 
     public static float round(float input, float step) {
@@ -157,10 +127,6 @@ public class Utils {
         }
 
         return new Color(max.getKey());
-    }
-
-    public static FileHandle getFileHandle(String filename) {
-        return getProjectFolderFileHandle().child(filename);
     }
 
     //TODO: handle rotation

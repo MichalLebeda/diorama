@@ -78,7 +78,7 @@ public abstract class LogicHud extends Stage {
         addActor(messages);
 
         projectNameLabel = new LeftToBackgroundLabel(
-                logicEditor.levelName,
+                logicEditor.getLevelFileHandle().name(),
                 editorResources.getSkin(),
                 editorResources.getDfShader(),
                 logicSelectedModeIndicator.getX() - 10);

@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.logic.prototype.AndGatePrototype;
@@ -33,7 +32,7 @@ import cz.shroomware.diorama.engine.level.object.Trigger;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Level {
-    protected String filename;
+    protected FileHandle fileHandle;
     protected Floor floor;
     protected GameObjects gameObjects;
     protected Clouds clouds;
@@ -41,12 +40,11 @@ public class Level {
     protected Logic logic;
     protected BoxFactory boxFactory;
 
-    public Level(String filename, Prototypes gameObjectPrototypes, Resources resources) {
-        this.filename = filename;
+    public Level(FileHandle fileHandle, Resources resources, int width, int height) {
+        this.fileHandle = fileHandle;
 
         world = new World(Vector2.Zero, true);
         world.setContactListener(new ContactListener() {
-
             private boolean isInContact(Contact contact, Body body) {
                 return contact.getFixtureA().getBody() == body || contact.getFixtureB().getBody() == body;
             }
@@ -117,14 +115,93 @@ public class Level {
         logic = new Logic();
         logic.addPureLogicComponentPrototype(new OrGatePrototype());
         logic.addPureLogicComponentPrototype(new AndGatePrototype());
-        floor = new Floor(resources.getObjectAtlas().findRegion("floor"));
+        floor = new Floor(resources.getObjectAtlas().findRegion("floor"), width, height);
         gameObjects = new GameObjects(logic);
         clouds = new Clouds(floor, resources);
-        loadIfExists(gameObjectPrototypes, resources.getObjectAtlas());
     }
 
-    public boolean loadIfExists(Prototypes gameObjectPrototypes, TextureAtlas atlas) {
-        FileHandle fileHandle = Utils.getFileHandle(filename);
+    public Level(FileHandle fileHandle, Resources resources, Prototypes gameObjectPrototypes) {
+        this.fileHandle = fileHandle;
+
+        world = new World(Vector2.Zero, true);
+        world.setContactListener(new ContactListener() {
+            private boolean isInContact(Contact contact, Body body) {
+                return contact.getFixtureA().getBody() == body || contact.getFixtureB().getBody() == body;
+            }
+
+            private <T> boolean isInContact(Contact contact, Class<T> tClass) {
+                return tClass.isInstance(contact.getFixtureA().getBody().getUserData()) ||
+                        tClass.isInstance(contact.getFixtureB().getBody().getUserData());
+            }
+
+            private <T> T getFromContact(Contact contact, Class<T> tClass) {
+                Body[] bodies = {contact.getFixtureA().getBody(), contact.getFixtureB().getBody()};
+
+                Object attachedObject;
+                for (Body body : bodies) {
+                    attachedObject = body.getUserData();
+
+                    if (tClass.isInstance(attachedObject)) {
+                        return (T) attachedObject;
+                    }
+                }
+
+                return null;
+            }
+
+            private Object getSecondFromContact(Contact contact, Object first) {
+                Body[] bodies = {contact.getFixtureB().getBody(), contact.getFixtureB().getBody()};
+
+                Object attachedObject;
+                for (Body body : bodies) {
+                    attachedObject = body.getUserData();
+
+                    if (attachedObject != null && attachedObject != first) {
+                        return attachedObject;
+                    }
+                }
+
+                return null;
+            }
+
+            @Override
+            public void beginContact(Contact contact) {
+                if (isInContact(contact, Trigger.class)) {
+                    Trigger trigger = getFromContact(contact, Trigger.class);
+                    trigger.addContact();
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+                if (isInContact(contact, Trigger.class)) {
+                    Trigger trigger = getFromContact(contact, Trigger.class);
+                    trigger.removeContact();
+                }
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
+
+        boxFactory = new BoxFactory(world);
+        logic = new Logic();
+        logic.addPureLogicComponentPrototype(new OrGatePrototype());
+        logic.addPureLogicComponentPrototype(new AndGatePrototype());
+        floor = new Floor();
+        gameObjects = new GameObjects(logic);
+        load(gameObjectPrototypes, resources.getObjectAtlas());
+        clouds = new Clouds(floor, resources);
+    }
+
+    public boolean load(Prototypes gameObjectPrototypes, TextureAtlas atlas) {
         if (fileHandle.exists()) {
             InputStream inputStream = fileHandle.read();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -150,8 +227,8 @@ public class Level {
             }
             return true;
         } else {
-            // Save as new if level file doesn't exist
-            save(true);
+            Gdx.app.error("Level", "Level doesn't exist");
+            Gdx.app.exit();
         }
 
         return false;
@@ -159,7 +236,7 @@ public class Level {
 
     public boolean save(boolean force) {
         if (isDirty() || force) {
-            OutputStream outputStream = Utils.getFileHandle(filename).write(false);
+            OutputStream outputStream = fileHandle.write(false);
             try {
                 floor.save(outputStream);
                 gameObjects.save(outputStream);
@@ -176,12 +253,12 @@ public class Level {
         return false;
     }
 
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
+    //    public String getFilename() {
+//        return fileHandle.name();
+//    }
+//
+    public FileHandle getFileHandle() {
+        return fileHandle;
     }
 
     public void update(float delta) {
@@ -209,8 +286,12 @@ public class Level {
         return floor.isInBounds(x, y);
     }
 
-    public int getSize() {
-        return floor.getSize();
+    public int getWidth() {
+        return floor.getWidth();
+    }
+
+    public int getHeight() {
+        return floor.getHeight();
     }
 
     public boolean isDirty() {

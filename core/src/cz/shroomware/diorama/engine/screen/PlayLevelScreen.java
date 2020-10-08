@@ -3,6 +3,7 @@ package cz.shroomware.diorama.engine.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -19,16 +20,15 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected EngineGame game;
     protected Player player;
 
-
-    public PlayLevelScreen(EngineGame game, Prototypes prototypes, String filename) {
+    public PlayLevelScreen(EngineGame game, Prototypes prototypes, FileHandle levelFileHandle) {
         super(game.getResources());
         this.game = game;
-        this.level = new Level(filename, prototypes, game.getResources());
+        this.level = new Level(levelFileHandle, game.getResources(), prototypes);
         updateBackgroundColor(level);
         initCamera(level);
 
         Vector2 offset = new Vector2(-3, +6);
-        player = new Player(new Vector3(level.getSize() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0),
+        player = new Player(new Vector3(level.getWidth() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0),
                 new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
     }

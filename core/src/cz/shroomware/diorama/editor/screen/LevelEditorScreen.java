@@ -30,6 +30,7 @@ import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.EditorTool;
 import cz.shroomware.diorama.editor.ui.Hud;
+import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
@@ -61,11 +62,11 @@ public class LevelEditorScreen extends BaseLevelScreen {
     boolean dragging = false;
     float time = 0;
 
-    public LevelEditorScreen(EditorEngineGame game, String filename) {
+    public LevelEditorScreen(EditorEngineGame game, Project project, String name, int width, int height) {
         super(game.getResources());
         this.game = game;
 
-        editor = new Editor(filename);
+        editor = new Editor();
 
         resources = game.getResources();
         defaultCursorRegion = resources.getObjectAtlas().findRegion("cursor");
@@ -73,7 +74,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         gameObjectPrototypes = new Prototypes(resources);
 
-        level = new Level(filename, gameObjectPrototypes, resources);
+        level = new Level(project.getLevelFileHandle(name), resources, width, height);
         updateBackgroundColor(level);
         initCamera(level);
 
@@ -86,6 +87,37 @@ public class LevelEditorScreen extends BaseLevelScreen {
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(hud);
         inputMultiplexer.addProcessor(this);
+    }
+
+    public LevelEditorScreen(EditorEngineGame game, Project project, String name) {
+        super(game.getResources());
+        this.game = game;
+
+        editor = new Editor();
+
+        resources = game.getResources();
+        defaultCursorRegion = resources.getObjectAtlas().findRegion("cursor");
+        shadowAtlas = resources.getShadowAtlas();
+
+        gameObjectPrototypes = new Prototypes(resources);
+
+        level = new Level(project.getLevelFileHandle(name), resources, gameObjectPrototypes);
+        updateBackgroundColor(level);
+        initCamera(level);
+
+        editorTool = new EditorTool(level.getFloor(), level.getGameObjects(), editor);
+
+        cursor = new Cursor(editor, resources, level, defaultCursorRegion);
+
+        hud = new Hud(game, gameObjectPrototypes, editor, level);
+
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(hud);
+        inputMultiplexer.addProcessor(this);
+    }
+
+    private void init() {
+
     }
 
     @Override
@@ -221,8 +253,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
     }
 
     protected void clampCameraPos(Camera camera) {
-        camera.position.x = MathUtils.clamp(camera.position.x, -MAX_CAM_DIST_FROM_GRID, level.getSize() + MAX_CAM_DIST_FROM_GRID);
-        camera.position.y = MathUtils.clamp(camera.position.y, -MAX_CAM_DIST_FROM_GRID, level.getSize() + MAX_CAM_DIST_FROM_GRID);
+        camera.position.x = MathUtils.clamp(camera.position.x, -MAX_CAM_DIST_FROM_GRID, level.getWidth() + MAX_CAM_DIST_FROM_GRID);
+        camera.position.y = MathUtils.clamp(camera.position.y, -MAX_CAM_DIST_FROM_GRID, level.getHeight() + MAX_CAM_DIST_FROM_GRID);
         camera.position.z = MathUtils.clamp(camera.position.z, 0.4f, 20);
     }
 
@@ -300,9 +332,9 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 return true;
             case Input.Keys.W:
                 if (save()) {
-                    hud.showMessage("Saved as " + level.getFilename());
+                    hud.showMessage("Saved as " + level.getFileHandle().name());
                 } else {
-                    hud.showMessage("NOT saved as " + level.getFilename());
+                    hud.showMessage("NOT saved as " + level.getFileHandle().name());
                 }
                 return true;
 //            case Input.Keys.L:
@@ -328,13 +360,13 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 return true;
             case Input.Keys.P:
                 save();
-                game.openGame(level.getFilename(), gameObjectPrototypes);
+                game.openGame(level.getFileHandle(), gameObjectPrototypes);
                 return true;
             case Input.Keys.V:
                 level.dumpLogic();
                 return true;
             case Input.Keys.SEMICOLON:
-                game.openLogicEditor(level.getFilename(), level.getLogic());
+                game.openLogicEditor(level.getFileHandle(), level.getLogic());
                 return true;
             case Input.Keys.S:
                 editor.toggleHardSnap();

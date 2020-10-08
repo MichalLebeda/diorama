@@ -10,30 +10,68 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class representing floor grid
+ */
 public class Floor {
-    public static final int GRID_SIZE = 100;
-    protected Tile[][] grid = new Tile[GRID_SIZE][GRID_SIZE];
+    protected Tile[][] grid;
     protected boolean dirty = false;
+    protected int width;
+    protected int height;
 
-    public Floor(TextureRegion region) {
-        for (int x = 0; x < GRID_SIZE; x++) {
-            for (int y = 0; y < GRID_SIZE; y++) {
+    /**
+     * Has to be loaded later
+     */
+    public Floor() {
+
+    }
+
+    /**
+     * Blank Floor constructor
+     *
+     * @param region Region to fill with
+     * @param width  Floor width
+     * @param height floor height
+     */
+    public Floor(TextureRegion region, int width, int height) {
+        this.width = width;
+        this.height = height;
+
+        grid = new Tile[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 Tile sprite = new Tile(x, y, region);
                 sprite.setSize(1, 1);
                 sprite.setPosition(x, y);
                 grid[x][y] = sprite;
             }
         }
+
+        dirty = true;
     }
 
+    /**
+     * Draws floor grid
+     *
+     * @param spriteBatch SpriteBatch to draw with
+     * @param delta       Elapsed time from last frame in seconds
+     */
     public void draw(SpriteBatch spriteBatch, float delta) {
-        for (int x = 0; x < GRID_SIZE; x++) {
-            for (int y = 0; y < GRID_SIZE; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 grid[x][y].draw(spriteBatch, delta);
             }
         }
     }
 
+    /**
+     * Sets TextureRegion for region located at given world coordinates
+     *
+     * @param x      X coordinate
+     * @param y      Y coordinate
+     * @param region TextureRegion to be set
+     * @return True if success false otherwise
+     */
     public boolean setTileRegionAtWorld(float x, float y, TextureRegion region) {
         int xIndex = (int) x;
         int yIndex = (int) y;
@@ -41,6 +79,14 @@ public class Floor {
         return setTileRegionAtIndex(xIndex, yIndex, region);
     }
 
+    /**
+     * Sets TextureRegion for region located at given local tile index
+     *
+     * @param xIndex X local grid index
+     * @param yIndex Y local grid index
+     * @param region TextureRegion to be set
+     * @return True if success false otherwise
+     */
     protected boolean setTileRegionAtIndex(int xIndex, int yIndex, TextureRegion region) {
         if (!isInBounds(xIndex, yIndex)) {
             return false;
@@ -71,15 +117,19 @@ public class Floor {
     }
 
     public boolean isInBounds(int x, int y) {
-        return (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE);
+        return (x >= 0 && x < width && y >= 0 && y < height);
     }
 
     public boolean isInBounds(float x, float y) {
-        return (x >= 0 && x <= GRID_SIZE && y >= 0 && y <= GRID_SIZE);
+        return (x >= 0 && x <= width && y >= 0 && y <= height);
     }
 
-    public int getSize() {
-        return GRID_SIZE;
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public boolean isDirty() {
@@ -104,17 +154,22 @@ public class Floor {
             return;
         }
 
-        int width = Integer.parseInt(parts[0]);
-        int height = Integer.parseInt(parts[1]);
+        width = Integer.parseInt(parts[0]);
+        height = Integer.parseInt(parts[1]);
+        grid = new Tile[width][height];
 
-            for (int y = 0; y < height; y++) {
-                line = bufferedReader.readLine();
-                parts = line.split(" ");
-                for (int x = 0; x < width; x++) {
-                    int key = Integer.parseInt(parts[x]);
-                    grid[x][y].setRegion(atlas.findRegion(tileNameToId.get(key)));
-                }
+        for (int y = 0; y < height; y++) {
+            line = bufferedReader.readLine();
+            parts = line.split(" ");
+            for (int x = 0; x < width; x++) {
+                int key = Integer.parseInt(parts[x]);
+
+                Tile sprite = new Tile(x, y, atlas.findRegion(tileNameToId.get(key)));
+                sprite.setSize(1, 1);
+                sprite.setPosition(x, y);
+                grid[x][y] = sprite;
             }
+        }
 
         dirty = false;
     }
@@ -124,9 +179,6 @@ public class Floor {
     }
 
     public void save(OutputStream outputStream) throws IOException {
-        int width = getSize();
-        int height = getSize();
-
         int i = 0;
         HashMap<String, Integer> tileNameToId = new HashMap<>();
         for (int y = 0; y < height; y++) {
@@ -163,8 +215,8 @@ public class Floor {
     }
 
     public void updateSurroundings() {
-        for (int y = 0; y < getSize(); y++) {
-            for (int x = 0; x < getSize(); x++) {
+        for (int y = 0; y < getWidth(); y++) {
+            for (int x = 0; x < getHeight(); x++) {
                 Tile tile = getTileAtIndex(x, y);
                 if (tile.hasAttachedObject()) {
                     tile.getAttachedGameObject().updateSurroundings(this);

@@ -2,6 +2,7 @@ package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -48,6 +49,7 @@ public abstract class NameDialog extends Dialog {
         });
 
         getButtonTable().add(cancelButton);
+        getButtonTable().add(new Actor()).expandX();
         getButtonTable().add(okButton);
     }
 
@@ -62,6 +64,7 @@ public abstract class NameDialog extends Dialog {
     public Dialog show(Stage stage, Action action) {
         Dialog dialog = super.show(stage, action);
         stage.setKeyboardFocus(textField);
+        setWidth(300);
         return dialog;
     }
 

@@ -56,10 +56,10 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
                 50,
                 calculateCameraViewportWidth(),
                 calculateCameraViewportHeight());
-        camera.position.set(level.getSize() / 2.f, -2, 5);
+        camera.position.set(level.getWidth() / 2.f, -2, 5);
         camera.near = 0.1f;
         camera.far = 300;
-        camera.lookAt(level.getSize() / 2.f, 4, 0);
+        camera.lookAt(level.getWidth() / 2.f, 4, 0);
     }
 
     @Override

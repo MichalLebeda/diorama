@@ -89,7 +89,7 @@ public class Hud extends Stage {
         addActor(messages);
 
         projectNameLabel = new LeftToBackgroundLabel(
-                level.getFilename(),
+                level.getFileHandle().name(),
                 resources.getSkin(),
                 resources.getDfShader(),
                 selectedItemIndicator.getX() - 10);
@@ -111,7 +111,7 @@ public class Hud extends Stage {
         logicEditorButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.openLogicEditor(level.getFilename(), level.getLogic());
+                game.openLogicEditor(level.getFileHandle(), level.getLogic());
             }
         });
 

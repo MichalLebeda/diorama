@@ -8,9 +8,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.Resources;
-import cz.shroomware.diorama.engine.screen.PlayLevelScreen;
 
 public class EngineGame extends Game {
     protected Resources resources;
@@ -67,9 +65,9 @@ public class EngineGame extends Game {
         return resources;
     }
 
-    public void openGame(String levelFilename, Prototypes prototypes) {
-        setScreen(new PlayLevelScreen(this, prototypes, levelFilename));
-    }
+//    public void openGame(FileHandle fileHandle, Prototypes prototypes) {
+//        setScreen(new PlayLevelScreen(this, prototypes, fileHandle));
+//    }
 
     @Override
     public void setScreen(Screen screen) {
