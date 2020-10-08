@@ -21,4 +21,10 @@ public class DFLabel extends Label {
         super.draw(batch, parentAlpha);
         batch.setShader(null);
     }
+
+    @Override
+    public void setText(CharSequence newText) {
+        super.setText(newText);
+        pack();
+    }
 }

@@ -13,30 +13,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
-import cz.shroomware.diorama.engine.Project;
+public abstract class NewProjectDialog extends Dialog {
+    TextField projectNameField;
 
-public abstract class NewLevelDialog extends Dialog {
-    TextField levelNameField;
-    TextField widthField;
-    TextField heightField;
-
-    public NewLevelDialog(Skin skin, ShaderProgram dfShader, final Project project, String initialText) {
+    public NewProjectDialog(Skin skin, ShaderProgram dfShader, final FileHandle parentFileHandle, String initialText) {
         super("", skin);
         padTop(64);
         getTitleTable().clearChildren();
         getTitleTable().align(Align.left);
-        getTitleTable().add(new DFLabel(skin, dfShader, "New Level Name: "));
+        getTitleTable().add(new DFLabel(skin, dfShader, "New Project Name: "));
 
-        levelNameField = new DFTextField(skin, dfShader, initialText);
-        getContentTable().add(levelNameField).fill().colspan(2);
+        projectNameField = new DFTextField(skin, dfShader, initialText);
+        getContentTable().add(projectNameField).fill().colspan(2);
 
         getContentTable().row();
-
-        widthField = new DFTextField(skin, dfShader, "64");
-        getContentTable().add(widthField).fill();
-
-        heightField = new DFTextField(skin, dfShader, "64");
-        getContentTable().add(heightField).fill();
 
         DFButton cancelButton = new DFButton(skin, dfShader, "Cancel");
         DFButton okButton = new DFButton(skin, dfShader, "OK");
@@ -51,33 +41,16 @@ public abstract class NewLevelDialog extends Dialog {
         okButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                String name = levelNameField.getText();
+                String name = projectNameField.getText();
 
-                if (levelNameField.getText().length() > 0) {
-                    FileHandle fileHandle = project.getLevelFileHandle(name);
+                if (projectNameField.getText().length() > 0) {
+                    FileHandle fileHandle = parentFileHandle.child(name);
                     if (fileHandle.exists()) {
                         Gdx.app.error("NewLevelDialog", "Level exists");
                         return;
                     }
 
-                    int width;
-                    int height;
-
-                    try {
-                        width = Integer.parseInt(widthField.getText());
-                    } catch (NumberFormatException e) {
-                        Gdx.app.error("NewLevelDialog", "Invalid WIDTH");
-                        return;
-                    }
-
-                    try {
-                        height = Integer.parseInt(heightField.getText());
-                    } catch (NumberFormatException e) {
-                        Gdx.app.error("NewLevelDialog", "Invalid HEIGHT");
-                        return;
-                    }
-
-                    onAccepted(name, width, height);
+                    onAccepted(name);
                     hide();
                     // For screen transition when creating new project
                     // TODO: edit this
@@ -95,27 +68,27 @@ public abstract class NewLevelDialog extends Dialog {
     @Override
     public Dialog show(Stage stage) {
         Dialog dialog = super.show(stage);
-        stage.setKeyboardFocus(levelNameField);
+        stage.setKeyboardFocus(projectNameField);
         return dialog;
     }
 
     @Override
     public Dialog show(Stage stage, Action action) {
         Dialog dialog = super.show(stage, action);
-        stage.setKeyboardFocus(levelNameField);
+        stage.setKeyboardFocus(projectNameField);
         setWidth(400);
         setY(stage.getHeight() / 2 - getHeight() / 2);
         return dialog;
     }
 
-    public abstract void onAccepted(String name, int width, int height);
+    public abstract void onAccepted(String name);
 
     public String getText() {
-        return levelNameField.getText();
+        return projectNameField.getText();
     }
 
     @Override
     public float getPrefWidth() {
-        return super.getPrefWidth() + levelNameField.getWidth();
+        return super.getPrefWidth() + projectNameField.getWidth();
     }
 }

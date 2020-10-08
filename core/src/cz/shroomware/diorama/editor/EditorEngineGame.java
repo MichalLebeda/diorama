@@ -2,6 +2,7 @@ package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import cz.shroomware.diorama.editor.screen.LevelEditorScreen;
 import cz.shroomware.diorama.editor.screen.LevelSelectionScreen;
 import cz.shroomware.diorama.editor.screen.LogicEditorScreen;
+import cz.shroomware.diorama.editor.screen.ProjectSelectionScreen;
 import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.Prototypes;
@@ -21,12 +23,16 @@ public class EditorEngineGame extends EngineGame {
     //TODO don't use editorScreen variable
     LevelEditorScreen editorScreen;
     LevelSelectionScreen levelSelectionScreen;
+    public static final String LAST_PROJECT_FILE = "LAST_DIR";
     //TODO: ask if ok, shadows base Resources resources
     EditorResources resources;
+    ProjectSelectionScreen projectSelectionScreen;
+    Preferences preferences;
 
     @Override
     public void create() {
         super.create();
+        preferences = Gdx.app.getPreferences("editor");
 
         TextureAtlas uiAtlas = new TextureAtlas(Gdx.files.internal("atlas/ui.atlas"));
 
@@ -48,9 +54,25 @@ public class EditorEngineGame extends EngineGame {
         resources.setSkin(skin);
         resources.setDfShader(dfShader);
 
-        Project project = new Project("test_proj");
-        levelSelectionScreen = new LevelSelectionScreen(this, project);
-        setScreen(levelSelectionScreen);
+        levelSelectionScreen = new LevelSelectionScreen(this);
+
+        projectSelectionScreen = new ProjectSelectionScreen(this,
+                Gdx.files.external(""));
+
+        if (preferences.contains(LAST_PROJECT_FILE)) {
+            Project project = new Project(Gdx.files.external(preferences.getString(LAST_PROJECT_FILE)));
+            if (project.getFileHandle().exists()) {
+                openLevelSelection(project);
+                projectSelectionScreen.setCurrentFileHandle(project.getFileHandle().parent());
+                return;
+            }
+        }
+
+        openProjectSelection();
+    }
+
+    public Preferences getEditorPreferences() {
+        return preferences;
     }
 
     @Override
@@ -101,6 +123,18 @@ public class EditorEngineGame extends EngineGame {
         if (editorScreen != null) {
             setScreen(editorScreen);
         }
+    }
+
+    public void openProjectSelection() {
+        setScreen(projectSelectionScreen);
+    }
+
+    public void openLevelSelection(Project project) {
+        Gdx.app.log("l", project.getFileHandle().path());
+        preferences.putString(LAST_PROJECT_FILE, project.getFileHandle().path());
+        preferences.flush();
+        levelSelectionScreen.setProject(project);
+        setScreen(levelSelectionScreen);
     }
 
     public void openGame(FileHandle fileHandle, Prototypes prototypes) {

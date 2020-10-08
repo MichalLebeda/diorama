@@ -23,25 +23,24 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
-import cz.shroomware.diorama.editor.ui.IconButton;
 import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.DFLabel;
-import cz.shroomware.diorama.ui.NewLevelDialog;
-import cz.shroomware.diorama.ui.YesNoDialog;
+import cz.shroomware.diorama.ui.NewProjectDialog;
 
-public class LevelSelectionScreen implements Screen {
+public class ProjectSelectionScreen implements Screen {
     private VerticalGroup verticalGroup;
     private ScrollPane scrollPane;
-    private BackgroundLabel createLevelLabel;
-    private BackgroundLabel projectLabel;
+    private BackgroundLabel createProjectLabel;
     private EditorEngineGame game;
     private EditorResources resources;
     private Stage stage;
     private Color backgroundColor = new Color(0x424242ff);
-    private Project project;
+    private FileHandle currentDir;
 
-    public LevelSelectionScreen(final EditorEngineGame game) {
+    public ProjectSelectionScreen(final EditorEngineGame game, final FileHandle startFileHandle) {
+        this.currentDir = startFileHandle;
+
         this.game = game;
 
         resources = game.getResources();
@@ -57,70 +56,59 @@ public class LevelSelectionScreen implements Screen {
 
         scrollPane = new ScrollPane(verticalGroup);
         stage.addActor(scrollPane);
-        createLevelLabel = new BackgroundLabel(
-                resources.getSkin(), resources.getDfShader(), "New Level"
+        createProjectLabel = new BackgroundLabel(
+                resources.getSkin(), resources.getDfShader(), "New Project"
         );
 
-        createLevelLabel.addListener(new ClickListener() {
+        createProjectLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                NewLevelDialog dialog = new NewLevelDialog(resources.getSkin(), resources.getDfShader(), LevelSelectionScreen.this.project, "level_") {
+                NewProjectDialog dialog = new NewProjectDialog(resources.getSkin(), resources.getDfShader(), startFileHandle, "project") {
                     @Override
-                    public void onAccepted(String name, int width, int height) {
-                        game.openEditorWithNewLevel(project, name, width, height);
+                    public void onAccepted(String name) {
+                        Project project = new Project(currentDir, name);
+                        game.openLevelSelection(project);
                     }
                 };
                 dialog.show(stage);
                 super.clicked(event, x, y);
             }
         });
-        createLevelLabel.setVisible(false);
-        stage.addActor(createLevelLabel);
-
-        projectLabel = new BackgroundLabel(resources.getSkin(), resources.getDfShader(), "");
-        projectLabel.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.openProjectSelection();
-            }
-        });
-        stage.addActor(projectLabel);
-    }
-
-    public void setProject(Project project) {
-        if (project != null) {
-            this.project = project;
-
-            createLevelLabel.setVisible(true);
-            createLevelLabel.setText("New Level");
-
-            projectLabel.setText(project.getName());
-            refreshList();
-        }
+        stage.addActor(createProjectLabel);
     }
 
     public void refreshList() {
-        if (project == null) {
-            createLevelLabel.setVisible(false);
-            return;
-        }
-
         verticalGroup.clear();
 
-        FileHandle[] fileHandles = project.getLevelDirHandle().list();
-        for (final FileHandle fileHandle : fileHandles) {
-            if (fileHandle.isDirectory()) {
-                // Filter directories
-                return;
-            }
+        FileHandle[] fileHandles = currentDir.list();
 
-            LevelButtonItem horizontalGroup = new LevelButtonItem(game, project, fileHandle) {
+        if (!currentDir.path().equals(currentDir.parent().path())) {
+            Item item = new Item(game, currentDir.parent()) {
                 @Override
-                public void onDelete(LevelButtonItem button) {
-                    verticalGroup.removeActor(button);
+                public void onClick(FileHandle fileHandle) {
+                    setCurrentFileHandle(fileHandle);
                 }
             };
-            verticalGroup.addActor(horizontalGroup);
+            item.setText(currentDir.path());
+            verticalGroup.addActor(item);
+        }
+
+        for (final FileHandle fileHandle : fileHandles) {
+            if (fileHandle.name().startsWith(".")) {
+                continue;
+            }
+
+            if (!fileHandle.isDirectory()) {
+                continue;
+            }
+
+            Item item = new Item(game, fileHandle) {
+                @Override
+                public void onClick(FileHandle fileHandle) {
+                    setCurrentFileHandle(fileHandle);
+                }
+            };
+            verticalGroup.addActor(item);
         }
 
         updateScrollPaneSize();
@@ -148,13 +136,9 @@ public class LevelSelectionScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
 
-        createLevelLabel.setPosition(
-                stage.getWidth() - createLevelLabel.getWidthWithPadding() - 10,
-                stage.getHeight() - createLevelLabel.getHeightWithPadding() - 10);
-
-        projectLabel.setPosition(
-                10,
-                stage.getHeight() - projectLabel.getHeightWithPadding() - 10);
+        createProjectLabel.setPosition(
+                stage.getWidth() - createProjectLabel.getWidthWithPadding() - 10,
+                stage.getHeight() - createProjectLabel.getHeightWithPadding() - 10);
 
         //TODO: remove this workaround
         refreshList();
@@ -199,12 +183,28 @@ public class LevelSelectionScreen implements Screen {
 
     }
 
-    public abstract static class LevelButtonItem extends HorizontalGroup {
-        Drawable currentBackground;
-        Drawable background;
-        Drawable backgroundPressed;
+    public void setCurrentFileHandle(FileHandle fileHandle) {
+        FileHandle[] children = fileHandle.list();
 
-        public LevelButtonItem(final EditorEngineGame game, final Project project, final FileHandle levelFileHandle) {
+        for (FileHandle child : children) {
+            if (child.name().equals(Project.PROJECT_FILE)) {
+                Project project = new Project(fileHandle);
+                game.openLevelSelection(project);
+                return;
+            }
+        }
+
+        this.currentDir = fileHandle;
+        refreshList();
+    }
+
+    public abstract static class Item extends HorizontalGroup {
+        private Drawable currentBackground;
+        private Drawable background;
+        private Drawable backgroundPressed;
+        private DFLabel label;
+
+        public Item(final EditorEngineGame game, final FileHandle fileHandle) {
             final EditorResources resources = game.getResources();
             final Skin skin = resources.getSkin();
 
@@ -219,7 +219,7 @@ public class LevelSelectionScreen implements Screen {
             addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.openEditor(project, levelFileHandle.name());
+                    onClick(fileHandle);
                 }
             });
             addListener(new ActorGestureListener() {
@@ -234,29 +234,15 @@ public class LevelSelectionScreen implements Screen {
                 }
             });
 
-            IconButton button = new IconButton(
-                    skin.getDrawable("default-round"),
-                    skin.getDrawable("default-round-down"),
-                    skin.getDrawable("cross"));
-            button.setIconSize(40);
-            button.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    YesNoDialog dialog = new YesNoDialog(skin,
-                            resources.getDfShader(),
-                            "Are you sure") {
-                        @Override
-                        public void onAccepted() {
-                            levelFileHandle.delete();
-                            onDelete(LevelButtonItem.this);
-                        }
-                    };
-                    dialog.show(getStage());
-                }
-            });
-            addActor(button);
-            addActor(new DFLabel(skin, resources.getDfShader(), levelFileHandle.name()));
+            label = new DFLabel(skin, resources.getDfShader(), fileHandle.name());
+            addActor(label);
         }
+
+        public void setText(String text) {
+            label.setText(text);
+        }
+
+        public abstract void onClick(FileHandle fileHandle);
 
         @Override
         public float getPrefWidth() {
@@ -273,7 +259,5 @@ public class LevelSelectionScreen implements Screen {
             currentBackground.draw(batch, getX(), getY(), getWidth(), getHeight());
             super.draw(batch, parentAlpha);
         }
-
-        public abstract void onDelete(LevelButtonItem button);
     }
 }

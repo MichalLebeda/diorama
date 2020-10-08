@@ -1,19 +1,37 @@
 package cz.shroomware.diorama.engine;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 public class Project {
+    public static final String PROJECT_FILE = "project.pixellab";
     private String name;
     private FileHandle fileHandle;
 
-    public Project(String name) {
+    public Project(FileHandle parent, String name) {
         this.name = name;
-        fileHandle = getProjectFileHandle(null, name);
+        fileHandle = parent.child(name);
+
+        if (!fileHandle.exists()) {
+            create();
+        }
     }
 
-    public String getProjectName() {
+    public Project(FileHandle file) {
+        fileHandle = file;
+        name = fileHandle.name();
+
+        if (!fileHandle.exists()) {
+            create();
+        }
+    }
+
+    private void create() {
+        fileHandle.mkdirs();
+        FileHandle file = fileHandle.child(PROJECT_FILE);
+        file.writeString(name, false);
+    }
+
+    public String getName() {
         return name;
     }
 
@@ -21,39 +39,11 @@ public class Project {
         return fileHandle;
     }
 
+    public FileHandle getLevelDirHandle() {
+        return fileHandle.child("level");
+    }
+
     public FileHandle getLevelFileHandle(String levelName) {
-        return fileHandle.child(levelName);
+        return getLevelDirHandle().child(levelName);
     }
-
-    private FileHandle getProjectFileHandle(String root, String projectName) {
-        Application.ApplicationType type = Gdx.app.getType();
-
-        if (root == null) {
-            root = "Documents/PixelLab/";
-        }
-
-        FileHandle fileHandle = Gdx.files.external(root + projectName + "/levels/");
-        if (!fileHandle.exists()) {
-            fileHandle.mkdirs();
-        }
-
-        return fileHandle;
-
-//        switch (type){
-//            case Desktop:
-//                FileHandle fileHandle =  Gdx.files.local("PixelLab/");
-//                if(!fileHandle.exists()){
-//                    fileHandle.mkdirs();
-//                }
-//                return fileHandle;
-//            case Android:
-//                FileHandle fileHandle =  Gdx.files.local("PixelLab/");
-//                if(!fileHandle.exists()){
-//                    fileHandle.mkdirs();
-//                }
-//                return fileHandle;
-//        }
-//        return Gdx.files
-    }
-
 }
