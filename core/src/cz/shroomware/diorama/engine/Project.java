@@ -29,6 +29,8 @@ public class Project {
         fileHandle.mkdirs();
         FileHandle file = fileHandle.child(PROJECT_FILE);
         file.writeString(name, false);
+
+        getLevelDirHandle().mkdirs();
     }
 
     public String getName() {
