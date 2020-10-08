@@ -64,6 +64,14 @@ public class Editor {
         }
     }
 
+    public void resetXOffset() {
+        snapOffset.x = 0;
+    }
+
+    public void resetYOffset() {
+        snapOffset.y = 0;
+    }
+
     public History getHistory() {
         return history;
     }

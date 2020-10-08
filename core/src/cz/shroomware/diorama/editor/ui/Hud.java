@@ -136,22 +136,6 @@ public class Hud extends Stage {
         float size = 18;
         float iconSize = 20;
         float borderWidth = 12;
-        plusButtonX = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("plus"));
-        plusButtonX.setBorderWidth(borderWidth);
-        plusButtonX.setSize(size, size);
-        plusButtonX.setIconSize(iconSize);
-        plusButtonX.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                editor.incrementXOffset();
-            }
-        });
-        snapTable.add(plusButtonX);
-
-        xOffsetLabel = new BackgroundLabel(resources.getSkin(),
-                resources.getDfShader(),
-                Integer.toString((int) (editor.getSnapOffsetX() / (1 / Utils.PIXELS_PER_METER))));
-        snapTable.add(xOffsetLabel).pad(30).padTop(20).padBottom(20);
 
         minusButtonX = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("minus"));
         minusButtonX.setBorderWidth(borderWidth);
@@ -165,24 +149,30 @@ public class Hud extends Stage {
         });
         snapTable.add(minusButtonX);
 
-        snapTable.row();
-
-        plusButtonY = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("plus"));
-        plusButtonY.setBorderWidth(borderWidth);
-        plusButtonY.setSize(size, size);
-        plusButtonY.setIconSize(iconSize);
-        plusButtonY.addListener(new ClickListener() {
+        xOffsetLabel = new BackgroundLabel(resources.getSkin(),
+                resources.getDfShader(),
+                Integer.toString((int) (editor.getSnapOffsetX() / (1 / Utils.PIXELS_PER_METER))));
+        xOffsetLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                editor.incrementYOffset();
+                editor.resetXOffset();
             }
         });
-        snapTable.add(plusButtonY);
+        snapTable.add(xOffsetLabel).pad(30).padTop(20).padBottom(20);
 
-        yOffsetLabel = new BackgroundLabel(resources.getSkin(),
-                resources.getDfShader(),
-                Integer.toString((int) (editor.getSnapOffsetY() / (1 / Utils.PIXELS_PER_METER))));
-        snapTable.add(yOffsetLabel).pad(30);
+        plusButtonX = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("plus"));
+        plusButtonX.setBorderWidth(borderWidth);
+        plusButtonX.setSize(size, size);
+        plusButtonX.setIconSize(iconSize);
+        plusButtonX.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editor.incrementXOffset();
+            }
+        });
+        snapTable.add(plusButtonX);
+
+        snapTable.row();
 
         minusButtonY = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("minus"));
         minusButtonY.setBorderWidth(borderWidth);
@@ -195,6 +185,29 @@ public class Hud extends Stage {
             }
         });
         snapTable.add(minusButtonY);
+
+        yOffsetLabel = new BackgroundLabel(resources.getSkin(),
+                resources.getDfShader(),
+                Integer.toString((int) (editor.getSnapOffsetY() / (1 / Utils.PIXELS_PER_METER))));
+        yOffsetLabel.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editor.resetYOffset();
+            }
+        });
+        snapTable.add(yOffsetLabel).pad(30);
+
+        plusButtonY = new IconButton(resources.getSkin(), resources.getSkin().getDrawable("plus"));
+        plusButtonY.setBorderWidth(borderWidth);
+        plusButtonY.setSize(size, size);
+        plusButtonY.setIconSize(iconSize);
+        plusButtonY.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editor.incrementYOffset();
+            }
+        });
+        snapTable.add(plusButtonY);
 
 //        colorIndicator = new Image(game.getEditorResources().getUiAtlas().findRegion("white")) {
 //            @Override
