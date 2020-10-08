@@ -321,6 +321,19 @@ public abstract class GameObject implements Identifiable {
         return getPosition().y;
     }
 
+    public float getZ() {
+        return getPosition().z;
+    }
+
+    public void setZ(float z) {
+        decal.setZ(z);
+    }
+
+    public void rotateY(float angle) {
+        decal.rotateY(angle);
+    }
+
+
 //    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
 //        // round to texels
 //        // TODO MOVE OUTSIDE

@@ -26,8 +26,8 @@ public class Tree extends GameObject {
 
     protected ParticleEmitter createParticleEmitter(Vector3 position, final TreePrototype prototype) {
         float depth = 1f;
-        ParticleEmitter particleEmitter = new ParticleEmitter(new Vector3(position.x - getWidth() / 2, position.y - depth / 2, position.z - getHeight() / 3), new
-                Vector3(getWidth(), depth, getHeight() / 3f), 0.2f) {
+        ParticleEmitter particleEmitter = new ParticleEmitter(position,
+                new Vector3(getWidth(), depth, getHeight() / 3f), 0.2f) {
             @Override
             protected Particle createParticle(Vector3 position) {
                 FallingParticle particle = new FallingParticle(position,
@@ -51,9 +51,9 @@ public class Tree extends GameObject {
     }
 
     @Override
-    public void setPosition(float x, float y) {
-        super.setPosition(x, y);
-        //TODO: set particle emitter position
+    protected void updatePosition(float originX, float originY) {
+        super.updatePosition(originX, originY);
+        particleEmitter.setPosition(originX, originY);
     }
 
     @Override

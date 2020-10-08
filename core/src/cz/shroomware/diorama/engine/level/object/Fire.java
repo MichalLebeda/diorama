@@ -28,8 +28,7 @@ public class Fire extends GameObject {
         endAnim = prototype.getEndAnim();
         fireAnim = prototype.getFireAnim();
 
-        particleEmitter = new ParticleEmitter(new Vector3(position.x - getWidth() / 2,
-                position.y, position.z - getHeight() / 2),
+        particleEmitter = new ParticleEmitter(position,
                 new Vector3(getWidth(), 0.1f, getHeight()),
                 10f) {
             @Override
@@ -130,6 +129,13 @@ public class Fire extends GameObject {
         }
 
         particleEmitter.update(delta);
+    }
+
+    @Override
+    protected void updatePosition(float originX, float originY) {
+        super.updatePosition(originX, originY);
+
+        particleEmitter.setPosition(originX, originY);
     }
 
     @Override

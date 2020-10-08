@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Date;
 
+import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.Cursor;
 import cz.shroomware.diorama.editor.Editor;
 import cz.shroomware.diorama.editor.EditorEngineGame;
@@ -312,7 +313,11 @@ public class LevelEditorScreen extends BaseLevelScreen {
 //                }
 //                return true;
             case Input.Keys.Z:
-                cursor.rotateY(90);
+                if (editor.isMovingObject()) {
+                    editor.getMovedObject().rotateY(90);
+                } else {
+                    cursor.rotateY(90);
+                }
                 return true;
             case Input.Keys.TAB:
                 if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
@@ -579,15 +584,24 @@ public class LevelEditorScreen extends BaseLevelScreen {
             return false;
         }
 
-        if (editor.isMode(Editor.Mode.ITEM) && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            if (amount > 0) {
-                cursor.decrementZOffset();
-            } else {
-                cursor.incrementZOffset();
-            }
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            if (editor.isMode(Editor.Mode.ITEM)) {
+                if (amount > 0) {
+                    cursor.decrementZOffset();
+                } else {
+                    cursor.incrementZOffset();
+                }
 
-            cursor.updateZ();
-            return true;
+                cursor.updateZ();
+                return true;
+            } else if (editor.isMode(Editor.Mode.ITEM_MOVE) && editor.isMovingObject()) {
+                if (amount > 0) {
+                    editorTool.transformObjectZ(1f / Utils.PIXELS_PER_METER, editor.getMovedObject());
+                } else {
+                    editorTool.transformObjectZ(-1f / Utils.PIXELS_PER_METER, editor.getMovedObject());
+                }
+                return true;
+            }
         }
 
         int screenX = Gdx.input.getX();

@@ -71,8 +71,8 @@ public abstract class ParticleEmitter {
     }
 
     protected void spawn() {
-        Vector3 position = new Vector3(MathUtils.randomTriangular(x, x + width),
-                MathUtils.randomTriangular(y, y + depth),
+        Vector3 position = new Vector3(MathUtils.randomTriangular(x - width / 2, x + width / 2),
+                MathUtils.randomTriangular(y - delta / 2, y + depth / 2),
                 MathUtils.randomTriangular(z, z + height)
         );
         Particle particle = createParticle(position);
@@ -84,6 +84,11 @@ public abstract class ParticleEmitter {
         while (particleLimitExceeded()) {
             particleArray.removeIndex(0);
         }
+    }
+
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
     }
 
     public void setEmission(boolean emission) {

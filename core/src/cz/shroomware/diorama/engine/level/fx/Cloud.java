@@ -25,8 +25,8 @@ public class Cloud {
         decal.setHeight(((float) decal.getTextureRegion().getRegionHeight()) / Utils.PIXELS_PER_METER);
         origPos = decal.getPosition().cpy();
 
-        particleEmitter = new ParticleEmitter(new Vector3(position.x - decal.getWidth() / 2, position.y, position.z - decal.getHeight() / 3), new
-                Vector3(decal.getWidth(), 0, decal.getHeight() / 3f), 4.2f) {
+        particleEmitter = new ParticleEmitter(position,
+                new Vector3(decal.getWidth(), 0, decal.getHeight() / 3f), 4.2f) {
             @Override
             protected Particle createParticle(Vector3 position) {
                 FallingParticle particle = new FallingParticle(position,

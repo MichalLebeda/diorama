@@ -156,10 +156,6 @@ public class Cursor extends AtlasRegionGameObject {
         return decal.getPosition();
     }
 
-    public void rotateY(float angle) {
-        decal.rotateY(angle);
-    }
-
     public void updateZ() {
         decal.setZ(getHeight() / 2 + zOffset);
     }

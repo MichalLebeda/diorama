@@ -149,6 +149,10 @@ public class EditorTool {
         gameObject.setPosition(gameObject.getX() + x, gameObject.getY() + y);
     }
 
+    public void transformObjectZ(float z, GameObject gameObject) {
+        gameObject.setZ(gameObject.getZ() + z);
+    }
+
     public void moveObject(float x, float y, GameObject gameObject) {
         if (gameObject.getPrototype().isAttached()) {
             x = ((int) x) + 0.5f;
