@@ -2,14 +2,15 @@ package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.engine.HexRegion;
+import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.PillarPrototype;
@@ -18,7 +19,7 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class Pillar extends GameObject {
-    Decal leftDecal, rightDecal, frontDecal, backDecal;
+    UpdatedDecal leftDecal, rightDecal, frontDecal, backDecal;
     TextureRegion region;
     TextureRegion regionConnectedLeft;
     TextureRegion regionConnectedRight;
@@ -37,24 +38,24 @@ public class Pillar extends GameObject {
         decal.setRotationX(0);
         decal.setZ(prototype.getLeftRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        leftDecal = Decal.newDecal(prototype.getLeftRegion(), true);
+        leftDecal = UpdatedDecal.newDecal(prototype.getLeftRegion(), true);
         leftDecal.rotateX(90);
         leftDecal.rotateY(90);
         leftDecal.setWidth(leftDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         leftDecal.setHeight(leftDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        rightDecal = Decal.newDecal(prototype.getRightRegion(), true);
+        rightDecal = UpdatedDecal.newDecal(prototype.getRightRegion(), true);
         rightDecal.rotateX(90);
         rightDecal.rotateY(90);
         rightDecal.setWidth(rightDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         rightDecal.setHeight(rightDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        frontDecal = Decal.newDecal(prototype.getFrontRegion(), true);
+        frontDecal = UpdatedDecal.newDecal(prototype.getFrontRegion(), true);
         frontDecal.rotateX(90);
         frontDecal.setWidth(frontDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         frontDecal.setHeight(frontDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        backDecal = Decal.newDecal(prototype.getBackRegion(), true);
+        backDecal = UpdatedDecal.newDecal(prototype.getBackRegion(), true);
         backDecal.rotateX(90);
         backDecal.setWidth(backDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         backDecal.setHeight(backDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
@@ -100,22 +101,45 @@ public class Pillar extends GameObject {
         Vector3 min = new Vector3();
         Vector3 max = new Vector3();
         float[] vertices = frontDecal.getVertices();
-        min.set(vertices[Decal.X1],
-                vertices[Decal.Y1],
-                vertices[Decal.Z1]);
-        max.set(vertices[Decal.X4],
-                vertices[Decal.Y4] + decal.getHeight(),
-                vertices[Decal.Z4]);
+        min.set(vertices[UpdatedDecal.X1],
+                vertices[UpdatedDecal.Y1],
+                vertices[UpdatedDecal.Z1]);
+        max.set(vertices[UpdatedDecal.X4],
+                vertices[UpdatedDecal.Y4] + decal.getHeight(),
+                vertices[UpdatedDecal.Z4]);
         boundingBox.set(min, max);
     }
 
     @Override
-    public boolean isPixelOpaque(Vector3 intersection) {
-        return isPixelOpaque(intersection, decal) ||
-                isPixelOpaque(intersection, leftDecal) ||
-                isPixelOpaque(intersection, rightDecal) ||
-                isPixelOpaque(intersection, frontDecal) ||
-                isPixelOpaque(intersection, backDecal);
+    public boolean intersectsWithOpaque(Ray ray, Vector3 boundsIntersection) {
+        Vector3 intersection = new Vector3();
+
+        findIntersectionRayDecalPlane(ray, decal, intersection);
+        if (isPixelOpaque(intersection, decal)) {
+            return true;
+        }
+
+        findIntersectionRayDecalPlane(ray, leftDecal, intersection);
+        if (isPixelOpaque(intersection, leftDecal)) {
+            return true;
+        }
+
+        findIntersectionRayDecalPlane(ray, rightDecal, intersection);
+        if (isPixelOpaque(intersection, rightDecal)) {
+            return true;
+        }
+
+        findIntersectionRayDecalPlane(ray, frontDecal, intersection);
+        if (isPixelOpaque(intersection, frontDecal)) {
+            return true;
+        }
+
+        findIntersectionRayDecalPlane(ray, backDecal, intersection);
+        if (isPixelOpaque(intersection, backDecal)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override

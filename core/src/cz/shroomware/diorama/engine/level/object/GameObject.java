@@ -7,20 +7,22 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.Identifiable;
 import cz.shroomware.diorama.engine.Identifier;
+import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
@@ -31,7 +33,7 @@ import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public abstract class GameObject implements Identifiable {
     protected Prototype prototype;
-    protected Decal decal;
+    protected UpdatedDecal decal;
     protected Sprite shadowSprite;
     protected Tile tileAttachedTo = null;
     protected LogicComponent logicComponent = null;
@@ -43,7 +45,7 @@ public abstract class GameObject implements Identifiable {
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
         this.prototype = prototype;
 
-        decal = Decal.newDecal(region, true);
+        decal = UpdatedDecal.newDecal(region, true);
         decal.rotateX(90);
         decal.setPosition(position);
         decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
@@ -70,12 +72,12 @@ public abstract class GameObject implements Identifiable {
         Vector3 min = new Vector3();
         Vector3 max = new Vector3();
         float[] vertices = decal.getVertices();
-        min.set(vertices[Decal.X1],
-                vertices[Decal.Y1],
-                vertices[Decal.Z1]);
-        max.set(vertices[Decal.X4],
-                vertices[Decal.Y4],
-                vertices[Decal.Z4]);
+        min.set(vertices[UpdatedDecal.X1],
+                vertices[UpdatedDecal.Y1],
+                vertices[UpdatedDecal.Z1]);
+        max.set(vertices[UpdatedDecal.X4],
+                vertices[UpdatedDecal.Y4],
+                vertices[UpdatedDecal.Z4]);
         boundingBox.set(min, max);
     }
 
@@ -149,31 +151,47 @@ public abstract class GameObject implements Identifiable {
         decal.setRotation(quaternion);
     }
 
-    //TODO: IF DECAL WAS ROTATED BY NON MULTIPLE OF 90, PASSED POSITION WILL FAIL COS BOUNDS WILL BE NON PLANAR
-    public boolean isPixelOpaque(Vector3 intersection, Decal decal) {
-//        decal.update();
-        float[] vertices = decal.getVertices();
-        Vector3 vecA = new Vector3(vertices[Decal.X2] - vertices[Decal.X1],
-                vertices[Decal.Y2] - vertices[Decal.Y1],
-                vertices[Decal.Z2] - vertices[Decal.Z1]);
-        Vector3 vecB = new Vector3(vertices[Decal.X3] - vertices[Decal.X1],
-                vertices[Decal.Y3] - vertices[Decal.Y1],
-                vertices[Decal.Z3] - vertices[Decal.Z1]);
-        Vector3 vecNormal = vecA.cpy().crs(vecB);
+    public boolean findIntersectionRayDecalPlane(Ray ray, UpdatedDecal testDecal, Vector3 intersection) {
+        // Bottom right in decal coordinates relative to origin
+        Vector3 vecA = new Vector3(testDecal.getWidth(), 0, 0);
+        // Top left in decal coordinates relative to origin
+        Vector3 vecB = new Vector3(0, testDecal.getHeight(), 0);
 
-        Plane plane = new Plane(vecNormal, decal.getPosition());
-        Gdx.app.error("GameObject", "dist:" + plane.distance(intersection));
-        if (plane.distance(intersection) > 0.001f) {
-            return false;
-        }
+        // Apply decal rotation to our vectors
+        vecA.rotate(Vector3.X, testDecal.getRotation().getAngleAround(Vector3.X));
+        vecA.rotate(Vector3.Y, testDecal.getRotation().getAngleAround(Vector3.Y));
+        vecA.rotate(Vector3.Z, testDecal.getRotation().getAngleAround(Vector3.Z));
+
+        vecB.rotate(Vector3.X, testDecal.getRotation().getAngleAround(Vector3.X));
+        vecB.rotate(Vector3.Y, testDecal.getRotation().getAngleAround(Vector3.Y));
+        vecB.rotate(Vector3.Z, testDecal.getRotation().getAngleAround(Vector3.Z));
+
+        // Calculate normal
+        Vector3 vecNormal = vecA.crs(vecB);
+
+        Plane plane = new Plane(vecNormal, testDecal.getPosition());
+        return Intersector.intersectRayPlane(ray, plane, intersection);
+    }
+
+    public boolean isPixelOpaque(Vector3 intersection, UpdatedDecal decal) {
+        decal.update();
+
+        float[] vertices = decal.getVertices();
+        Vector3 vecA = new Vector3(vertices[UpdatedDecal.X2] - vertices[UpdatedDecal.X1],
+                vertices[UpdatedDecal.Y2] - vertices[UpdatedDecal.Y1],
+                vertices[UpdatedDecal.Z2] - vertices[UpdatedDecal.Z1]);
+        Vector3 vecB = new Vector3(vertices[UpdatedDecal.X3] - vertices[UpdatedDecal.X1],
+                vertices[UpdatedDecal.Y3] - vertices[UpdatedDecal.Y1],
+                vertices[UpdatedDecal.Z3] - vertices[UpdatedDecal.Z1]);
+        Vector3 vecC = vecA.cpy().crs(vecB);
 
         Matrix3 matrix3 = new Matrix3(
                 new float[]{vecA.x, vecA.y, vecA.z,
                         vecB.x, vecB.y, vecB.z,
-                        vecNormal.x, vecNormal.y, vecNormal.z});
+                        vecC.x, vecC.y, vecC.z});
         matrix3.inv();
 
-        Vector3 origin = new Vector3(vertices[Decal.X1], vertices[Decal.Y1], vertices[Decal.Z1]);
+        Vector3 origin = new Vector3(vertices[UpdatedDecal.X1], vertices[UpdatedDecal.Y1], vertices[UpdatedDecal.Z1]);
         intersection.add(origin.scl(-1));
         intersection.mul(matrix3);
 
@@ -184,6 +202,22 @@ public abstract class GameObject implements Identifiable {
         }
         Pixmap pixmap = texture.getTextureData().consumePixmap();
 
+        if (intersection.x > 1) {
+            return false;
+        }
+
+        if (intersection.x < 0) {
+            return false;
+        }
+
+        if (intersection.y > 1) {
+            return false;
+        }
+
+        if (intersection.y < 0) {
+            return false;
+        }
+
         int color = pixmap.getPixel((int) (region.getRegionX() + intersection.x * region.getRegionWidth()),
                 (int) (region.getRegionY() + intersection.y * region.getRegionHeight()));
 
@@ -191,8 +225,8 @@ public abstract class GameObject implements Identifiable {
         return ((color & 0x000000ff)) / 255f > 0.5f;
     }
 
-    public boolean isPixelOpaque(Vector3 intersection) {
-        return isPixelOpaque(intersection, decal);
+    public boolean intersectsWithOpaque(Ray ray, Vector3 boundsIntersection) {
+        return isPixelOpaque(boundsIntersection, decal);
     }
 
     public String getName() {
@@ -261,17 +295,16 @@ public abstract class GameObject implements Identifiable {
         }
     }
 
+    //TODO: fix, looks bad
     public Vector3 getNormalVector() {
-        Vector3 min = new Vector3();
-        Vector3 max = new Vector3();
         float[] vertices = decal.getVertices();
-        min.set(vertices[Decal.X1],
-                vertices[Decal.Y1],
-                vertices[Decal.Z1]);
-        max.set(vertices[Decal.X4],
-                vertices[Decal.Y4],
-                vertices[Decal.Z4]);
-        return min.crs(max);
+        Vector3 vecA = new Vector3(vertices[UpdatedDecal.X2] - vertices[UpdatedDecal.X1],
+                vertices[UpdatedDecal.Y2] - vertices[UpdatedDecal.Y1],
+                vertices[UpdatedDecal.Z2] - vertices[UpdatedDecal.Z1]);
+        Vector3 vecB = new Vector3(vertices[UpdatedDecal.X3] - vertices[UpdatedDecal.X1],
+                vertices[UpdatedDecal.Y3] - vertices[UpdatedDecal.Y1],
+                vertices[UpdatedDecal.Z3] - vertices[UpdatedDecal.Z1]);
+        return vecA.cpy().crs(vecB);
     }
 
     @Override

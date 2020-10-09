@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -87,20 +86,17 @@ public class GameObjects {
         float minDist = Float.MAX_VALUE;
         GameObject candidate = null;
 
-        Plane cameraPlane = new Plane(camera.direction, camera.position);
         // Test ray against every game object we have
         for (GameObject gameObject : gameObjects) {
             gameObject.sizeBoundingBox(boundingBox);
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                if (cameraPlane.testPoint(intersection) == Plane.PlaneSide.Front) {
-                    if (gameObject.isPixelOpaque(intersection.cpy())) {
+                    if (gameObject.intersectsWithOpaque(ray, intersection.cpy())) {
                         float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
                         if (currentObjectDist < minDist) {
                             minDist = currentObjectDist;
                             candidate = gameObject;
                         }
                     }
-                }
             }
         }
 

@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.DoorPrototype;
@@ -18,7 +19,7 @@ public class Door extends GameObject {
     private static final float ANIM_DURATION = 1;
     private static final float OPEN_RELATIVE_ANGLE = 84;
     protected boolean open = false;
-    protected Decal movingPart;
+    protected UpdatedDecal movingPart;
     float targetRelativeAngle;
     float startRelativeAngle;
     float relativeAngle = 0;
@@ -32,7 +33,7 @@ public class Door extends GameObject {
                 BoxFactory boxFactory) {
         super(position, prototype.getDoorPostRegion(), prototype);
 
-        movingPart = Decal.newDecal(prototype.getDoorRegion(), true);
+        movingPart = UpdatedDecal.newDecal(prototype.getDoorRegion(), true);
         movingPart.setPosition(position);
         movingPart.setRotation(decal.getRotation());
         movingPart.setWidth(prototype.getDoorRegion().getRegionWidth() / PIXELS_PER_METER);

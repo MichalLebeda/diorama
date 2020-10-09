@@ -2,14 +2,15 @@ package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.engine.HexRegion;
+import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
@@ -18,8 +19,8 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class Wall extends GameObject {
-    Decal leftDecal, rightDecal, frontDecal, backDecal;
-    boolean back, right, front, left;
+    UpdatedDecal leftDecal, rightDecal, frontDecal, backDecal;
+    boolean neighborBack, neighborRight, neighborFront, neighborLeft;
     TextureRegion region;
     TextureRegion regionConnectedLeft;
     TextureRegion regionConnectedRight;
@@ -37,24 +38,24 @@ public class Wall extends GameObject {
 
         decal.setRotationX(0);
 
-        leftDecal = Decal.newDecal(prototype.getLeftRegion(), true);
+        leftDecal = UpdatedDecal.newDecal(prototype.getLeftRegion(), true);
         leftDecal.rotateX(90);
         leftDecal.rotateY(90);
         leftDecal.setWidth(leftDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         leftDecal.setHeight(leftDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        rightDecal = Decal.newDecal(prototype.getRightRegion(), true);
+        rightDecal = UpdatedDecal.newDecal(prototype.getRightRegion(), true);
         rightDecal.rotateX(90);
         rightDecal.rotateY(90);
         rightDecal.setWidth(rightDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         rightDecal.setHeight(rightDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        frontDecal = Decal.newDecal(prototype.getFrontRegion(), true);
+        frontDecal = UpdatedDecal.newDecal(prototype.getFrontRegion(), true);
         frontDecal.rotateX(90);
         frontDecal.setWidth(frontDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         frontDecal.setHeight(frontDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        backDecal = Decal.newDecal(prototype.getBackRegion(), true);
+        backDecal = UpdatedDecal.newDecal(prototype.getBackRegion(), true);
         backDecal.rotateX(90);
         backDecal.setWidth(backDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         backDecal.setHeight(backDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
@@ -92,6 +93,12 @@ public class Wall extends GameObject {
 
     @Override
     public void sizeBoundingBox(BoundingBox boundingBox) {
+        decal.setColor(Color.WHITE);
+        leftDecal.setColor(Color.WHITE);
+        rightDecal.setColor(Color.WHITE);
+        frontDecal.setColor(Color.WHITE);
+        backDecal.setColor(Color.WHITE);
+
         Vector3 min = getPosition().cpy();
         Vector3 max = getPosition().cpy();
 
@@ -107,27 +114,58 @@ public class Wall extends GameObject {
     }
 
     @Override
-    public boolean isPixelOpaque(Vector3 intersection) {
-        return isPixelOpaque(intersection, decal) ||
-                (!left && isPixelOpaque(intersection, leftDecal)) ||
-                (!right && isPixelOpaque(intersection, rightDecal)) ||
-                (!front && isPixelOpaque(intersection, frontDecal)) ||
-                (!back && isPixelOpaque(intersection, backDecal));
+    public boolean intersectsWithOpaque(Ray ray, Vector3 boundsIntersection) {
+        Vector3 intersection = new Vector3();
+
+        findIntersectionRayDecalPlane(ray, decal, intersection);
+        if (isPixelOpaque(intersection, decal)) {
+            return true;
+        }
+
+        if (!neighborLeft) {
+            findIntersectionRayDecalPlane(ray, leftDecal, intersection);
+            if (isPixelOpaque(intersection, leftDecal)) {
+                return true;
+            }
+        }
+
+        if (!neighborRight) {
+            findIntersectionRayDecalPlane(ray, rightDecal, intersection);
+            if (isPixelOpaque(intersection, rightDecal)) {
+                return true;
+            }
+        }
+
+        if (!neighborFront) {
+            findIntersectionRayDecalPlane(ray, frontDecal, intersection);
+            if (isPixelOpaque(intersection, frontDecal)) {
+                return true;
+            }
+        }
+
+        if (!neighborBack) {
+            findIntersectionRayDecalPlane(ray, backDecal, intersection);
+            if (isPixelOpaque(intersection, backDecal)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
     public void drawDecal(MinimalisticDecalBatch decalBatch) {
         super.drawDecal(decalBatch);
-        if (!left) {
+        if (!neighborLeft) {
             decalBatch.add(leftDecal);
         }
-        if (!right) {
+        if (!neighborRight) {
             decalBatch.add(rightDecal);
         }
-        if (!front) {
+        if (!neighborFront) {
             decalBatch.add(frontDecal);
         }
-        if (!back) {
+        if (!neighborBack) {
             decalBatch.add(backDecal);
         }
     }
@@ -183,15 +221,15 @@ public class Wall extends GameObject {
         }
 
         tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
-        back = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
+        neighborBack = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
         tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
-        right = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
+        neighborRight = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
         tile = floor.getTileByOffset(tileAttachedTo, 0, -1);
-        front = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
+        neighborFront = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
         tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
-        left = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
+        neighborLeft = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
 
-        decal.setTextureRegion(topRegions.get(back, right, front, left));
+        decal.setTextureRegion(topRegions.get(neighborBack, neighborRight, neighborFront, neighborLeft));
     }
 
     @Override
