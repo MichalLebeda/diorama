@@ -45,7 +45,7 @@ public class Door extends GameObject {
         logicComponent.addHandler(new Handler("open") {
             @Override
             public void handle() {
-                // Open door in oposite direction
+                // Open door in opposite direction
                 open(new Vector3(getPosition().cpy().add(0, -1, 0)));
             }
         });
