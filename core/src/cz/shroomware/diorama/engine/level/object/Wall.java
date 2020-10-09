@@ -19,7 +19,7 @@ import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class Wall extends GameObject {
     Decal leftDecal, rightDecal, frontDecal, backDecal;
-    boolean up, right, down, left;
+    boolean back, right, front, left;
     TextureRegion region;
     TextureRegion regionConnectedLeft;
     TextureRegion regionConnectedRight;
@@ -109,10 +109,10 @@ public class Wall extends GameObject {
     @Override
     public boolean isPixelOpaque(Vector3 intersection) {
         return isPixelOpaque(intersection, decal) ||
-                isPixelOpaque(intersection, leftDecal) ||
-                isPixelOpaque(intersection, rightDecal) ||
-                isPixelOpaque(intersection, frontDecal) ||
-                isPixelOpaque(intersection, backDecal);
+                (!left && isPixelOpaque(intersection, leftDecal)) ||
+                (!right && isPixelOpaque(intersection, rightDecal)) ||
+                (!front && isPixelOpaque(intersection, frontDecal)) ||
+                (!back && isPixelOpaque(intersection, backDecal));
     }
 
     @Override
@@ -124,10 +124,10 @@ public class Wall extends GameObject {
         if (!right) {
             decalBatch.add(rightDecal);
         }
-        if (!down) {
+        if (!front) {
             decalBatch.add(frontDecal);
         }
-        if (!up) {
+        if (!back) {
             decalBatch.add(backDecal);
         }
     }
@@ -183,15 +183,15 @@ public class Wall extends GameObject {
         }
 
         tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
-        up = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
+        back = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
         tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
         right = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
         tile = floor.getTileByOffset(tileAttachedTo, 0, -1);
-        down = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
+        front = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
         tile = floor.getTileByOffset(tileAttachedTo, -1, 0);
         left = (tile != null && tile.hasAttachedObjectOfClass(Wall.class));
 
-        decal.setTextureRegion(topRegions.get(up, right, down, left));
+        decal.setTextureRegion(topRegions.get(back, right, front, left));
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -158,12 +159,18 @@ public abstract class GameObject implements Identifiable {
         Vector3 vecB = new Vector3(vertices[Decal.X3] - vertices[Decal.X1],
                 vertices[Decal.Y3] - vertices[Decal.Y1],
                 vertices[Decal.Z3] - vertices[Decal.Z1]);
-        Vector3 vecC = vecA.cpy().crs(vecB);
+        Vector3 vecNormal = vecA.cpy().crs(vecB);
+
+        Plane plane = new Plane(vecNormal, decal.getPosition());
+        Gdx.app.error("GameObject", "dist:" + plane.distance(intersection));
+        if (plane.distance(intersection) > 0.001f) {
+            return false;
+        }
 
         Matrix3 matrix3 = new Matrix3(
                 new float[]{vecA.x, vecA.y, vecA.z,
                         vecB.x, vecB.y, vecB.z,
-                        vecC.x, vecC.y, vecC.z});
+                        vecNormal.x, vecNormal.y, vecNormal.z});
         matrix3.inv();
 
         Vector3 origin = new Vector3(vertices[Decal.X1], vertices[Decal.Y1], vertices[Decal.Z1]);

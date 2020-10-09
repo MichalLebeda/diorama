@@ -564,7 +564,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
     public GameObject findDecalByScreenCoordinates(int screenX, int screenY) {
         Ray ray = camera.getPickRay(screenX, screenY);
 
-        return level.findIntersectingWithRay(ray, camera.position);
+        return level.findIntersectingWithRay(ray, camera);
     }
 
     @Override

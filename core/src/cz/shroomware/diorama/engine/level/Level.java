@@ -2,12 +2,12 @@ package cz.shroomware.diorama.engine.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -298,8 +298,8 @@ public class Level {
         return gameObjects.isDirty() || floor.isDirty() || logic.isDirty();
     }
 
-    public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
-        return gameObjects.findIntersectingWithRay(ray, cameraPos);
+    public GameObject findIntersectingWithRay(Ray ray, Camera camera) {
+        return gameObjects.findIntersectingWithRay(ray, camera);
     }
 
     public Floor getFloor() {

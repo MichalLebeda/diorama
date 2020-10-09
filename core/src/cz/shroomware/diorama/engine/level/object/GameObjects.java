@@ -1,9 +1,11 @@
 package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -78,22 +80,25 @@ public class GameObjects {
         }
     }
 
-    public GameObject findIntersectingWithRay(Ray ray, Vector3 cameraPos) {
+    public GameObject findIntersectingWithRay(Ray ray, Camera camera) {
         Vector3 intersection = new Vector3();
         BoundingBox boundingBox = new BoundingBox();
 
         float minDist = Float.MAX_VALUE;
         GameObject candidate = null;
 
+        Plane cameraPlane = new Plane(camera.direction, camera.position);
         // Test ray against every game object we have
         for (GameObject gameObject : gameObjects) {
             gameObject.sizeBoundingBox(boundingBox);
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                if (gameObject.isPixelOpaque(intersection.cpy())) {
-                    float currentObjectDist = cameraPos.cpy().add(intersection.cpy().scl(-1)).len();
-                    if (currentObjectDist < minDist) {
-                        minDist = currentObjectDist;
-                        candidate = gameObject;
+                if (cameraPlane.testPoint(intersection) == Plane.PlaneSide.Front) {
+                    if (gameObject.isPixelOpaque(intersection.cpy())) {
+                        float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
+                        if (currentObjectDist < minDist) {
+                            minDist = currentObjectDist;
+                            candidate = gameObject;
+                        }
                     }
                 }
             }
