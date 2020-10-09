@@ -89,7 +89,7 @@ public class ProjectSelectionScreen implements Screen {
                     setCurrentFileHandle(fileHandle);
                 }
             };
-            item.setText(currentDir.path());
+            item.setText(currentDir.path() + "/..");
             verticalGroup.addActor(item);
         }
 
