@@ -12,11 +12,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
- * Created by michal on 29.12.17.
+ * Decal batch that is simpler to use
  */
-
-//NO SORTING AND SHIT
-
 public class MinimalisticDecalBatch implements Disposable {
     private static final int DEFAULT_SIZE = 1000;
     public ShaderProgram shaderProgram;
