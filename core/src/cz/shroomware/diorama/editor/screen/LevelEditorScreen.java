@@ -315,7 +315,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 }
                 return true;
             case Input.Keys.TAB:
-                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     editor.setPrevMode();
                 } else {
                     editor.setNextMode();

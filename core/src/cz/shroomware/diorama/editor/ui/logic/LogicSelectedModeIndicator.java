@@ -23,7 +23,7 @@ public class LogicSelectedModeIndicator extends IconButton {
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     logicEditor.setPrevMode();
                 } else {
                     logicEditor.setNextMode();
