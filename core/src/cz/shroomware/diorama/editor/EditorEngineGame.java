@@ -15,9 +15,10 @@ import cz.shroomware.diorama.editor.screen.LogicEditorScreen;
 import cz.shroomware.diorama.editor.screen.ProjectSelectionScreen;
 import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.Project;
-import cz.shroomware.diorama.engine.level.Prototypes;
+import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.engine.screen.PlayLevelScreen;
+import cz.shroomware.diorama.engine.level.logic.component.LevelSwitcher;
+import cz.shroomware.diorama.engine.screen.TestLevelScreen;
 
 public class EditorEngineGame extends EngineGame {
     //TODO don't use editorScreen variable
@@ -28,6 +29,7 @@ public class EditorEngineGame extends EngineGame {
     EditorResources resources;
     ProjectSelectionScreen projectSelectionScreen;
     Preferences preferences;
+    Project project; //TODO move to parent?
 
     @Override
     public void create() {
@@ -56,8 +58,7 @@ public class EditorEngineGame extends EngineGame {
 
         levelSelectionScreen = new LevelSelectionScreen(this);
 
-        projectSelectionScreen = new ProjectSelectionScreen(this,
-                Gdx.files.external(""));
+        projectSelectionScreen = new ProjectSelectionScreen(this, Gdx.files.external(""));
 
         if (preferences.contains(LAST_PROJECT_FILE)) {
             Project project = new Project(Gdx.files.external(preferences.getString(LAST_PROJECT_FILE)));
@@ -109,12 +110,14 @@ public class EditorEngineGame extends EngineGame {
     }
 
     public void openEditor(Project project, String filename) {
-        editorScreen = new LevelEditorScreen(this, project, filename);
+        Level level = new Level(project.getLevelFileHandle(filename), this);
+        editorScreen = new LevelEditorScreen(this, level);
         setScreen(editorScreen);
     }
 
     public void openEditorWithNewLevel(Project project, String filename, int width, int height) {
-        editorScreen = new LevelEditorScreen(this, project, filename, width, height);
+        Level level = new Level(project.getLevelFileHandle(filename), this, width, height);
+        editorScreen = new LevelEditorScreen(this, level);
         setScreen(editorScreen);
     }
 
@@ -130,22 +133,31 @@ public class EditorEngineGame extends EngineGame {
     }
 
     public void openLevelSelection(Project project) {
-        Gdx.app.log("l", project.getFileHandle().path());
+        this.project = project;
+        levelSwitcher = new LevelSwitcher(this, project.getLevels());
+
         preferences.putString(LAST_PROJECT_FILE, project.getFileHandle().path());
         preferences.flush();
+
         levelSelectionScreen.setProject(project);
         setScreen(levelSelectionScreen);
     }
 
-    public void openGame(FileHandle fileHandle, Prototypes prototypes) {
-        setScreen(new PlayLevelScreen(this, prototypes, fileHandle));
-    }
-
-    public void openLogicEditor(FileHandle levelName, Logic logic) {
-        setScreen(new LogicEditorScreen(this, levelName, logic));
+    public void openLogicEditor(FileHandle fileHandle, Logic logic) {
+        setScreen(new LogicEditorScreen(this, fileHandle, logic));
     }
 
     public void openSelection() {
         setScreen(levelSelectionScreen);
+    }
+
+    public void openLevel(FileHandle fileHandle) {
+        setScreen(createTestLevelScreen(fileHandle));
+    }
+
+    protected TestLevelScreen createTestLevelScreen(FileHandle fileHandle) {
+        Level level = new Level(fileHandle, this);
+        TestLevelScreen testLevelScreen = new TestLevelScreen(this, level);
+        return testLevelScreen;
     }
 }

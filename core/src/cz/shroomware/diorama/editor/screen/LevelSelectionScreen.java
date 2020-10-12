@@ -128,6 +128,7 @@ public class LevelSelectionScreen implements Screen {
 
     @Override
     public void show() {
+        Gdx.graphics.setTitle("Project - " + project.getName());
         //TODO workaround, show called before resize
 //        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         Gdx.input.setInputProcessor(stage);

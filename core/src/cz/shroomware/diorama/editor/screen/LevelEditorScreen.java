@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -30,9 +31,7 @@ import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.EditorTool;
 import cz.shroomware.diorama.editor.ui.Hud;
-import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.Level;
-import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
@@ -53,7 +52,6 @@ public class LevelEditorScreen extends BaseLevelScreen {
     protected Cursor cursor;
     protected Hud hud;
     protected OrthographicCamera screenCamera;
-    protected Prototypes gameObjectPrototypes;
     protected Vector2 lastDragScreenPos = new Vector2();
     protected Vector3 cameraLastDragWorldPos;
     protected GameObject currentlyHighlightedObject;
@@ -62,9 +60,10 @@ public class LevelEditorScreen extends BaseLevelScreen {
     boolean dragging = false;
     float time = 0;
 
-    public LevelEditorScreen(EditorEngineGame game, Project project, String name, int width, int height) {
-        super(game.getResources());
+    public LevelEditorScreen(EditorEngineGame game, Level level) {
+        super(game.getResources(), level);
         this.game = game;
+        this.level = level;
 
         editor = new Editor();
 
@@ -72,70 +71,32 @@ public class LevelEditorScreen extends BaseLevelScreen {
         defaultCursorRegion = resources.getObjectAtlas().findRegion("cursor");
         shadowAtlas = resources.getShadowAtlas();
 
-        gameObjectPrototypes = new Prototypes(resources);
-
-        level = new Level(project.getLevelFileHandle(name), resources, width, height);
         updateBackgroundColor(level);
-        initCamera(level);
+
+        screenCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         editorTool = new EditorTool(level.getFloor(), level.getGameObjects(), editor);
 
         cursor = new Cursor(editor, resources, level, defaultCursorRegion);
 
-        hud = new Hud(game, gameObjectPrototypes, editor, level);
+        hud = new Hud(game, editor, level);
 
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(hud);
         inputMultiplexer.addProcessor(this);
-    }
-
-    public LevelEditorScreen(EditorEngineGame game, Project project, String name) {
-        super(game.getResources());
-        this.game = game;
-
-        editor = new Editor();
-
-        resources = game.getResources();
-        defaultCursorRegion = resources.getObjectAtlas().findRegion("cursor");
-        shadowAtlas = resources.getShadowAtlas();
-
-        gameObjectPrototypes = new Prototypes(resources);
-
-        level = new Level(project.getLevelFileHandle(name), resources, gameObjectPrototypes);
-        updateBackgroundColor(level);
-        initCamera(level);
-
-        editorTool = new EditorTool(level.getFloor(), level.getGameObjects(), editor);
-
-        cursor = new Cursor(editor, resources, level, defaultCursorRegion);
-
-        hud = new Hud(game, gameObjectPrototypes, editor, level);
-
-        inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(hud);
-        inputMultiplexer.addProcessor(this);
-    }
-
-    private void init() {
-
     }
 
     @Override
     public void show() {
+        Gdx.graphics.setTitle("Level Editor - " + level.getName());
         Gdx.input.setInputProcessor(inputMultiplexer);
-    }
-
-    @Override
-    protected void initCamera(Level level) {
-        super.initCamera(level);
-
-        screenCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override
     public void drawWorld(float delta) {
         time += delta;
 
+        PerspectiveCamera camera = level.getCamera();
         camera.update();
         spriteBatch.setProjectionMatrix(camera.combined);
 
@@ -196,6 +157,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
     }
 
     protected void drawIdLabels() {
+        PerspectiveCamera camera = level.getCamera();
+
         spriteBatch.setShader(resources.getDfShader());
         spriteBatch.setProjectionMatrix(screenCamera.combined);
 
@@ -360,7 +323,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 return true;
             case Input.Keys.P:
                 save();
-                game.openGame(level.getFileHandle(), gameObjectPrototypes);
+                game.openLevel(level.getFileHandle());
                 return true;
             case Input.Keys.V:
                 level.dumpLogic();
@@ -391,6 +354,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        PerspectiveCamera camera = level.getCamera();
+
         Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
 
         if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
@@ -451,6 +416,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        PerspectiveCamera camera = level.getCamera();
+
         dragging = false;
         //let hud handle this if event occurred on top of menu
         Vector2 pos = new Vector2(screenX, screenY);
@@ -562,6 +529,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
     }
 
     public GameObject findDecalByScreenCoordinates(int screenX, int screenY) {
+        PerspectiveCamera camera = level.getCamera();
+
         Ray ray = camera.getPickRay(screenX, screenY);
 
         return level.findIntersectingWithRay(ray, camera);
@@ -569,6 +538,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        PerspectiveCamera camera = level.getCamera();
+
         // Let hud handle this if event occurred on top of menu
         Vector2 pos = new Vector2(screenX, screenY);
         pos = hud.screenToStageCoordinates(pos);
@@ -601,6 +572,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
     }
 
     private Vector3 getRayIntersectionWithFloor(int x, int y) {
+        PerspectiveCamera camera = level.getCamera();
+
         Vector3 intersection = new Vector3();
         Ray ray = camera.getPickRay(x, y);
 
@@ -610,6 +583,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public boolean scrolled(int amount) {
+        PerspectiveCamera camera = level.getCamera();
+
         Vector2 pos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
         pos = hud.screenToStageCoordinates(pos);
         if (hud.isVisible() && hud.hit(pos.x, pos.y, false) != null) {
@@ -716,9 +691,12 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public void resize(int width, int height) {
-        camera.viewportWidth = calculateCameraViewportWidth();
-        camera.viewportHeight = calculateCameraViewportHeight();
-        camera.update();
+        PerspectiveCamera camera = level.getCamera();
+        if (camera != null) {
+            camera.viewportWidth = Utils.calculateCameraViewportWidth();
+            camera.viewportHeight = Utils.calculateCameraViewportHeight();
+            camera.update();
+        }
 
         screenCamera.viewportWidth = width;
         screenCamera.viewportHeight = height;

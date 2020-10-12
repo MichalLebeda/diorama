@@ -54,7 +54,7 @@ public class Hud extends Stage {
     //    Image colorIndicator;
     boolean lastDirtyState = false;
 
-    public Hud(final EditorEngineGame game, Prototypes prototypes, final Editor editor, final Level level) {
+    public Hud(final EditorEngineGame game, final Editor editor, final Level level) {
         super();
 
         this.editor = editor;
@@ -74,8 +74,10 @@ public class Hud extends Stage {
         itemGroup.columnAlign(Align.right);
         itemGroup.pad(10);
         itemGroup.space(10);
-        for (int i = 0; i < prototypes.getSize(); i++) {
-            Prototype prototype = prototypes.getGameObjectPrototype(i);
+
+        Prototypes gameObjectPrototypes = game.getGameObjectPrototypes();
+        for (int i = 0; i < gameObjectPrototypes.getSize(); i++) {
+            Prototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
             itemGroup.addActor(new Item(resources.getSkin(), resources.getDfShader(), editor, prototype) {
                 @Override
                 public float getPrefWidth() {

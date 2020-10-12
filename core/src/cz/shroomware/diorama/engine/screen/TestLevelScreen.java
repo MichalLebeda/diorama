@@ -3,29 +3,27 @@ package cz.shroomware.diorama.engine.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import cz.shroomware.diorama.engine.EngineGame;
+import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.engine.level.Level;
-import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
-public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
+public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float SPEED = 9.0f;
     protected static final float Y_CAMERA_DISTANCE = 6;
-    protected EngineGame game;
+    protected EditorEngineGame game;
     protected Player player;
 
-    public PlayLevelScreen(EngineGame game, Prototypes prototypes, FileHandle levelFileHandle) {
-        super(game.getResources());
+    public TestLevelScreen(EditorEngineGame game, Level level) {
+        super(game.getResources(), level);
         this.game = game;
-        this.level = new Level(levelFileHandle, game.getResources(), prototypes);
+
         updateBackgroundColor(level);
-        initCamera(level);
 
         Vector2 offset = new Vector2(-3, +6);
         player = new Player(new Vector3(level.getWidth() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0),
@@ -35,11 +33,15 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
 
     @Override
     public void show() {
+        Gdx.graphics.setTitle("Test: " + level.getName());
+
         Gdx.input.setInputProcessor(this);
     }
 
     @Override
     public void drawWorld(float delta) {
+        PerspectiveCamera camera = level.getCamera();
+
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             player.setVelocity(0, SPEED);
         }
@@ -55,7 +57,8 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
 
         level.update(delta);
 
-        camera.position.set(player.getBody().getPosition().cpy().add(0, -Y_CAMERA_DISTANCE), 4);
+        player.update(0);
+        camera.position.set(player.getPosition().cpy().add(0, -Y_CAMERA_DISTANCE, 4));
         camera.lookAt(player.getPosition());
         camera.update();
 
@@ -85,7 +88,7 @@ public class PlayLevelScreen extends BaseLevelScreen implements InputProcessor {
         switch (keycode) {
             case Input.Keys.ESCAPE:
                 dispose();
-                game.returnToLastScreen();
+                game.returnToEditor();
                 return true;
         }
 

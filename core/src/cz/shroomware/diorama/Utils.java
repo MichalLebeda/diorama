@@ -1,5 +1,6 @@
 package cz.shroomware.diorama;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
@@ -142,5 +143,14 @@ public class Utils {
         worldPos.y = Utils.round(worldPos.y, 1f / 16f);
 
         return worldPos;
+    }
+
+    public static float calculateCameraViewportHeight() {
+        return 20;
+    }
+
+    public static float calculateCameraViewportWidth() {
+        double ratio = (double) Gdx.graphics.getWidth() / (double) Gdx.graphics.getHeight();
+        return (float) (calculateCameraViewportHeight() * ratio);
     }
 }

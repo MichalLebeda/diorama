@@ -45,6 +45,10 @@ public class Project {
         return fileHandle.child("level");
     }
 
+    public FileHandle[] getLevels() {
+        return getLevelDirHandle().list();
+    }
+
     public FileHandle getLevelFileHandle(String levelName) {
         return getLevelDirHandle().child(levelName);
     }

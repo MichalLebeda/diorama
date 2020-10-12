@@ -1,13 +1,13 @@
 package cz.shroomware.diorama.engine.level.fx;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.engine.level.Resources;
 
 public class Cloud {
     protected Decal decal;
@@ -17,8 +17,8 @@ public class Cloud {
 
     ParticleEmitter particleEmitter;
 
-    public Cloud(final Resources resources, Vector3 position) {
-        decal = Decal.newDecal(resources.getObjectAtlas().findRegions("cloud").random());
+    public Cloud(final TextureAtlas atlas, Vector3 position) {
+        decal = Decal.newDecal(atlas.findRegions("cloud").random());
         decal.setPosition(position);
         decal.rotateX(90);
         decal.setWidth(((float) decal.getTextureRegion().getRegionWidth()) / Utils.PIXELS_PER_METER);
@@ -30,7 +30,7 @@ public class Cloud {
             @Override
             protected Particle createParticle(Vector3 position) {
                 FallingParticle particle = new FallingParticle(position,
-                        resources.getObjectAtlas().findRegion("white"),
+                        atlas.findRegion("white"),
                         Color.GRAY,
                         9f);
                 particle.rotateX(90);

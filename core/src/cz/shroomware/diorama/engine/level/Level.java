@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
@@ -22,8 +23,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.logic.Logic;
+import cz.shroomware.diorama.engine.level.logic.component.InitComponent;
 import cz.shroomware.diorama.engine.level.logic.prototype.AndGatePrototype;
 import cz.shroomware.diorama.engine.level.logic.prototype.OrGatePrototype;
 import cz.shroomware.diorama.engine.level.object.GameObject;
@@ -39,10 +43,10 @@ public class Level {
     protected World world;
     protected Logic logic;
     protected BoxFactory boxFactory;
+    protected PerspectiveCamera camera;
+    protected InitComponent initComponent;
 
-    public Level(FileHandle fileHandle, Resources resources, int width, int height) {
-        this.fileHandle = fileHandle;
-
+    private Level() {
         world = new World(Vector2.Zero, true);
         world.setContactListener(new ContactListener() {
             private boolean isInContact(Contact contact, Body body) {
@@ -115,90 +119,31 @@ public class Level {
         logic = new Logic();
         logic.addPureLogicComponentPrototype(new OrGatePrototype());
         logic.addPureLogicComponentPrototype(new AndGatePrototype());
-        floor = new Floor(resources.getObjectAtlas().findRegion("floor"), width, height);
-        gameObjects = new GameObjects(logic);
-        clouds = new Clouds(floor, resources);
+        initComponent = new InitComponent();
+        logic.register(initComponent);
     }
 
-    public Level(FileHandle fileHandle, Resources resources, Prototypes gameObjectPrototypes) {
+    public Level(FileHandle fileHandle, EngineGame game, int width, int height) {
+        this();
         this.fileHandle = fileHandle;
 
-        world = new World(Vector2.Zero, true);
-        world.setContactListener(new ContactListener() {
-            private boolean isInContact(Contact contact, Body body) {
-                return contact.getFixtureA().getBody() == body || contact.getFixtureB().getBody() == body;
-            }
+        floor = new Floor(game.getResources().getObjectAtlas().findRegion("floor"), width, height);
+        gameObjects = new GameObjects(logic);
+        clouds = new Clouds(floor, game.getResources().getObjectAtlas());
 
-            private <T> boolean isInContact(Contact contact, Class<T> tClass) {
-                return tClass.isInstance(contact.getFixtureA().getBody().getUserData()) ||
-                        tClass.isInstance(contact.getFixtureB().getBody().getUserData());
-            }
+        initCamera();
+    }
 
-            private <T> T getFromContact(Contact contact, Class<T> tClass) {
-                Body[] bodies = {contact.getFixtureA().getBody(), contact.getFixtureB().getBody()};
-
-                Object attachedObject;
-                for (Body body : bodies) {
-                    attachedObject = body.getUserData();
-
-                    if (tClass.isInstance(attachedObject)) {
-                        return (T) attachedObject;
-                    }
-                }
-
-                return null;
-            }
-
-            private Object getSecondFromContact(Contact contact, Object first) {
-                Body[] bodies = {contact.getFixtureB().getBody(), contact.getFixtureB().getBody()};
-
-                Object attachedObject;
-                for (Body body : bodies) {
-                    attachedObject = body.getUserData();
-
-                    if (attachedObject != null && attachedObject != first) {
-                        return attachedObject;
-                    }
-                }
-
-                return null;
-            }
-
-            @Override
-            public void beginContact(Contact contact) {
-                if (isInContact(contact, Trigger.class)) {
-                    Trigger trigger = getFromContact(contact, Trigger.class);
-                    trigger.addContact();
-                }
-            }
-
-            @Override
-            public void endContact(Contact contact) {
-                if (isInContact(contact, Trigger.class)) {
-                    Trigger trigger = getFromContact(contact, Trigger.class);
-                    trigger.removeContact();
-                }
-            }
-
-            @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
-
-            }
-
-            @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
-
-            }
-        });
-
-        boxFactory = new BoxFactory(world);
-        logic = new Logic();
-        logic.addPureLogicComponentPrototype(new OrGatePrototype());
-        logic.addPureLogicComponentPrototype(new AndGatePrototype());
+    public Level(FileHandle fileHandle, EngineGame game) {
+        this();
+        this.fileHandle = fileHandle;
         floor = new Floor();
         gameObjects = new GameObjects(logic);
-        load(gameObjectPrototypes, resources.getObjectAtlas());
-        clouds = new Clouds(floor, resources);
+
+        logic.register(game.getLevelSwitcher());
+        load(game.getGameObjectPrototypes(), game.getResources().getObjectAtlas());
+
+        initCamera();
     }
 
     public boolean load(Prototypes gameObjectPrototypes, TextureAtlas atlas) {
@@ -225,13 +170,33 @@ public class Level {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return true;
         } else {
             Gdx.app.error("Level", "Level doesn't exist");
             Gdx.app.exit();
+            return false;
         }
 
-        return false;
+        clouds = new Clouds(floor, atlas);
+
+        logic.sendEvent(initComponent.getEvents().first());
+
+        return true;
+    }
+
+    protected void initCamera() {
+        camera = new PerspectiveCamera(
+                50,
+                Utils.calculateCameraViewportWidth(),
+                Utils.calculateCameraViewportHeight());
+        camera.near = 0.1f;
+        camera.far = 300;
+
+        camera.position.set(getWidth() / 2.f, -2, 5);
+        camera.lookAt(getWidth() / 2.f, 4, 0);
+    }
+
+    public PerspectiveCamera getCamera() {
+        return camera;
     }
 
     public boolean save(boolean force) {
@@ -265,7 +230,7 @@ public class Level {
         world.step(delta, 6, 2);
 
         gameObjects.update(delta);
-        clouds.update(delta);
+//        clouds.update(delta);
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
@@ -279,7 +244,7 @@ public class Level {
 
 //        gameObjects.drawShadows(spriteBatch);
         gameObjects.drawObjects(decalBatch);
-        clouds.draw(decalBatch);
+//        clouds.draw(decalBatch);
     }
 
     public boolean isInBounds(float x, float y) {
@@ -325,5 +290,9 @@ public class Level {
     //TODO remove
     public void dumpLogic() {
         Gdx.app.log("Level:Logic", "\n" + logic.toString());
+    }
+
+    public String getName() {
+        return fileHandle.name();
     }
 }

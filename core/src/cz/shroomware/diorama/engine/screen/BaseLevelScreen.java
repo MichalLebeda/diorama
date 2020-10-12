@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
@@ -20,15 +19,16 @@ import cz.shroomware.diorama.engine.level.Resources;
 public abstract class BaseLevelScreen implements Screen, InputProcessor {
     protected ShaderProgram spriteBatchShader;
     protected Level level;
-    protected Color backgroundColor;
+    protected Color backgroundColor = Color.GRAY.cpy();
     protected SpriteBatch spriteBatch;
     protected MinimalisticDecalBatch decalBatch;
-    protected PerspectiveCamera camera;
     protected Box2DDebugRenderer dr = new Box2DDebugRenderer();
 
     protected boolean boxDebug = false;
 
-    protected BaseLevelScreen(Resources resources) {
+    protected BaseLevelScreen(Resources resources, Level level) {
+        this.level = level;
+
         spriteBatchShader = resources.getSpriteBatchShader();
         spriteBatch = new SpriteBatch();
         decalBatch = new MinimalisticDecalBatch();
@@ -42,24 +42,8 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
         pixmap.dispose();
     }
 
-    protected float calculateCameraViewportHeight() {
-        return 20;
-    }
-
-    protected float calculateCameraViewportWidth() {
-        double ratio = (double) Gdx.graphics.getWidth() / (double) Gdx.graphics.getHeight();
-        return (float) (calculateCameraViewportHeight() * ratio);
-    }
-
-    protected void initCamera(Level level) {
-        camera = new PerspectiveCamera(
-                50,
-                calculateCameraViewportWidth(),
-                calculateCameraViewportHeight());
-        camera.position.set(level.getWidth() / 2.f, -2, 5);
-        camera.near = 0.1f;
-        camera.far = 300;
-        camera.lookAt(level.getWidth() / 2.f, 4, 0);
+    public Level getLevel() {
+        return level;
     }
 
     @Override
@@ -79,7 +63,7 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
         drawWorld(delta);
 
         if (boxDebug) {
-            dr.render(level.getWorld(), camera.combined);
+            dr.render(level.getWorld(), level.getCamera().combined);
         }
     }
 

@@ -35,8 +35,11 @@ public class LogicEditorScreen implements Screen, InputProcessor {
     OrthographicCamera camera;
     InputMultiplexer inputMultiplexer;
 
+    FileHandle fileHandle;
+
     public LogicEditorScreen(EditorEngineGame game, FileHandle fileHandle, Logic logic) {
         this.game = game;
+        this.fileHandle = fileHandle;
 
         logicEditor = new LogicEditor(logic, fileHandle);
 
@@ -110,6 +113,7 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
+        Gdx.graphics.setTitle("Logic Editor - " + fileHandle.name());
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 

@@ -116,6 +116,7 @@ public class ProjectSelectionScreen implements Screen {
 
     @Override
     public void show() {
+        Gdx.graphics.setTitle("Open Project");
         //TODO workaround, show called before resize
 //        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         Gdx.input.setInputProcessor(stage);

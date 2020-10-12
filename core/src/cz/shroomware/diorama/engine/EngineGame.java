@@ -8,13 +8,17 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
+import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.Resources;
+import cz.shroomware.diorama.engine.level.logic.component.LevelSwitcher;
 
 public class EngineGame extends Game {
     protected Resources resources;
     protected int lastWindowedWidth;
     protected int lastWindowedHeight;
-    Screen lastScreen = null;
+    protected LevelSwitcher levelSwitcher = null;
+    protected Screen lastScreen = null;
+    protected Prototypes gameObjectPrototypes;
 
     @Override
     public void render() {
@@ -41,6 +45,8 @@ public class EngineGame extends Game {
         resources.setObjectAtlas(objectAtlas);
         resources.setShadowAtlas(shadowsAtlas);
         resources.setSpriteBatchShader(spriteBatchShader);
+
+        gameObjectPrototypes = new Prototypes(resources);
     }
 
     @Override
@@ -65,17 +71,17 @@ public class EngineGame extends Game {
         return resources;
     }
 
-//    public void openGame(FileHandle fileHandle, Prototypes prototypes) {
-//        setScreen(new PlayLevelScreen(this, prototypes, fileHandle));
-//    }
-
     @Override
     public void setScreen(Screen screen) {
         lastScreen = getScreen();
         super.setScreen(screen);
     }
 
-    public void returnToLastScreen() {
-        setScreen(lastScreen);
+    public Prototypes getGameObjectPrototypes() {
+        return gameObjectPrototypes;
+    }
+
+    public LevelSwitcher getLevelSwitcher() {
+        return levelSwitcher;
     }
 }
