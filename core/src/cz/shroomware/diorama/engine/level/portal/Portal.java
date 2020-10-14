@@ -2,6 +2,7 @@ package cz.shroomware.diorama.engine.level.portal;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -67,7 +68,7 @@ public class Portal extends GameObject {
         backDecal.setWidth(decal.getWidth());
         backDecal.setHeight(2);
 
-        updatePosition(body.getPosition().x, body.getPosition().y);
+        positionDirty = true;
     }
 
     @Override
@@ -197,5 +198,19 @@ public class Portal extends GameObject {
     @Override
     public String getName() {
         return "portal";
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+        metaPortal.setPosition(x, y);
+        metaPortal.getParentLevel().getMetaPortals().setDirty();
+    }
+
+    @Override
+    public void setPosition(Vector2 position) {
+        super.setPosition(position);
+        metaPortal.setPosition(position);
+        metaPortal.getParentLevel().getMetaPortals().setDirty();
     }
 }

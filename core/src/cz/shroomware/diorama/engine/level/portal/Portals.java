@@ -39,6 +39,7 @@ public class Portals {
 
     public void drawObjects(MinimalisticDecalBatch decalBatch) {
         for (Portal portal : metaToPortal.values()) {
+            portal.update(0);
             portal.drawDecal(decalBatch);
         }
     }

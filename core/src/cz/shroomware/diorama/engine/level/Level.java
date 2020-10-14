@@ -71,7 +71,7 @@ public class Level {
     public Level(MetaLevel metaLevel, EngineGame game, int width, int height) {
         this(game, metaLevel);
 
-        floor = new Floor(game.getResources().getObjectAtlas().findRegion("floor"), width, height);
+        floor = new Floor(game.getResources().getObjectAtlas().findRegion("ground"), width, height);
         clouds = new Clouds(floor, game.getResources().getObjectAtlas());
 
         initCamera();

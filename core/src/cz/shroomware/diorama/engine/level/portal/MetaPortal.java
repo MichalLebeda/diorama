@@ -102,4 +102,12 @@ public class MetaPortal {
     public MetaLevel getParentLevel() {
         return parentLevel;
     }
+
+    public void setPosition(float x, float y) {
+        this.position.set(x, y);
+    }
+
+    public void setPosition(Vector2 position) {
+        this.position.set(position);
+    }
 }
