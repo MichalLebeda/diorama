@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,48 +15,41 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 
 import cz.shroomware.diorama.editor.EditorEngineGame;
-import cz.shroomware.diorama.editor.ui.logic.LogicEditor;
-import cz.shroomware.diorama.editor.ui.logic.LogicGraph;
-import cz.shroomware.diorama.editor.ui.logic.LogicHud;
-import cz.shroomware.diorama.engine.level.logic.Logic;
+import cz.shroomware.diorama.editor.ui.portal.ConnectionEditor;
+import cz.shroomware.diorama.editor.ui.portal.ConnectionGraph;
+import cz.shroomware.diorama.editor.ui.portal.ConnectionHud;
+import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 
-public class LogicEditorScreen implements Screen, InputProcessor {
+public class PortalConnectionScreen implements Screen, InputProcessor {
     EditorEngineGame game;
+    Project project;
+    ConnectionEditor connectionEditor;
     //TODO make ProjectSelScreeen from same parent
-    LogicEditor logicEditor;
-    LogicGraph graph;
-    LogicHud hud;
+    ConnectionGraph graph;
 
     Color backgroundColor = new Color(0x424242ff);
     ShapeRenderer shapeRenderer;
     SpriteBatch spriteBatch;
     OrthographicCamera camera;
     InputMultiplexer inputMultiplexer;
+    ConnectionHud hud;
 
-    FileHandle fileHandle = null;
-
-    public LogicEditorScreen(EditorEngineGame game, String name, Logic logic, FileHandle fileHandle) {
-        this(game, name, logic);
-        this.fileHandle = fileHandle;
-    }
-
-    public LogicEditorScreen(EditorEngineGame game, String name, Logic logic) {
+    public PortalConnectionScreen(EditorEngineGame game, Project project) {
         this.game = game;
+        this.project = project;
 
-        logicEditor = new LogicEditor(logic, name);
+        connectionEditor = new ConnectionEditor(project);
 
         shapeRenderer = new ShapeRenderer();
-        graph = new LogicGraph(logicEditor, game.getResources(), shapeRenderer);
+        graph = new ConnectionGraph(project, connectionEditor, game.getResources(), shapeRenderer);
 
-        hud = new LogicHud(game, logicEditor) {
+        hud = new ConnectionHud(game, project, connectionEditor) {
             @Override
             public void onComponentAdded(LogicComponent component) {
-                graph.update(true);
-                graph.setPosToCamera(component);
+
             }
         };
-
 
         spriteBatch = new SpriteBatch();
         inputMultiplexer = new InputMultiplexer();
@@ -117,16 +109,16 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        Gdx.graphics.setTitle("Logic Editor - " + logicEditor.getName());
+        Gdx.graphics.setTitle("Connection Editor - " + project.getName());
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
     public void hide() {
         graph.save();
-        if (fileHandle != null) {
-            logicEditor.getLogic().save(fileHandle);
-        }
+//if(fileHandle!=null)        {
+//    logicEditor.getLogic().save(fileHandle);
+//}
         dispose();
     }
 
@@ -174,9 +166,9 @@ public class LogicEditorScreen implements Screen, InputProcessor {
                 return true;
             case Input.Keys.TAB:
                 if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
-                    logicEditor.setPrevMode();
+                    connectionEditor.setPrevMode();
                 } else {
-                    logicEditor.setNextMode();
+                    connectionEditor.setNextMode();
                 }
                 return true;
             case Input.Keys.SPACE:
@@ -185,7 +177,7 @@ public class LogicEditorScreen implements Screen, InputProcessor {
                 camera.update();
                 return true;
             case Input.Keys.N:
-                graph.centerByMax();
+//                graph.centerByMax();
                 return true;
         }
         return false;
@@ -219,9 +211,9 @@ public class LogicEditorScreen implements Screen, InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        if (hud.hit(screenX, screenY, false) != null) {
-            hud.setScrollFocus(screenX, screenY);
-        }
+//        if (hud.hit(screenX, screenY, false) != null) {
+//            hud.setScrollFocus(screenX, screenY);
+//        }
         return false;
     }
 

@@ -66,7 +66,7 @@ public class ProjectSelectionScreen implements Screen {
                 NewProjectDialog dialog = new NewProjectDialog(resources.getSkin(), resources.getDfShader(), startFileHandle, "project") {
                     @Override
                     public void onAccepted(String name) {
-                        Project project = new Project(currentDir, name);
+                        Project project = new Project(game, currentDir, name);
                         game.openLevelSelection(project);
                     }
                 };
@@ -189,7 +189,7 @@ public class ProjectSelectionScreen implements Screen {
 
         for (FileHandle child : children) {
             if (child.name().equals(Project.PROJECT_FILE)) {
-                Project project = new Project(fileHandle);
+                Project project = new Project(game, fileHandle);
                 game.openLevelSelection(project);
                 return;
             }

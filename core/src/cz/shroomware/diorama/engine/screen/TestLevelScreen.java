@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.editor.EditorEngineGame;
@@ -19,21 +18,20 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected EditorEngineGame game;
     protected Player player;
 
-    public TestLevelScreen(EditorEngineGame game, Level level) {
+    public TestLevelScreen(EditorEngineGame game, Level level, float x, float y) {
         super(game.getResources(), level);
         this.game = game;
 
         updateBackgroundColor(level);
 
-        Vector2 offset = new Vector2(-3, +6);
-        player = new Player(new Vector3(level.getWidth() / 2.f + offset.x, Y_CAMERA_DISTANCE + offset.y, 0),
+        player = new Player(new Vector3(x, y, 0),
                 new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
     }
 
     @Override
     public void show() {
-        Gdx.graphics.setTitle("Test: " + level.getName());
+        Gdx.graphics.setTitle("Test: " + level.getMetaLevel().getName());
 
         Gdx.input.setInputProcessor(this);
     }
@@ -89,6 +87,8 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
             case Input.Keys.ESCAPE:
                 dispose();
                 game.returnToEditor();
+                return true;
+            case Input.Keys.L:
                 return true;
         }
 

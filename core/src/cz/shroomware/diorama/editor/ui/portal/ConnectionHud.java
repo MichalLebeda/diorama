@@ -1,34 +1,27 @@
-package cz.shroomware.diorama.editor.ui.logic;
+package cz.shroomware.diorama.editor.ui.portal;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import java.util.Collection;
 
 import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.ui.Messages;
+import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
-import cz.shroomware.diorama.engine.level.logic.component.LogicOperator;
-import cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.LeftToBackgroundLabel;
 
-public abstract class LogicHud extends Stage {
-    LogicSelectedModeIndicator logicSelectedModeIndicator;
-    LogicEditor logicEditor;
-    ScrollPane scrollPane;
+public abstract class ConnectionHud extends Stage {
+    ConnectionSelectedModeIndicator connectionSelectedModeIndicator;
+    Project project;
+    ConnectionEditor connectionEditor;
     EditorEngineGame game;
     EditorResources editorResources;
     LeftToBackgroundLabel projectNameLabel;
@@ -36,10 +29,11 @@ public abstract class LogicHud extends Stage {
     Messages messages;
     boolean lastDirtyState = false;
 
-    public LogicHud(final EditorEngineGame game, final LogicEditor logicEditor) {
+    public ConnectionHud(final EditorEngineGame game, Project project, ConnectionEditor connectionEditor) {
         super();
         this.game = game;
-        this.logicEditor = logicEditor;
+        this.project = project;
+        this.connectionEditor = connectionEditor;
         editorResources = game.getResources();
 
 //        setDebugAll(true);
@@ -48,40 +42,18 @@ public abstract class LogicHud extends Stage {
         //TODO remember why
         getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
-        final VerticalGroup itemGroup = new VerticalGroup();
-        itemGroup.columnAlign(Align.right);
-        itemGroup.pad(10);
-        itemGroup.space(10);
-        Collection<LogicOperatorPrototype> prototypes = logicEditor.getLogic().getNameToPureLogicPrototypes().values();
-        for (LogicOperatorPrototype prototype : prototypes) {
-            final PureLogicItem item = new PureLogicItem(editorResources, prototype);
-            item.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-
-                    LogicOperator logicOperator = LogicHud.this.logicEditor.getLogic().createLogicOperator(item.getPrototype());
-                    onComponentAdded(logicOperator);
-                }
-            });
-            itemGroup.addActor(item);
-        }
-
-        scrollPane = new ScrollPane(itemGroup, game.getResources().getSkin());
-        scrollPane.pack();
-        addActor(scrollPane);
-
-        logicSelectedModeIndicator = new LogicSelectedModeIndicator(logicEditor, game.getResources().getSkin());
-        addActor(logicSelectedModeIndicator);
+        connectionSelectedModeIndicator = new ConnectionSelectedModeIndicator(connectionEditor, game.getResources().getSkin());
+        addActor(connectionSelectedModeIndicator);
 
         messages = new Messages(editorResources);
         messages.setWidth(400);
         addActor(messages);
 
         projectNameLabel = new LeftToBackgroundLabel(
-                logicEditor.getName(),
+                project.getName(),
                 editorResources.getSkin(),
                 editorResources.getDfShader(),
-                logicSelectedModeIndicator.getX() - 10);
+                connectionSelectedModeIndicator.getX() - 10);
         projectNameLabel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -145,16 +117,6 @@ public abstract class LogicHud extends Stage {
         return getRoot().isVisible();
     }
 
-    public Vector3 getMenuStagePosition() {
-        Vector3 position = new Vector3();
-        position.set(scrollPane.getX(), scrollPane.getY(), 0);
-        return position;
-    }
-
-    public Vector3 getMenuScreenPosition() {
-        return getCamera().project(getMenuStagePosition());
-    }
-
     @Override
     public void dispose() {
         super.dispose();
@@ -172,16 +134,9 @@ public abstract class LogicHud extends Stage {
         unsavedChangesLabel.setX(projectNameLabel.getXWithPadding() + projectNameLabel.getWidthWithPadding() + 10);
         unsavedChangesLabel.setY(projectNameLabel.getYWithPadding());
 
-
-        scrollPane.setHeight(getViewport().getWorldHeight());
-        scrollPane.setPosition(
-                getViewport().getWorldWidth() - scrollPane.getWidth(),
-                0);
-
-
-        logicSelectedModeIndicator.setPosition(
-                scrollPane.getX() - logicSelectedModeIndicator.getWidth() - 10,
-                getHeight() - logicSelectedModeIndicator.getHeight() - 10);
+        connectionSelectedModeIndicator.setPosition(
+                getWidth() - connectionSelectedModeIndicator.getWidth() - 10,
+                getHeight() - connectionSelectedModeIndicator.getHeight() - 10);
     }
 
     //FIXME: DOESN'T WORK

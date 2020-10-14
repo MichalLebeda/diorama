@@ -9,9 +9,9 @@ import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 
 public class LogicComponent implements Identifiable {
-    protected Logic logic;
-    private Array<Event> events = new Array<>(Event.class);
-    private Array<Handler> handlers = new Array<>(Handler.class);
+    protected cz.shroomware.diorama.engine.level.logic.Logic logic;
+    private Array<cz.shroomware.diorama.engine.level.logic.Event> events = new Array<>(cz.shroomware.diorama.engine.level.logic.Event.class);
+    private Array<cz.shroomware.diorama.engine.level.logic.Handler> handlers = new Array<>(cz.shroomware.diorama.engine.level.logic.Handler.class);
     private Identifier parentIdentifier;
 
     public LogicComponent(Identifier parentIdentifier) {
@@ -23,12 +23,12 @@ public class LogicComponent implements Identifiable {
         return parentIdentifier;
     }
 
-    public void addEvent(Event event) {
+    public void addEvent(cz.shroomware.diorama.engine.level.logic.Event event) {
         events.add(event);
         event.setParent(this);
     }
 
-    public void addHandler(Handler handler) {
+    public void addHandler(cz.shroomware.diorama.engine.level.logic.Handler handler) {
         handlers.add(handler);
         handler.setParent(this);
     }
@@ -41,7 +41,7 @@ public class LogicComponent implements Identifiable {
         return handlers;
     }
 
-    public void onRegister(Logic logic) {
+    public void onRegister(cz.shroomware.diorama.engine.level.logic.Logic logic) {
         this.logic = logic;
     }
 

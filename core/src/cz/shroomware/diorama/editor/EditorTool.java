@@ -11,21 +11,19 @@ import cz.shroomware.diorama.editor.history.actions.DeleteGameObjectAction;
 import cz.shroomware.diorama.editor.history.actions.PlaceGameObjectAction;
 import cz.shroomware.diorama.editor.history.actions.PlaceTileAction;
 import cz.shroomware.diorama.engine.level.Floor;
+import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 
 public class EditorTool {
-    //    FloorTool floorTool;
-//    GameObjectsTool gameObjectsTool;
     Floor floor;
     GameObjects gameObjects;
     Editor editor;
 
-    public EditorTool(Floor floor, GameObjects gameObjects, Editor editor) {
-//        floorTool = new FloorTool(floor,editor);
-        this.floor = floor;
-        this.gameObjects = gameObjects;
+    public EditorTool(Level level, Editor editor) {
+        this.floor = level.getFloor();
+        this.gameObjects = level.getGameObjects();
         this.editor = editor;
     }
 
@@ -104,7 +102,7 @@ public class EditorTool {
     }
 
     public void addObject(GameObject gameObject, boolean useHistory) {
-        if (gameObject.getPrototype().isAttached()) {
+        if (gameObject.hasPrototype() && gameObject.getPrototype().isAttached()) {
             Vector3 position = gameObject.getPosition();
             addObjectToTileAt(position.x, position.y, gameObject);
         } else {
@@ -147,14 +145,18 @@ public class EditorTool {
 
     public void transformObject(float x, float y, GameObject gameObject) {
         gameObject.setPosition(gameObject.getX() + x, gameObject.getY() + y);
+
+        gameObjects.setDirty();
     }
 
     public void transformObjectZ(float z, GameObject gameObject) {
         gameObject.setZ(gameObject.getZ() + z);
+
+        gameObjects.setDirty();
     }
 
     public void moveObject(float x, float y, GameObject gameObject) {
-        if (gameObject.getPrototype().isAttached()) {
+        if (gameObject.hasPrototype() && gameObject.getPrototype().isAttached()) {
             x = ((int) x) + 0.5f;
             y = ((int) y) + 0.5f;
 
@@ -193,6 +195,7 @@ public class EditorTool {
                 }
             }
         }
+
         gameObjects.setDirty();
     }
 }

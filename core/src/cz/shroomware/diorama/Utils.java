@@ -31,6 +31,8 @@ public class Utils {
 
     public static final String DISCONNECT_MODE_ICON_DRAWABLE = "disconnect_mode_icon";
 
+    public static final String PORTAL_MODE_ICON_DRAWABLE = "portal_mode_icon";
+
     public static final String ID_ASSIGN_MODE_ICON_DRAWABLE = "id_assign_mode_icon";
 
     public static final String SNAP_ON_ICON_DRAWABLE = "snap_on_icon";
@@ -40,6 +42,8 @@ public class Utils {
     public static final String LABELS_ON_ICON_DRAWABLE = "labels_on_icon";
 
     public static final String LABELS_OFF_ICON_DRAWABLE = "labels_off_icon";
+
+    public static final String START_PORTAL = "start";
 
     public static final float PIXELS_PER_METER = 16f;
 

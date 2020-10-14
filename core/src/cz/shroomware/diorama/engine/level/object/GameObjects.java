@@ -1,14 +1,10 @@
 package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -26,10 +22,11 @@ import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
-public class GameObjects {
+public class GameObjects implements IdManager {
     protected Array<GameObject> gameObjects = new Array<>();
     protected boolean dirty = false;
     protected Logic logic;
+    HashMap<String, GameObject> idToObject = new HashMap<>();
 
     public GameObjects(Logic logic) {
         this.logic = logic;
@@ -79,38 +76,12 @@ public class GameObjects {
         }
     }
 
-    public GameObject findIntersectingWithRay(Ray ray, Camera camera) {
-        Vector3 intersection = new Vector3();
-        BoundingBox boundingBox = new BoundingBox();
-
-        float minDist = Float.MAX_VALUE;
-        GameObject candidate = null;
-
-        // Test ray against every game object we have
-        for (GameObject gameObject : gameObjects) {
-            gameObject.sizeBoundingBox(boundingBox);
-            if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                    if (gameObject.intersectsWithOpaque(ray, intersection.cpy())) {
-                        float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
-                        if (currentObjectDist < minDist) {
-                            minDist = currentObjectDist;
-                            candidate = gameObject;
-                        }
-                    }
-            }
-        }
-
-        return candidate;
-    }
-
-    HashMap<String, GameObject> idToObject = new HashMap<>();
-
     public boolean isDirty() {
         return dirty;
     }
 
     public void save(OutputStream outputStream) throws IOException {
-        Gdx.app.log("GameObject", "saved");
+        Gdx.app.log("GameObjects", "Saved");
         outputStream.write((gameObjects.size + "\n").getBytes());
         for (GameObject object : gameObjects) {
             outputStream.write((object.toString() + "\n").getBytes());
@@ -125,11 +96,10 @@ public class GameObjects {
                      BoxFactory boxFactory) throws IOException {
         gameObjects.clear();
 
-        String line = null;
+        String line;
         Vector3 position = new Vector3();
         int objectAmount = Integer.parseInt(bufferedReader.readLine());
         for (int j = 0; j < objectAmount; j++) {
-//                Gdx.app.error("LINE", line);
 
             line = bufferedReader.readLine();
             String[] attributes = line.split(" ");
@@ -153,7 +123,6 @@ public class GameObjects {
                 }
 
                 if (name.equals(prototype.getName())) {
-//                        Gdx.app.error("LINE 2", prototype.getName());
                     Quaternion quaternion = new Quaternion(
                             Float.parseFloat(attributes[4]),
                             Float.parseFloat(attributes[5]),
@@ -181,10 +150,12 @@ public class GameObjects {
         dirty = false;
     }
 
+    @Override
     public boolean assignId(GameObject object, String id) {
         return assignId(object, id, null);
     }
 
+    @Override
     public boolean assignId(GameObject object, String id, Messages messages) {
         if (id == null || id.equals("")) {
             Gdx.app.error("GameObjects", "ID NOT(!!!) changed:" + id);

@@ -128,6 +128,7 @@ public class Editor {
         DELETE(Utils.DELETE_MODE_ICON_DRAWABLE),
         TILE(Utils.TILE_MODE_ICON_DRAWABLE),
         TILE_BUCKET(Utils.TILE_BUCKET_MODE_ICON_DRAWABLE),
+        PORTAL(Utils.PORTAL_MODE_ICON_DRAWABLE),
         ID_ASSIGN(Utils.ID_ASSIGN_MODE_ICON_DRAWABLE);
 
         private String iconName;

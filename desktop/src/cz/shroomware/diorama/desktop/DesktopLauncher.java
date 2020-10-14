@@ -11,10 +11,13 @@ import java.util.Locale;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 
 public class DesktopLauncher {
+    public static boolean release = true;
     public static void main(String[] arg) {
-        packAtlas();
-        packShadowAtlas();
-        packUiAtlas();
+//        if(!release){
+//            packAtlas();
+//            packShadowAtlas();
+//            packUiAtlas();
+//        }
 
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setWindowedMode(1100, 620);

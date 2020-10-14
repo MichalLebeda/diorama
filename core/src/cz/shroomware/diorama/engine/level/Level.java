@@ -8,13 +8,11 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.io.BufferedReader;
@@ -28,15 +26,16 @@ import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.logic.component.InitComponent;
-import cz.shroomware.diorama.engine.level.logic.prototype.AndGatePrototype;
-import cz.shroomware.diorama.engine.level.logic.prototype.OrGatePrototype;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
-import cz.shroomware.diorama.engine.level.object.Trigger;
+import cz.shroomware.diorama.engine.level.portal.MetaPortal;
+import cz.shroomware.diorama.engine.level.portal.Portals;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
+import cz.shroomware.diorama.engine.physics.LevelContactListener;
 
 public class Level {
-    protected FileHandle fileHandle;
+    protected Portals portals;
+    protected MetaLevel metaLevel;
     protected Floor floor;
     protected GameObjects gameObjects;
     protected Clouds clouds;
@@ -45,108 +44,52 @@ public class Level {
     protected BoxFactory boxFactory;
     protected PerspectiveCamera camera;
     protected InitComponent initComponent;
+    protected Resources resources;
 
-    private Level() {
+    private Level(EngineGame game, MetaLevel metaLevel) {
+        this.metaLevel = metaLevel;
+        this.resources = game.getResources();
+
         world = new World(Vector2.Zero, true);
-        world.setContactListener(new ContactListener() {
-            private boolean isInContact(Contact contact, Body body) {
-                return contact.getFixtureA().getBody() == body || contact.getFixtureB().getBody() == body;
-            }
-
-            private <T> boolean isInContact(Contact contact, Class<T> tClass) {
-                return tClass.isInstance(contact.getFixtureA().getBody().getUserData()) ||
-                        tClass.isInstance(contact.getFixtureB().getBody().getUserData());
-            }
-
-            private <T> T getFromContact(Contact contact, Class<T> tClass) {
-                Body[] bodies = {contact.getFixtureA().getBody(), contact.getFixtureB().getBody()};
-
-                Object attachedObject;
-                for (Body body : bodies) {
-                    attachedObject = body.getUserData();
-
-                    if (tClass.isInstance(attachedObject)) {
-                        return (T) attachedObject;
-                    }
-                }
-
-                return null;
-            }
-
-            private Object getSecondFromContact(Contact contact, Object first) {
-                Body[] bodies = {contact.getFixtureB().getBody(), contact.getFixtureB().getBody()};
-
-                Object attachedObject;
-                for (Body body : bodies) {
-                    attachedObject = body.getUserData();
-
-                    if (attachedObject != null && attachedObject != first) {
-                        return attachedObject;
-                    }
-                }
-
-                return null;
-            }
-
-            @Override
-            public void beginContact(Contact contact) {
-                if (isInContact(contact, Trigger.class)) {
-                    Trigger trigger = getFromContact(contact, Trigger.class);
-                    trigger.addContact();
-                }
-            }
-
-            @Override
-            public void endContact(Contact contact) {
-                if (isInContact(contact, Trigger.class)) {
-                    Trigger trigger = getFromContact(contact, Trigger.class);
-                    trigger.removeContact();
-                }
-            }
-
-            @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
-
-            }
-
-            @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
-
-            }
-        });
-
+        world.setContactListener(new LevelContactListener());
         boxFactory = new BoxFactory(world);
+
         logic = new Logic();
-        logic.addPureLogicComponentPrototype(new OrGatePrototype());
-        logic.addPureLogicComponentPrototype(new AndGatePrototype());
+
         initComponent = new InitComponent();
         logic.register(initComponent);
+
+        gameObjects = new GameObjects(logic);
+        portals = new Portals(metaLevel,
+                boxFactory,
+                resources);
     }
 
-    public Level(FileHandle fileHandle, EngineGame game, int width, int height) {
-        this();
-        this.fileHandle = fileHandle;
+    public Level(MetaLevel metaLevel, EngineGame game, int width, int height) {
+        this(game, metaLevel);
 
         floor = new Floor(game.getResources().getObjectAtlas().findRegion("floor"), width, height);
-        gameObjects = new GameObjects(logic);
         clouds = new Clouds(floor, game.getResources().getObjectAtlas());
 
         initCamera();
     }
 
-    public Level(FileHandle fileHandle, EngineGame game) {
-        this();
-        this.fileHandle = fileHandle;
-        floor = new Floor();
-        gameObjects = new GameObjects(logic);
+    public Level(MetaLevel metaLevel, EngineGame game) {
+        this(game, metaLevel);
 
-        logic.register(game.getLevelSwitcher());
+        floor = new Floor();
         load(game.getGameObjectPrototypes(), game.getResources().getObjectAtlas());
+        clouds = new Clouds(floor, game.getResources().getObjectAtlas());
 
         initCamera();
     }
 
+    public void setIgnoredPortal(MetaPortal metaPortal) {
+        portals.setIgnored(metaPortal);
+    }
+
     public boolean load(Prototypes gameObjectPrototypes, TextureAtlas atlas) {
+        FileHandle fileHandle = metaLevel.getDataFileHandle();
         if (fileHandle.exists()) {
             InputStream inputStream = fileHandle.read();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -172,11 +115,10 @@ public class Level {
             }
         } else {
             Gdx.app.error("Level", "Level doesn't exist");
+            Gdx.app.error("Level", fileHandle.name());
             Gdx.app.exit();
             return false;
         }
-
-        clouds = new Clouds(floor, atlas);
 
         logic.sendEvent(initComponent.getEvents().first());
 
@@ -201,17 +143,35 @@ public class Level {
 
     public boolean save(boolean force) {
         if (isDirty() || force) {
-            OutputStream outputStream = fileHandle.write(false);
-            try {
-                floor.save(outputStream);
-                gameObjects.save(outputStream);
-                logic.save(outputStream);
-                outputStream.flush();
-                outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
+            if (gameObjects.isDirty()
+                    || floor.isDirty()
+                    || logic.isDirty()) {
+                OutputStream outputStream = metaLevel.getDataFileHandle().write(false);
+                try {
+                    floor.save(outputStream);
+                    gameObjects.save(outputStream);
+                    logic.save(outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
+
+            if (metaLevel.getMetaPortals().isDirty()) {
+                OutputStream outputStream = metaLevel.getMetadataFileHandle().write(false);
+                try {
+                    metaLevel.getMetaPortals().save(outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+
+            }
+
             return true;
         }
 
@@ -222,10 +182,6 @@ public class Level {
 //        return fileHandle.name();
 //    }
 //
-    public FileHandle getFileHandle() {
-        return fileHandle;
-    }
-
     public void update(float delta) {
         world.step(delta, 6, 2);
 
@@ -236,6 +192,8 @@ public class Level {
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
         floor.draw(spriteBatch, delta);
 
+        portals.drawObjects(decalBatch);
+
         spriteBatch.flush();
         //TODO: pouzit decaly na vsechno aby se tomuhle zamezilo (stiny na podlaze prekryv atd)
 //        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
@@ -244,7 +202,8 @@ public class Level {
 
 //        gameObjects.drawShadows(spriteBatch);
         gameObjects.drawObjects(decalBatch);
-//        clouds.draw(decalBatch);
+
+        clouds.draw(decalBatch);
     }
 
     public boolean isInBounds(float x, float y) {
@@ -260,11 +219,47 @@ public class Level {
     }
 
     public boolean isDirty() {
-        return gameObjects.isDirty() || floor.isDirty() || logic.isDirty();
+        return gameObjects.isDirty() || floor.isDirty() || logic.isDirty() || getMetaLevel().getMetaPortals().isDirty();
     }
 
     public GameObject findIntersectingWithRay(Ray ray, Camera camera) {
-        return gameObjects.findIntersectingWithRay(ray, camera);
+        Vector3 intersection = new Vector3();
+        BoundingBox boundingBox = new BoundingBox();
+
+        float minDist = Float.MAX_VALUE;
+        GameObject candidate = null;
+
+        // Test ray against every game object we have
+        for (int i = 0; i < gameObjects.getSize(); i++) {
+            GameObject gameObject = gameObjects.get(i);
+            gameObject.sizeBoundingBox(boundingBox);
+            if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
+                if (gameObject.intersectsWithOpaque(ray, intersection.cpy())) {
+                    float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
+                    if (currentObjectDist < minDist) {
+                        minDist = currentObjectDist;
+                        candidate = gameObject;
+                    }
+                }
+            }
+        }
+
+        // Test ray against every game object we have
+        for (int i = 0; i < portals.getSize(); i++) {
+            GameObject gameObject = portals.get(i);
+            gameObject.sizeBoundingBox(boundingBox);
+            if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
+                if (gameObject.intersectsWithOpaque(ray, intersection.cpy())) {
+                    float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
+                    if (currentObjectDist < minDist) {
+                        minDist = currentObjectDist;
+                        candidate = gameObject;
+                    }
+                }
+            }
+        }
+
+        return candidate;
     }
 
     public Floor getFloor() {
@@ -292,7 +287,11 @@ public class Level {
         Gdx.app.log("Level:Logic", "\n" + logic.toString());
     }
 
-    public String getName() {
-        return fileHandle.name();
+    public MetaLevel getMetaLevel() {
+        return metaLevel;
+    }
+
+    public Portals getPortals() {
+        return portals;
     }
 }

@@ -2,7 +2,6 @@ package cz.shroomware.diorama.editor.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -20,11 +19,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.Collection;
+
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.ui.IconButton;
 import cz.shroomware.diorama.engine.Project;
+import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.DFLabel;
 import cz.shroomware.diorama.ui.NewLevelDialog;
@@ -40,6 +42,7 @@ public class LevelSelectionScreen implements Screen {
     private Stage stage;
     private Color backgroundColor = new Color(0x424242ff);
     private Project project;
+    private IconButton logicEditorButton;
 
     public LevelSelectionScreen(final EditorEngineGame game) {
         this.game = game;
@@ -67,7 +70,7 @@ public class LevelSelectionScreen implements Screen {
                 NewLevelDialog dialog = new NewLevelDialog(resources.getSkin(), resources.getDfShader(), LevelSelectionScreen.this.project, "level_") {
                     @Override
                     public void onAccepted(String name, int width, int height) {
-                        game.openEditorWithNewLevel(project, name, width, height);
+                        game.openEditorWithNewLevel(name, width, height);
                     }
                 };
                 dialog.show(stage);
@@ -85,6 +88,17 @@ public class LevelSelectionScreen implements Screen {
             }
         });
         stage.addActor(projectLabel);
+
+
+        Drawable logicEditorIcon = resources.getSkin().getDrawable(Utils.CONNECT_MODE_ICON_DRAWABLE);
+        logicEditorButton = new IconButton(resources.getSkin(), logicEditorIcon);
+        logicEditorButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.openProjectConnections();
+            }
+        });
+        stage.addActor(logicEditorButton);
     }
 
     public void setProject(Project project) {
@@ -107,14 +121,9 @@ public class LevelSelectionScreen implements Screen {
 
         verticalGroup.clear();
 
-        FileHandle[] fileHandles = project.getLevelDirHandle().list();
-        for (final FileHandle fileHandle : fileHandles) {
-            if (fileHandle.isDirectory()) {
-                // Filter directories
-                return;
-            }
-
-            LevelButtonItem horizontalGroup = new LevelButtonItem(game, project, fileHandle) {
+        Collection<MetaLevel> metaLevels = project.getMetaLevels();
+        for (final MetaLevel metaLevel : metaLevels) {
+            LevelButtonItem horizontalGroup = new LevelButtonItem(game, project, metaLevel) {
                 @Override
                 public void onDelete(LevelButtonItem button) {
                     verticalGroup.removeActor(button);
@@ -156,6 +165,8 @@ public class LevelSelectionScreen implements Screen {
         projectLabel.setPosition(
                 10,
                 stage.getHeight() - projectLabel.getHeightWithPadding() - 10);
+
+        logicEditorButton.setPosition(10, projectLabel.getYWithPadding() - 10 - logicEditorButton.getHeight());
 
         //TODO: remove this workaround
         refreshList();
@@ -205,7 +216,7 @@ public class LevelSelectionScreen implements Screen {
         Drawable background;
         Drawable backgroundPressed;
 
-        public LevelButtonItem(final EditorEngineGame game, final Project project, final FileHandle levelFileHandle) {
+        public LevelButtonItem(final EditorEngineGame game, final Project project, final MetaLevel metaLevel) {
             final EditorResources resources = game.getResources();
             final Skin skin = resources.getSkin();
 
@@ -220,7 +231,7 @@ public class LevelSelectionScreen implements Screen {
             addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.openEditor(project, levelFileHandle.name());
+                    game.openEditor(metaLevel);
                 }
             });
             addListener(new ActorGestureListener() {
@@ -248,7 +259,7 @@ public class LevelSelectionScreen implements Screen {
                             "Are you sure") {
                         @Override
                         public void onAccepted() {
-                            levelFileHandle.delete();
+                            project.deleteLevel(metaLevel.getName());
                             onDelete(LevelButtonItem.this);
                         }
                     };
@@ -256,7 +267,7 @@ public class LevelSelectionScreen implements Screen {
                 }
             });
             addActor(button);
-            addActor(new DFLabel(skin, resources.getDfShader(), levelFileHandle.name()));
+            addActor(new DFLabel(skin, resources.getDfShader(), metaLevel.getName()));
         }
 
         @Override

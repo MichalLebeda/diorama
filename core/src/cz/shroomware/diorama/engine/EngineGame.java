@@ -10,15 +10,15 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.Resources;
-import cz.shroomware.diorama.engine.level.logic.component.LevelSwitcher;
 
 public class EngineGame extends Game {
     protected Resources resources;
     protected int lastWindowedWidth;
     protected int lastWindowedHeight;
-    protected LevelSwitcher levelSwitcher = null;
+//    protected LevelSwitcher levelSwitcher = null;
     protected Screen lastScreen = null;
     protected Prototypes gameObjectPrototypes;
+    protected Project project;
 
     @Override
     public void render() {
@@ -81,7 +81,16 @@ public class EngineGame extends Game {
         return gameObjectPrototypes;
     }
 
-    public LevelSwitcher getLevelSwitcher() {
-        return levelSwitcher;
+//    public LevelSwitcher getLevelSwitcher() {
+//        return levelSwitcher;
+//    }
+
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

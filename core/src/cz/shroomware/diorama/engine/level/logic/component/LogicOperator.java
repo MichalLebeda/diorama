@@ -4,9 +4,9 @@ import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype;
 
 public abstract class LogicOperator extends LogicComponent {
-    LogicOperatorPrototype prototype;
+    cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype prototype;
 
-    public LogicOperator(LogicOperatorPrototype prototype, Identifier identifier) {
+    public LogicOperator(cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype prototype, Identifier identifier) {
         super(identifier);
         this.prototype = prototype;
     }

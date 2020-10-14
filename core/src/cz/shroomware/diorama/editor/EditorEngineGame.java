@@ -3,7 +3,6 @@ package cz.shroomware.diorama.editor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -12,12 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import cz.shroomware.diorama.editor.screen.LevelEditorScreen;
 import cz.shroomware.diorama.editor.screen.LevelSelectionScreen;
 import cz.shroomware.diorama.editor.screen.LogicEditorScreen;
+import cz.shroomware.diorama.editor.screen.PortalConnectionScreen;
 import cz.shroomware.diorama.editor.screen.ProjectSelectionScreen;
 import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.logic.Logic;
-import cz.shroomware.diorama.engine.level.logic.component.LevelSwitcher;
+import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 import cz.shroomware.diorama.engine.screen.TestLevelScreen;
 
 public class EditorEngineGame extends EngineGame {
@@ -29,7 +30,6 @@ public class EditorEngineGame extends EngineGame {
     EditorResources resources;
     ProjectSelectionScreen projectSelectionScreen;
     Preferences preferences;
-    Project project; //TODO move to parent?
 
     @Override
     public void create() {
@@ -61,7 +61,7 @@ public class EditorEngineGame extends EngineGame {
         projectSelectionScreen = new ProjectSelectionScreen(this, Gdx.files.external(""));
 
         if (preferences.contains(LAST_PROJECT_FILE)) {
-            Project project = new Project(Gdx.files.external(preferences.getString(LAST_PROJECT_FILE)));
+            Project project = new Project(this, Gdx.files.external(preferences.getString(LAST_PROJECT_FILE)));
             if (project.getFileHandle().exists()) {
                 openLevelSelection(project);
                 projectSelectionScreen.setCurrentFileHandle(project.getFileHandle().parent());
@@ -109,14 +109,14 @@ public class EditorEngineGame extends EngineGame {
         }
     }
 
-    public void openEditor(Project project, String filename) {
-        Level level = new Level(project.getLevelFileHandle(filename), this);
+    public void openEditor(MetaLevel metaLevel) {
+        Level level = new Level(metaLevel, this);
         editorScreen = new LevelEditorScreen(this, level);
         setScreen(editorScreen);
     }
 
-    public void openEditorWithNewLevel(Project project, String filename, int width, int height) {
-        Level level = new Level(project.getLevelFileHandle(filename), this, width, height);
+    public void openEditorWithNewLevel(String name, int width, int height) {
+        Level level = new Level(project.createNewLevel(name), this, width, height);
         editorScreen = new LevelEditorScreen(this, level);
         setScreen(editorScreen);
     }
@@ -128,13 +128,17 @@ public class EditorEngineGame extends EngineGame {
         }
     }
 
+    public void back() {
+        setScreen(lastScreen);
+    }
+
     public void openProjectSelection() {
         setScreen(projectSelectionScreen);
     }
 
     public void openLevelSelection(Project project) {
-        this.project = project;
-        levelSwitcher = new LevelSwitcher(this, project.getLevels());
+        setProject(project);
+//        levelSwitcher = new LevelSwitcher(this, project.getLevels());
 
         preferences.putString(LAST_PROJECT_FILE, project.getFileHandle().path());
         preferences.flush();
@@ -143,21 +147,28 @@ public class EditorEngineGame extends EngineGame {
         setScreen(levelSelectionScreen);
     }
 
-    public void openLogicEditor(FileHandle fileHandle, Logic logic) {
-        setScreen(new LogicEditorScreen(this, fileHandle, logic));
+    public void openProjectConnections() {
+        setScreen(new PortalConnectionScreen(this, project));
+    }
+
+    public void openLogicEditor(MetaLevel metaLevel, Logic logic) {
+        setScreen(new LogicEditorScreen(this, metaLevel.getName(), logic));
     }
 
     public void openSelection() {
         setScreen(levelSelectionScreen);
     }
 
-    public void openLevel(FileHandle fileHandle) {
-        setScreen(createTestLevelScreen(fileHandle));
+    public void openLevel(MetaPortal metaPortal) {
+        Level level = new Level(metaPortal.getParentLevel(), this);
+        level.setIgnoredPortal(metaPortal);
+        TestLevelScreen testLevelScreen = new TestLevelScreen(this, level, metaPortal.getX(), metaPortal.getY());
+        setScreen(testLevelScreen);
     }
 
-    protected TestLevelScreen createTestLevelScreen(FileHandle fileHandle) {
-        Level level = new Level(fileHandle, this);
-        TestLevelScreen testLevelScreen = new TestLevelScreen(this, level);
-        return testLevelScreen;
+    public void openLevel(MetaLevel metaLevel, float x, float y) {
+        Level level = new Level(metaLevel, this);
+        TestLevelScreen testLevelScreen = new TestLevelScreen(this, level, x, y);
+        setScreen(testLevelScreen);
     }
 }

@@ -23,7 +23,7 @@ import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.GameObjects;
+import cz.shroomware.diorama.engine.level.object.IdManager;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.LeftToBackgroundLabel;
@@ -104,7 +104,7 @@ public class Hud extends Stage {
         addActor(messages);
 
         projectNameLabel = new LeftToBackgroundLabel(
-                level.getFileHandle().name(),
+                level.getMetaLevel().getName(),
                 resources.getSkin(),
                 resources.getDfShader(),
                 selectedItemIndicator.getX() - 10);
@@ -126,7 +126,7 @@ public class Hud extends Stage {
         logicEditorButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.openLogicEditor(level.getFileHandle(), level.getLogic());
+                game.openLogicEditor(level.getMetaLevel(), level.getLogic());
             }
         });
 
@@ -339,14 +339,14 @@ public class Hud extends Stage {
                 showLabelsIndicator.getY());
     }
 
-    public void openIdAssignDialog(final GameObjects gameObjects, final GameObject gameObject) {
+    public void openIdAssignDialog(final IdManager idManager, final GameObject gameObject) {
         NameDialog nameDialog = new NameDialog(resources.getSkin(),
                 resources.getDfShader(),
                 "Set Object Tag:",
                 gameObject.getIdentifier().isSet() ? gameObject.getIdentifier().getIdString() : "") {
             @Override
             public void onAccepted(String name) {
-                gameObjects.assignId(gameObject, name, messages);
+                idManager.assignId(gameObject, name, messages);
             }
         };
 

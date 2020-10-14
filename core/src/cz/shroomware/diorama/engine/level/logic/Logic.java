@@ -1,6 +1,7 @@
 package cz.shroomware.diorama.engine.level.logic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 
 import java.io.BufferedReader;
@@ -16,7 +17,9 @@ import java.util.Set;
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.logic.component.LogicOperator;
+import cz.shroomware.diorama.engine.level.logic.prototype.AndGatePrototype;
 import cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype;
+import cz.shroomware.diorama.engine.level.logic.prototype.OrGatePrototype;
 
 public class Logic {
     boolean dirty = false;
@@ -28,6 +31,11 @@ public class Logic {
     HashMap<String, Integer> prototypeNameToLastId = new HashMap<>();
 
     ArrayList<LogicComponent> registeredWithoutId = new ArrayList<>();
+
+    public Logic() {
+        addPureLogicComponentPrototype(new OrGatePrototype());
+        addPureLogicComponentPrototype(new AndGatePrototype());
+    }
 
     public void addPureLogicComponentPrototype(LogicOperatorPrototype prototype) {
         if (nameToPureLogicPrototypes.containsKey(prototype.getName())) {
@@ -80,6 +88,11 @@ public class Logic {
     }
 
     public void sendEvent(Event event) {
+        if (event == null) {
+            Gdx.app.error("Level", "called sendEvent with null");
+            return;
+        }
+
         Gdx.app.log("Logic", "Logic recieved event: " + event.toString());
 
         ArrayList<Handler> connectedHandlers = eventToHandlersConnections.get(event);
@@ -203,7 +216,7 @@ public class Logic {
         if (oldId != null && !oldId.isEmpty()) {
             registered.remove(oldId);
             register(component);
-            Gdx.app.log("Logic", "ID of" + component.getIdentifier().getIdString() + " reregistered because of new ID");
+            Gdx.app.log("Logic", "ID of " + component.getIdentifier().getIdString() + " reregistered because of new ID");
         } else {
             if (registeredWithoutId.contains(component)) {
                 registeredWithoutId.remove(component);
@@ -255,6 +268,19 @@ public class Logic {
         dirty = true;
     }
 
+    public void save(FileHandle fileHandle) {
+        if (isDirty()) {
+            OutputStream outputStream = fileHandle.write(false);
+            try {
+                save(outputStream);
+                outputStream.flush();
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void save(OutputStream outputStream) throws IOException {
         int size = idToLogicOperator.size();
 
@@ -279,6 +305,10 @@ public class Logic {
             }
         }
         dirty = false;
+    }
+
+    public void clear() {
+
     }
 
     public void load(BufferedReader bufferedReader) throws IOException {

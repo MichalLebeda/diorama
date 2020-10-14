@@ -1,26 +1,16 @@
-package cz.shroomware.diorama.editor.ui.logic;
+package cz.shroomware.diorama.editor.ui.portal;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.engine.level.logic.Logic;
+import cz.shroomware.diorama.engine.Project;
 
-public class LogicEditor {
-    protected Logic logic;
-    protected String name;
+public class ConnectionEditor {
+    protected Project project;
 
     protected Mode mode = Mode.CONNECT;
     protected Mode modeBeforeDeleteToggle = mode;
 
-    public LogicEditor(Logic logic, String name) {
-        this.logic = logic;
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Logic getLogic() {
-        return logic;
+    public ConnectionEditor(Project project) {
+        this.project = project;
     }
 
     public void setNextMode() {

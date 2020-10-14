@@ -54,7 +54,7 @@ public class LogicGraph extends Stage {
         this.resources = resources;
         this.shapeRenderer = shapeRenderer;
 
-        preferences = Gdx.app.getPreferences(logicEditor.getLevelFileHandle().name());
+        preferences = Gdx.app.getPreferences(logicEditor.getName());
 
         OrthographicCamera camera = (OrthographicCamera) getCamera();
         camera.position.x = preferences.getFloat("camera.x", 0);
@@ -112,9 +112,9 @@ public class LogicGraph extends Stage {
         preferences.putFloat("camera.y", getCamera().position.y);
         preferences.putFloat("camera.zoom", ((OrthographicCamera) getCamera()).zoom);
 
-        for (Map.Entry<LogicComponent, LogicBlock> entry : blocks.entrySet()) {
-            LogicComponent logicComponent = entry.getKey();
-            LogicBlock logicBlock = entry.getValue();
+        for (LogicBlock logicBlock : blocks.values()) {
+            LogicComponent logicComponent = logicBlock.getLogicComponent();
+
             preferences.putFloat(logicComponent.getIdentifier().getIdString() + ".x", logicBlock.getX());
             preferences.putFloat(logicComponent.getIdentifier().getIdString() + ".y", logicBlock.getY());
         }

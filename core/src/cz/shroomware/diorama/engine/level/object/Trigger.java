@@ -52,7 +52,10 @@ public class Trigger extends GameObject {
         }
     }
 
-    public void addContact() {
+    @Override
+    public void onContactBegin() {
+        super.onContactBegin();
+
         contacts++;
         if (contacts == 1) {
             if (logicComponent.isRegistered()) {
@@ -61,7 +64,10 @@ public class Trigger extends GameObject {
         }
     }
 
-    public void removeContact() {
+    @Override
+    public void onContactEnd() {
+        super.onContactEnd();
+
         contacts--;
         if (contacts == 0) {
             if (logicComponent.isRegistered()) {

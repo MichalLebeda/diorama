@@ -6,8 +6,8 @@ import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.prototype.LogicOperatorPrototype;
 
 public class AndGate extends LogicOperator {
-    Event outputTrue;
-    Event outputFalse;
+    cz.shroomware.diorama.engine.level.logic.Event outputTrue;
+    cz.shroomware.diorama.engine.level.logic.Event outputFalse;
 
     boolean aValue = false;
     boolean bValue = false;
@@ -15,21 +15,21 @@ public class AndGate extends LogicOperator {
     public AndGate(LogicOperatorPrototype prototype, Identifier identifier) {
         super(prototype, identifier);
 
-        addHandler(new Handler("set_a_true") {
+        addHandler(new cz.shroomware.diorama.engine.level.logic.Handler("set_a_true") {
             @Override
             public void handle() {
                 aValue = true;
                 eval();
             }
         });
-        addHandler(new Handler("set_a_false") {
+        addHandler(new cz.shroomware.diorama.engine.level.logic.Handler("set_a_false") {
             @Override
             public void handle() {
                 aValue = false;
                 eval();
             }
         });
-        addHandler(new Handler("set_b_true") {
+        addHandler(new cz.shroomware.diorama.engine.level.logic.Handler("set_b_true") {
             @Override
             public void handle() {
                 bValue = true;
@@ -44,7 +44,7 @@ public class AndGate extends LogicOperator {
             }
         });
 
-        outputTrue = new Event("output_true");
+        outputTrue = new cz.shroomware.diorama.engine.level.logic.Event("output_true");
         outputFalse = new Event("output_false");
         addEvent(outputTrue);
         addEvent(outputFalse);

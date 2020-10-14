@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Collection;
 import java.util.Date;
 
 import cz.shroomware.diorama.Utils;
@@ -34,6 +35,7 @@ import cz.shroomware.diorama.editor.ui.Hud;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
+import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
 public class LevelEditorScreen extends BaseLevelScreen {
@@ -75,7 +77,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         screenCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        editorTool = new EditorTool(level.getFloor(), level.getGameObjects(), editor);
+        editorTool = new EditorTool(level, editor);
 
         cursor = new Cursor(editor, resources, level, defaultCursorRegion);
 
@@ -88,7 +90,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public void show() {
-        Gdx.graphics.setTitle("Level Editor - " + level.getName());
+        Gdx.graphics.setTitle("Level Editor - " + level.getMetaLevel().getName());
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
@@ -295,9 +297,9 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 return true;
             case Input.Keys.W:
                 if (save()) {
-                    hud.showMessage("Saved as " + level.getFileHandle().name());
+                    hud.showMessage("Saved as " + level.getMetaLevel().getName());
                 } else {
-                    hud.showMessage("NOT saved as " + level.getFileHandle().name());
+                    hud.showMessage("NOT saved as " + level.getMetaLevel().getName());
                 }
                 return true;
 //            case Input.Keys.L:
@@ -323,13 +325,30 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 return true;
             case Input.Keys.P:
                 save();
-                game.openLevel(level.getFileHandle());
+                Collection<MetaPortal> portals = level.getMetaLevel().getMetaPortals().getValues();
+                MetaPortal entryPortal = null;
+                for (MetaPortal candidate : portals) {
+                    if (entryPortal == null) {
+                        entryPortal = candidate;
+                    } else {
+                        if (candidate.getIdentifier().getIdString().equals(Utils.START_PORTAL)) {
+                            entryPortal = candidate;
+                        }
+                    }
+                }
+
+                if (entryPortal != null) {
+                    game.openLevel(entryPortal);
+                } else {
+                    game.openLevel(level.getMetaLevel(), level.getWidth() / 2f, 0);
+                }
+
                 return true;
             case Input.Keys.V:
                 level.dumpLogic();
                 return true;
             case Input.Keys.SEMICOLON:
-                game.openLogicEditor(level.getFileHandle(), level.getLogic());
+                game.openLogicEditor(level.getMetaLevel(), level.getLogic());
                 return true;
             case Input.Keys.S:
                 editor.toggleHardSnap();
@@ -398,7 +417,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         if (editor.isMode(Editor.Mode.ITEM_MOVE) && editor.isMovingObject()) {
             if (editor.isMovingObject()) {
-                intersection = getRayIntersectionWithFloor(screenX, screenY);
+                intersection = new Vector3();
 
                 Ray ray = camera.getPickRay(screenX, screenY);
                 ray.origin.z -= offset.z;
@@ -461,26 +480,13 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 return true;
             } else if (editor.isMode(Editor.Mode.TILE)) {
                 if (editor.getCurrentlySelectedPrototype() != null) {
-                    Vector3 intersection;
-                    Ray ray = camera.getPickRay(screenX, screenY);
-                    intersection = ray.direction.cpy().add(ray.origin);
-                    Intersector.intersectRayPlane(ray,
-                            floorPlane,
-                            intersection);
-
+                    Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
                     editorTool.setTileRegion(intersection.x, intersection.y, editor.getPrototypeIcon());
                     return true;
                 }
             } else if (editor.isMode(Editor.Mode.TILE_BUCKET)) {
                 if (editor.getCurrentlySelectedPrototype() != null) {
-                    //TODO use general method
-                    Vector3 intersection;
-                    Ray ray = camera.getPickRay(screenX, screenY);
-                    intersection = ray.direction.cpy().add(ray.origin);
-                    Intersector.intersectRayPlane(ray,
-                            floorPlane,
-                            intersection);
-
+                    Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
                     editorTool.tileRegionBucketAt(intersection.x, intersection.y, editor.getPrototypeIcon());
                     return true;
                 }
@@ -510,6 +516,13 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
                     return true;
                 }
+            } else if (editor.isMode(Editor.Mode.PORTAL)) {
+                Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
+                level.getPortals().create(intersection.x,
+                        intersection.y,
+                        1,
+                        1,
+                        "" + MathUtils.random(0, 100));
             }
         }
 
@@ -710,7 +723,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
     public void hide() {
         save();
 
-        Gdx.app.error("hide", "editor");
+        Gdx.app.log("Editor", "hide()");
         super.hide();
     }
 }

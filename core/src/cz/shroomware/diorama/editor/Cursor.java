@@ -87,6 +87,9 @@ public class Cursor extends AtlasRegionGameObject {
                     drawFloorCursor(spriteBatch);
                 }
                 break;
+            case PORTAL:
+                drawFloorCursor(spriteBatch);
+                break;
         }
     }
 

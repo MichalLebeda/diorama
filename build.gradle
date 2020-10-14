@@ -88,5 +88,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
+        // or 29.0-android for the Android flavor
+        api group: 'com.google.guava', name: 'guava', version: '29.0-jre'
     }
 }

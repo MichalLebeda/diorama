@@ -1,6 +1,5 @@
 package cz.shroomware.diorama.engine.level.object;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,7 +31,7 @@ import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public abstract class GameObject implements Identifiable {
-    protected Prototype prototype;
+    protected Prototype prototype = null;
     protected UpdatedDecal decal;
     protected Sprite shadowSprite;
     protected Tile tileAttachedTo = null;
@@ -41,6 +40,9 @@ public abstract class GameObject implements Identifiable {
     protected Identifier identifier = new Identifier();
     protected boolean selected = false;
     protected boolean positionDirty = false;
+
+    protected GameObject() {
+    }
 
     protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
         this.prototype = prototype;
@@ -85,7 +87,6 @@ public abstract class GameObject implements Identifiable {
         if (hasBody()) {
             if (body.getType() != BodyDef.BodyType.StaticBody && body.isAwake()) {
                 positionDirty = true;
-                Gdx.app.log("GameObject", prototype.getName() + " active");
             }
         }
 
@@ -265,6 +266,10 @@ public abstract class GameObject implements Identifiable {
         return decal.getWidth();
     }
 
+    public boolean hasPrototype() {
+        return prototype != null;
+    }
+
     public Prototype getPrototype() {
         return prototype;
     }
@@ -372,6 +377,16 @@ public abstract class GameObject implements Identifiable {
     public void rotateY(float angle) {
         decal.rotateY(angle);
     }
+
+    public void onContactBegin() {
+    }
+
+    ;
+
+    public void onContactEnd() {
+    }
+
+    ;
 
 
 //    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {

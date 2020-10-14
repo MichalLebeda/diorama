@@ -1,7 +1,6 @@
 package cz.shroomware.diorama.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -54,8 +53,7 @@ public abstract class NewLevelDialog extends Dialog {
                 String name = levelNameField.getText();
 
                 if (levelNameField.getText().length() > 0) {
-                    FileHandle fileHandle = project.getLevelFileHandle(name);
-                    if (fileHandle.exists()) {
+                    if (project.levelExists(levelNameField.getText())) {
                         Gdx.app.error("NewLevelDialog", "Level exists");
                         return;
                     }
