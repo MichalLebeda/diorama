@@ -121,6 +121,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
         spriteBatch.getShader().setUniformf("time", time / 10f);
 
         level.update(delta);
+        level.getPortals().drawObjects(decalBatch);
         level.draw(spriteBatch, decalBatch, delta);
 
         if (takingScreenshot) {

@@ -194,8 +194,6 @@ public class Level {
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
         floor.draw(spriteBatch, delta);
 
-        portals.drawObjects(decalBatch);
-
         spriteBatch.flush();
         //TODO: pouzit decaly na vsechno aby se tomuhle zamezilo (stiny na podlaze prekryv atd)
 //        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
