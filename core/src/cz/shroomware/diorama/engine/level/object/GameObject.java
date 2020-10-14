@@ -37,15 +37,16 @@ public abstract class GameObject implements Identifiable {
     protected Tile tileAttachedTo = null;
     protected LogicComponent logicComponent = null;
     protected Body body = null;
-    protected Identifier identifier = new Identifier();
+    protected Identifier identifier;
     protected boolean selected = false;
     protected boolean positionDirty = false;
 
     protected GameObject() {
     }
 
-    protected GameObject(Vector3 position, TextureRegion region, Prototype prototype) {
+    protected GameObject(Vector3 position, TextureRegion region, Prototype prototype, Identifier identifier) {
         this.prototype = prototype;
+        this.identifier = identifier;
 
         decal = UpdatedDecal.newDecal(region, true);
         decal.rotateX(90);
@@ -116,18 +117,17 @@ public abstract class GameObject implements Identifiable {
     @Override
     public String toString() {
         String string = "";
-        if (identifier.isSet()) {
-            string += prototype.getName() + ":" + identifier.getIdString() + " ";
-        } else {
-            string += prototype.getName() + " ";
-        }
+
+        string += prototype.getName() + " ";
         string += decal.getX() + " ";
         string += decal.getY() + " ";
         string += decal.getZ() + " ";
         string += decal.getRotation().x + " ";
         string += decal.getRotation().y + " ";
         string += decal.getRotation().z + " ";
-        string += decal.getRotation().w;
+        string += decal.getRotation().w + " ";
+        string += identifier.toString();
+
         return string;
     }
 
@@ -381,12 +381,9 @@ public abstract class GameObject implements Identifiable {
     public void onContactBegin() {
     }
 
-    ;
 
     public void onContactEnd() {
     }
-
-    ;
 
 
 //    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {

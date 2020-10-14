@@ -29,6 +29,7 @@ public class Project {
     private FileHandle fileHandle;
     private HashMap<String, MetaLevel> metaLevels = new HashMap<>();
     private EditorEngineGame game;
+    private IdGenerator idGenerator;
 
     public Project(EditorEngineGame editorEngineGame, FileHandle parent, String name) {
         this.name = name;
@@ -42,7 +43,7 @@ public class Project {
 
         portalConnector = new PortalConnector(game);
 
-        loadConnections();
+        load();
     }
 
     public Project(EditorEngineGame editorEngineGame, FileHandle file) {
@@ -56,7 +57,40 @@ public class Project {
 
         portalConnector = new PortalConnector(game);
 
+        load();
+    }
+
+    private void load() {
+        loadIdGenerator();
         loadConnections();
+    }
+
+    private void loadIdGenerator() {
+        FileHandle projectConfigHandle = getProjectConfigHandle();
+        if (projectConfigHandle.exists()) {
+            InputStream inputStream = projectConfigHandle.read();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            try {
+                int lastId = Integer.parseInt(bufferedReader.readLine());
+                idGenerator = new IdGenerator(lastId);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                bufferedReader.close();
+                inputStreamReader.close();
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            idGenerator = new IdGenerator(-1);
+            Gdx.app.log("Project", "No project file");
+        }
+
     }
 
     private void loadConnections() {
@@ -112,6 +146,15 @@ public class Project {
 
         getLevelDirHandle().mkdirs();
     }
+
+    public void saveConfig() {
+        if (idGenerator.isDirty()) {
+            Gdx.app.log("IdGenerator", "saved, last id: " + idGenerator.getLastId());
+            FileHandle file = getProjectConfigHandle();
+            file.writeString(idGenerator.getLastId() + "\n", false);
+        }
+    }
+
 
     public String getName() {
         return name;
@@ -208,5 +251,9 @@ public class Project {
 
     public PortalConnector getPortalConnector() {
         return portalConnector;
+    }
+
+    public IdGenerator getIdGenerator() {
+        return idGenerator;
     }
 }

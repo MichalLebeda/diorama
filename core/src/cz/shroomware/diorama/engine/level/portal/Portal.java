@@ -25,9 +25,8 @@ public class Portal extends GameObject {
 
         super(new Vector3(metaPortal.getPosition(), 0),
                 resources.getObjectAtlas().findRegion("cursor"),
-                null);
-
-        identifier = metaPortal.identifier;
+                null,
+                metaPortal.getIdentifier());
 
         this.portalConnector = portalConnector;
         this.metaPortal = metaPortal;

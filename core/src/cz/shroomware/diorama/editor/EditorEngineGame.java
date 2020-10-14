@@ -86,6 +86,10 @@ public class EditorEngineGame extends EngineGame {
 
     @Override
     public void dispose() {
+        if (project != null) {
+            project.saveConfig();
+        }
+
         getScreen().hide();
 
         if (editorScreen != null) {

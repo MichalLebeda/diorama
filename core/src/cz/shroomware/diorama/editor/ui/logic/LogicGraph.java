@@ -115,8 +115,8 @@ public class LogicGraph extends Stage {
         for (LogicBlock logicBlock : blocks.values()) {
             LogicComponent logicComponent = logicBlock.getLogicComponent();
 
-            preferences.putFloat(logicComponent.getIdentifier().getIdString() + ".x", logicBlock.getX());
-            preferences.putFloat(logicComponent.getIdentifier().getIdString() + ".y", logicBlock.getY());
+            preferences.putFloat(logicComponent.getIdentifier().getId() + ".x", logicBlock.getX());
+            preferences.putFloat(logicComponent.getIdentifier().getId() + ".y", logicBlock.getY());
         }
 
         preferences.flush();
@@ -165,8 +165,8 @@ public class LogicGraph extends Stage {
                 }
             };
 
-            float x = preferences.getFloat(logicComponent.getIdentifier().getIdString() + ".x", 0);
-            float y = preferences.getFloat(logicComponent.getIdentifier().getIdString() + ".y", 0);
+            float x = preferences.getFloat(logicComponent.getIdentifier().getId() + ".x", 0);
+            float y = preferences.getFloat(logicComponent.getIdentifier().getId() + ".y", 0);
             block.setPosition(x, y);
             blocks.put(logicComponent, block);
             eventButtons.putAll(block.getEventButtonHashMap());

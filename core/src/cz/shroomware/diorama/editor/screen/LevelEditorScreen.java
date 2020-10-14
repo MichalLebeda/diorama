@@ -32,11 +32,14 @@ import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.EditorTool;
 import cz.shroomware.diorama.editor.ui.Hud;
+import cz.shroomware.diorama.engine.IdGenerator;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 import cz.shroomware.diorama.engine.level.portal.Portal;
+import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
 public class LevelEditorScreen extends BaseLevelScreen {
@@ -176,16 +179,18 @@ public class LevelEditorScreen extends BaseLevelScreen {
         for (int i = 0; i < gameObjects.getSize(); i++) {
             GameObject object = gameObjects.get(i);
 
-            if (object.getIdentifier().isSet()) {
+            if (object.getIdentifier().isNameSet()) {
                 Vector3 position = object.getPosition().cpy();
-                drawLabel(position, object.getIdentifier().getIdString(), font);
+                drawLabel(position, object.getIdentifier().getName(), font);
             }
         }
 
         Collection<Portal> portals = level.getPortals().getPortals();
         for (Portal portal : portals) {
-            Vector3 position = portal.getPosition().cpy();
-            drawLabel(position, portal.getMetaPortal().getIdentifier().getIdString(), font);
+            if (portal.getIdentifier().isNameSet()) {
+                Vector3 position = portal.getPosition().cpy();
+                drawLabel(position, portal.getMetaPortal().getIdentifier().getName(), font);
+            }
         }
 
         spriteBatch.end();
@@ -256,7 +261,11 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     private void placeCurrentObjectAtCursorPosition() {
         if (cursor.isPlacingItemAllowed() && editor.hasSelectedPrototype()) {
-            GameObject gameObject = editor.getCurrentlySelectedPrototype().createAt(cursor.getPosition(), level.getBoxFactory());
+            IdGenerator idGenerator = level.getMetaLevel().getParentProject().getIdGenerator();
+            Prototype currentlySelectedPrototype = editor.getCurrentlySelectedPrototype();
+            GameObject gameObject = currentlySelectedPrototype.createAt(cursor.getPosition(),
+                    level.getBoxFactory(),
+                    idGenerator.generateId());
             gameObject.setRotation(cursor.getRotation());
             editorTool.addObject(gameObject, true);
             if (showAddRemoveMessages) {
@@ -347,8 +356,11 @@ public class LevelEditorScreen extends BaseLevelScreen {
                     if (entryPortal == null) {
                         entryPortal = candidate;
                     } else {
-                        if (candidate.getIdentifier().getIdString().equals(Utils.START_PORTAL)) {
-                            entryPortal = candidate;
+                        Identifier identifier = candidate.getIdentifier();
+                        if (identifier.isNameSet()) {
+                            if (candidate.getIdentifier().getName().equals(Utils.START_PORTAL)) {
+                                entryPortal = candidate;
+                            }
                         }
                     }
                 }
@@ -495,7 +507,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
             } else if (editor.isMode(Editor.Mode.ID_ASSIGN)) {
                 GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
                 if (gameObject != null) {
-                    hud.openIdAssignDialog(level.getGameObjects(), gameObject);
+                    hud.openIdAssignDialog(level.getGameObjects(), level.getMetaLevel().getMetaPortals(), gameObject);
                 }
                 return true;
             } else if (editor.isMode(Editor.Mode.TILE)) {
@@ -541,8 +553,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
                 level.getPortals().create(intersection.x,
                         intersection.y,
                         1,
-                        1,
-                        "" + MathUtils.random(0, 100));
+                        1);
             }
         }
 

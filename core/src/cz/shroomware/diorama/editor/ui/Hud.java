@@ -23,7 +23,9 @@ import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.object.GameObject;
-import cz.shroomware.diorama.engine.level.object.IdManager;
+import cz.shroomware.diorama.engine.level.object.GameObjects;
+import cz.shroomware.diorama.engine.level.portal.MetaPortals;
+import cz.shroomware.diorama.engine.level.portal.Portal;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.ui.BackgroundLabel;
 import cz.shroomware.diorama.ui.LeftToBackgroundLabel;
@@ -339,14 +341,19 @@ public class Hud extends Stage {
                 showLabelsIndicator.getY());
     }
 
-    public void openIdAssignDialog(final IdManager idManager, final GameObject gameObject) {
+    public void openIdAssignDialog(final GameObjects gameObjects, final MetaPortals portals, final GameObject gameObject) {
         NameDialog nameDialog = new NameDialog(resources.getSkin(),
                 resources.getDfShader(),
                 "Set Object Tag:",
-                gameObject.getIdentifier().isSet() ? gameObject.getIdentifier().getIdString() : "") {
+                gameObject.getIdentifier().isNameSet() ? gameObject.getIdentifier().getName() : "") {
             @Override
             public void onAccepted(String name) {
-                idManager.assignId(gameObject, name, messages);
+                gameObject.getIdentifier().setName(name);
+                if (gameObject instanceof Portal) {
+                    portals.setDirty();
+                } else {
+                    gameObjects.setDirty();
+                }
             }
         };
 

@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
 public class AtlasRegionGameObject extends GameObject {
     //TODO add shadows everywhere
 
-    public AtlasRegionGameObject(Vector3 position, AtlasRegionPrototype prototype) {
-        super(position, prototype.getObjectRegion(), prototype);
+    public AtlasRegionGameObject(Vector3 position, AtlasRegionPrototype prototype, Identifier identifier) {
+        super(position, prototype.getObjectRegion(), prototype, identifier);
         createShadowSprite(prototype);
     }
 

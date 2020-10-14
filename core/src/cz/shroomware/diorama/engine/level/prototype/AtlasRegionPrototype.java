@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.AtlasRegionGameObject;
 import cz.shroomware.diorama.engine.level.object.GameObject;
@@ -38,8 +39,8 @@ public class AtlasRegionPrototype extends Prototype {
     }
 
     @Override
-    public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
-        return new AtlasRegionGameObject(position, this);
+    public GameObject createAt(Vector3 position, BoxFactory boxFactory, Identifier identifier) {
+        return new AtlasRegionGameObject(position, this, identifier);
     }
 
     @Override

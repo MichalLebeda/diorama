@@ -73,6 +73,10 @@ public class EngineGame extends Game {
 
     @Override
     public void setScreen(Screen screen) {
+        if (this.project != null) {
+            this.project.saveConfig();
+        }
+
         lastScreen = getScreen();
         super.setScreen(screen);
     }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.fx.LifespanParticle;
 import cz.shroomware.diorama.engine.level.fx.Particle;
 import cz.shroomware.diorama.engine.level.fx.ParticleEmitter;
@@ -21,8 +22,8 @@ public class Fire extends GameObject {
     protected float time = 0;
     protected State state = State.OFF;
 
-    public Fire(Vector3 position, final FirePrototype prototype) {
-        super(position, prototype.getStartAnim().getKeyFrame(0), prototype);
+    public Fire(Vector3 position, final FirePrototype prototype, Identifier identifier) {
+        super(position, prototype.getStartAnim().getKeyFrame(0), prototype, identifier);
 
         startAnim = prototype.getStartAnim();
         endAnim = prototype.getEndAnim();

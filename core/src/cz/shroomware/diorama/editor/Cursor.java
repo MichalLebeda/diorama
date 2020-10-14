@@ -27,7 +27,7 @@ public class Cursor extends AtlasRegionGameObject {
                   EditorResources resources,
                   Level level,
                   TextureAtlas.AtlasRegion defaultRegion) {
-        super(Vector3.Zero, new AtlasRegionPrototype(resources, defaultRegion));
+        super(Vector3.Zero, new AtlasRegionPrototype(resources, defaultRegion), null);
         this.editor = editor;
         this.level = level;
         this.defaultRegion = defaultRegion;

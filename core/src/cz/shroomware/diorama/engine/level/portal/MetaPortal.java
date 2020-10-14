@@ -15,20 +15,29 @@ public class MetaPortal {
     protected float width;
     protected float height;
 
-    public MetaPortal(MetaLevel parentLevel, Vector2 position, float width, float height, String id) {
+    public MetaPortal(MetaLevel parentLevel,
+                      Vector2 position,
+                      float width,
+                      float height,
+                      Identifier identifier) {
         this.parentLevel = parentLevel;
         this.position = position;
         this.width = width;
         this.height = height;
-        this.identifier = new Identifier(id);
+        this.identifier = identifier;
     }
 
-    public MetaPortal(MetaLevel parentLevel, float x, float y, float width, float height, String id) {
+    public MetaPortal(MetaLevel parentLevel,
+                      float x,
+                      float y,
+                      float width,
+                      float height,
+                      Identifier identifier) {
         this.parentLevel = parentLevel;
         this.position = new Vector2(x, y);
         this.width = width;
         this.height = height;
-        this.identifier = new Identifier(id);
+        this.identifier = identifier;
     }
 
     @Override
@@ -54,10 +63,7 @@ public class MetaPortal {
         string += position.y + " ";
         string += width + " ";
         string += height;
-
-        if (identifier.isSet()) {
-            string += " " + identifier.getIdString();
-        }
+        string += " " + identifier.toString();
 
         return string;
     }

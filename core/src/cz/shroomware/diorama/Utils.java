@@ -49,6 +49,8 @@ public class Utils {
 
     public static final float SHADOW_SCALE = 2;
 
+    public static final int INIT_ID = -1;
+
     public static float round(float input, float step) {
         return ((Math.round(input / step)) * step);
     }

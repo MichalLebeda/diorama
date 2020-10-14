@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import cz.shroomware.diorama.engine.IdGenerator;
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.logic.component.LogicOperator;
@@ -23,16 +24,18 @@ import cz.shroomware.diorama.engine.level.logic.prototype.OrGatePrototype;
 
 public class Logic {
     boolean dirty = false;
-    HashMap<String, LogicComponent> registered = new HashMap<>();
+    IdGenerator idGenerator;
+    HashMap<Integer, LogicComponent> registered = new HashMap<>();
     HashMap<Event, ArrayList<Handler>> eventToHandlersConnections = new HashMap<>();
 
     HashMap<String, LogicOperatorPrototype> nameToPureLogicPrototypes = new HashMap<>();
-    HashMap<String, LogicOperator> idToLogicOperator = new HashMap<>();
+    HashMap<Integer, LogicOperator> idToLogicOperator = new HashMap<>();
     HashMap<String, Integer> prototypeNameToLastId = new HashMap<>();
 
     ArrayList<LogicComponent> registeredWithoutId = new ArrayList<>();
 
-    public Logic() {
+    public Logic(IdGenerator idGenerator) {
+        this.idGenerator = idGenerator;
         addPureLogicComponentPrototype(new OrGatePrototype());
         addPureLogicComponentPrototype(new AndGatePrototype());
     }
@@ -108,7 +111,7 @@ public class Logic {
     }
 
     public void connect(Event event, Handler handler) {
-        if (!event.getParent().getIdentifier().isSet() | !handler.getParent().getIdentifier().isSet()) {
+        if (!event.getParent().getIdentifier().isNameSet() | !handler.getParent().getIdentifier().isNameSet()) {
             Gdx.app.error("Logic", "Cannot connect, missing ID form one of the objects");
             return;
         }
@@ -166,12 +169,12 @@ public class Logic {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("\nComponents:\n");
 
-        Set<Map.Entry<String, LogicComponent>> entries = registered.entrySet();
-        for (Map.Entry<String, LogicComponent> entry : entries) {
+        Set<Map.Entry<Integer, LogicComponent>> entries = registered.entrySet();
+        for (Map.Entry<Integer, LogicComponent> entry : entries) {
             stringBuilder.append("key: ");
             stringBuilder.append(entry.getKey());
             stringBuilder.append(" value: ");
-            stringBuilder.append(entry.getValue().getIdentifier().getIdString());
+            stringBuilder.append(entry.getValue().getIdentifier().toString());
             stringBuilder.append("\n");
         }
         stringBuilder.append("\nEvents:\n");
@@ -206,32 +209,12 @@ public class Logic {
         return stringBuilder.toString();
     }
 
-    /**
-     * Has to be called when any component ID change occurs
-     *
-     * @param component Component whose ID was changed
-     * @param oldId     Old ID of given component
-     */
-    public void componentIdChange(LogicComponent component, String oldId) {
-        if (oldId != null && !oldId.isEmpty()) {
-            registered.remove(oldId);
-            register(component);
-            Gdx.app.log("Logic", "ID of " + component.getIdentifier().getIdString() + " reregistered because of new ID");
-        } else {
-            if (registeredWithoutId.contains(component)) {
-                registeredWithoutId.remove(component);
-                Gdx.app.log("Logic", "Component has new ID so it is now properly registered: " + component.getIdentifier().getIdString());
-                register(component);
-            }
-        }
-    }
-
     public void register(LogicComponent component) {
-        if (component.getIdentifier().isSet()) {
+        if (component.getIdentifier().isNameSet()) {
             if (component instanceof LogicOperator) {
-                idToLogicOperator.put(component.getIdentifier().getIdString(), (LogicOperator) component);
+                idToLogicOperator.put(component.getIdentifier().getId(), (LogicOperator) component);
             }
-            registered.put(component.getIdentifier().getIdString(), component);
+            registered.put(component.getIdentifier().getId(), component);
             component.onRegister(this);
             dirty = true;
         } else {
@@ -245,7 +228,7 @@ public class Logic {
     }
 
     public void unregister(LogicComponent component) {
-        registered.remove(component.getIdentifier().getIdString());
+        registered.remove(component.getIdentifier().getId());
 
         Array<Event> events = component.getEvents();
         if (events != null) {
@@ -262,7 +245,7 @@ public class Logic {
         }
 
         if (component instanceof LogicOperator) {
-            idToLogicOperator.remove(component.getIdentifier().getIdString());
+            idToLogicOperator.remove(component.getIdentifier().getId());
         }
 
         dirty = true;
@@ -289,7 +272,7 @@ public class Logic {
         for (LogicOperator component : idToLogicOperator.values()) {
             line = component.getPrototype().getName();
             line += ":";
-            line += component.getIdentifier().getIdString() + "\n";
+            line += component.getIdentifier().getId() + "\n";
             outputStream.write(line.getBytes());
         }
 
@@ -320,7 +303,7 @@ public class Logic {
             String[] parts = line.split(":");
 
             LogicOperatorPrototype prototype = nameToPureLogicPrototypes.get(parts[0]);
-            Identifier identifier = new Identifier(parts[1]);
+            Identifier identifier = idGenerator.obtainLoadedIdentifier(parts[1]);
             register(prototype.create(identifier));
 
             String[] idParts = parts[1].split("_");
@@ -340,7 +323,7 @@ public class Logic {
             String[] handlerParts = pair[1].split(":");
 
             //TODO: use hashmap for getEvents/handlers
-            LogicComponent eventObject = registered.get(eventParts[0]);
+            LogicComponent eventObject = registered.get(Integer.parseInt(eventParts[0]));
             Event foundEvent = null;
             Array<Event> events = eventObject.getEvents();
             for (Event event : events) {
@@ -350,7 +333,7 @@ public class Logic {
                 }
             }
 
-            LogicComponent handlerObject = registered.get(handlerParts[0]);
+            LogicComponent handlerObject = registered.get(Integer.parseInt(handlerParts[0]));
             Handler foundHandler = null;
             Array<Handler> handlers = handlerObject.getHandlers();
             for (Handler handler : handlers) {
@@ -382,7 +365,8 @@ public class Logic {
     public LogicOperator createLogicOperator(LogicOperatorPrototype prototype) {
         int index = prototypeNameToLastId.get(prototype.getName()) + 1;
         Gdx.app.log("Logic", "Last operator id: " + index);
-        Identifier identifier = new Identifier(prototype.getName() + "_" + index);
+//ID:        Identifier identifier = new Identifier(prototype.getName() + "_" + index);
+        Identifier identifier = idGenerator.generateId();
         LogicOperator operator = prototype.create(identifier);
         register(operator);
 

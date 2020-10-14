@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.engine.HexRegion;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
@@ -26,8 +27,8 @@ public class Pillar extends GameObject {
     TextureRegion regionConnectedBoth;
     HexRegion topRegions;
 
-    public Pillar(Vector3 position, PillarPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype.getTop().get("oooo"), prototype);
+    public Pillar(Vector3 position, PillarPrototype prototype, BoxFactory boxFactory, Identifier identifier) {
+        super(position, prototype.getTop().get("oooo"), prototype, identifier);
 
         region = prototype.getRegion();
         regionConnectedLeft = prototype.getRegionConnectedLeft();

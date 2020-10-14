@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.ui.logic.ConnectionSlot;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 import cz.shroomware.diorama.ui.DFLabel;
 
@@ -19,7 +20,18 @@ public class PortalButton extends HorizontalGroup {
 
         space(10);
 
-        DFLabel label = new DFLabel(resources.getSkin(), resources.getDfShader(), metaPortal.getIdentifier().getIdString());
+        String text;
+        Identifier identifier = metaPortal.getIdentifier();
+
+        if (identifier.isNameSet()) {
+            text = identifier.getName();
+        } else {
+            text = String.valueOf(identifier.getId());
+        }
+
+        DFLabel label = new DFLabel(resources.getSkin(),
+                resources.getDfShader(),
+                text);
         addActor(label);
 
         slot = new ConnectionSlot(resources, color);

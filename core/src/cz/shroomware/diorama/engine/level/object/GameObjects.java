@@ -14,7 +14,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 
-import cz.shroomware.diorama.editor.ui.Messages;
+import cz.shroomware.diorama.engine.IdGenerator;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.Tile;
@@ -22,7 +23,7 @@ import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.prototype.Prototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
-public class GameObjects implements IdManager {
+public class GameObjects {
     protected Array<GameObject> gameObjects = new Array<>();
     protected boolean dirty = false;
     protected Logic logic;
@@ -63,7 +64,7 @@ public class GameObjects implements IdManager {
     public void remove(GameObject gameObject) {
         dirty = true;
         gameObjects.removeValue(gameObject, false);
-        idToObject.remove(gameObject.getIdentifier().getIdString());
+        idToObject.remove(gameObject.getIdentifier().getId());
         if (gameObject.hasBody()) {
             Body body = gameObject.getBody();
             World world = body.getWorld();
@@ -93,7 +94,8 @@ public class GameObjects implements IdManager {
     public void load(BufferedReader bufferedReader,
                      Prototypes gameObjectPrototypes,
                      Floor floor,
-                     BoxFactory boxFactory) throws IOException {
+                     BoxFactory boxFactory,
+                     IdGenerator idGenerator) throws IOException {
         gameObjects.clear();
 
         String line;
@@ -104,42 +106,41 @@ public class GameObjects implements IdManager {
             line = bufferedReader.readLine();
             String[] attributes = line.split(" ");
 
-            if (attributes.length != 8) {
-                continue;
-            }
+            String prototypeName = attributes[0];
+
             position.set(
                     Float.parseFloat(attributes[1]),
                     Float.parseFloat(attributes[2]),
                     Float.parseFloat(attributes[3]));
 
+            Quaternion quaternion = new Quaternion(
+                    Float.parseFloat(attributes[4]),
+                    Float.parseFloat(attributes[5]),
+                    Float.parseFloat(attributes[6]),
+                    Float.parseFloat(attributes[7]));
+
+            String id = attributes[8];
+            Identifier identifier = idGenerator.obtainLoadedIdentifier(id);
+
+            if (attributes.length == 10) {
+                String name = attributes[9];
+                identifier.setName(name);
+            }
+
             for (int i = 0; i < gameObjectPrototypes.getSize(); i++) {
                 Prototype prototype = gameObjectPrototypes.getGameObjectPrototype(i);
 
-                String[] parts = attributes[0].split(":");
-                String name = parts[0];
-                String id = null;
-                if (parts.length > 1) {
-                    id = parts[1];
-                }
-
-                if (name.equals(prototype.getName())) {
-                    Quaternion quaternion = new Quaternion(
-                            Float.parseFloat(attributes[4]),
-                            Float.parseFloat(attributes[5]),
-                            Float.parseFloat(attributes[6]),
-                            Float.parseFloat(attributes[7]));
+                if (prototypeName.equals(prototype.getName())) {
                     GameObject object = prototype.createAt(
-                            position,
-                            boxFactory);
+                            position.cpy(),
+                            boxFactory,
+                            identifier);
                     object.setRotation(quaternion);
                     if (prototype.isAttached()) {
                         // There should always be a Tile for an attached object. Any exceptions are not our fault.
                         Tile tile = floor.getTileAtWorld(position.x, position.y);
                         tile.attachObject(object);
                         object.attachToTile(tile);
-                    }
-                    if (id != null) {
-                        assignId(object, id);
                     }
                     add(object);
                     break;
@@ -150,55 +151,55 @@ public class GameObjects implements IdManager {
         dirty = false;
     }
 
-    @Override
-    public boolean assignId(GameObject object, String id) {
-        return assignId(object, id, null);
-    }
-
-    @Override
-    public boolean assignId(GameObject object, String id, Messages messages) {
-        if (id == null || id.equals("")) {
-            Gdx.app.error("GameObjects", "ID NOT(!!!) changed:" + id);
-            Gdx.app.error("GameObjects", "Reason: bad ID");
-            if (messages != null) {
-                messages.showMessage("Bad ID");
-            }
-            return false;
-        }
-
-        id = id.replace(" ", "_");
-        id = id.replace(":", "_");
-
-        if (idToObject.containsKey(id)) {
-            Gdx.app.error("GameObjects", "ID NOT(!!!) changed: " + id);
-            Gdx.app.error("GameObjects", "Reason: Duplicate ID: " + id);
-            if (messages != null) {
-                messages.showMessage("Duplicate ID, using old");
-            }
-            return false;
-        } else if (idToObject.containsKey(object.getIdentifier().getIdString())) {
-            dirty = true;
-            idToObject.remove(object.getIdentifier().getIdString());
-            idToObject.put(id, object);
-            String oldId = object.getIdentifier().getIdString();
-            object.getIdentifier().setIdString(id);
-            logic.componentIdChange(object.getLogicComponent(), oldId);
-            if (messages != null) {
-                messages.showMessage("ID Changed");
-            }
-            return true;
-        } else {
-            dirty = true;
-            idToObject.put(id, object);
-            String oldId = object.getIdentifier().getIdString();
-            object.getIdentifier().setIdString(id);
-            logic.componentIdChange(object.getLogicComponent(), oldId);
-            if (messages != null) {
-                messages.showMessage("New ID assigned");
-            }
-            return true;
-        }
-    }
+//    @Override
+//    public boolean assignId(GameObject object, String id) {
+//        return assignId(object, id, null);
+//    }
+//
+//    @Override
+//    public boolean assignId(GameObject object, String id, Messages messages) {
+//        if (id == null || id.equals("")) {
+//            Gdx.app.error("GameObjects", "ID NOT(!!!) changed:" + id);
+//            Gdx.app.error("GameObjects", "Reason: bad ID");
+//            if (messages != null) {
+//                messages.showMessage("Bad ID");
+//            }
+//            return false;
+//        }
+//
+//        id = id.replace(" ", "_");
+//        id = id.replace(":", "_");
+//
+//        if (idToObject.containsKey(id)) {
+//            Gdx.app.error("GameObjects", "ID NOT(!!!) changed: " + id);
+//            Gdx.app.error("GameObjects", "Reason: Duplicate ID: " + id);
+//            if (messages != null) {
+//                messages.showMessage("Duplicate ID, using old");
+//            }
+//            return false;
+//        } else if (idToObject.containsKey(object.getIdentifier().getIdString())) {
+//            dirty = true;
+//            idToObject.remove(object.getIdentifier().getIdString());
+//            idToObject.put(id, object);
+//            String oldId = object.getIdentifier().getIdString();
+//            object.getIdentifier().setName(id);
+//            logic.componentIdChange(object.getLogicComponent(), oldId);
+//            if (messages != null) {
+//                messages.showMessage("ID Changed");
+//            }
+//            return true;
+//        } else {
+//            dirty = true;
+//            idToObject.put(id, object);
+//            String oldId = object.getIdentifier().getIdString();
+//            object.getIdentifier().setName(id);
+//            logic.componentIdChange(object.getLogicComponent(), oldId);
+//            if (messages != null) {
+//                messages.showMessage("New ID assigned");
+//            }
+//            return true;
+//        }
+//    }
 
     public int getSize() {
         return gameObjects.size;

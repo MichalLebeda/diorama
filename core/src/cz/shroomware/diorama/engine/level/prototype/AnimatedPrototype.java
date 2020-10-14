@@ -3,6 +3,7 @@ package cz.shroomware.diorama.engine.level.prototype;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.object.AnimatedGameObject;
 import cz.shroomware.diorama.engine.level.object.GameObject;
@@ -27,8 +28,8 @@ public class AnimatedPrototype extends Prototype {
     }
 
     @Override
-    public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
-        return new AnimatedGameObject(position, this);
+    public GameObject createAt(Vector3 position, BoxFactory boxFactory, Identifier identifier) {
+        return new AnimatedGameObject(position, this, identifier);
     }
 
     @Override

@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.EngineGame;
+import cz.shroomware.diorama.engine.IdGenerator;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.logic.component.InitComponent;
@@ -56,7 +57,7 @@ public class Level {
         world.setContactListener(new LevelContactListener());
         boxFactory = new BoxFactory(world);
 
-        logic = new Logic();
+        logic = new Logic(metaLevel.getParentProject().getIdGenerator());
 
         initComponent = new InitComponent();
         logic.register(initComponent);
@@ -98,8 +99,13 @@ public class Level {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             try {
+                IdGenerator idGenerator = metaLevel.getParentProject().getIdGenerator();
                 floor.load(bufferedReader, atlas);
-                gameObjects.load(bufferedReader, gameObjectPrototypes, floor, boxFactory);
+                gameObjects.load(bufferedReader,
+                        gameObjectPrototypes,
+                        floor,
+                        boxFactory,
+                        idGenerator);
 
                 logic.load(bufferedReader);
             } catch (IOException e) {

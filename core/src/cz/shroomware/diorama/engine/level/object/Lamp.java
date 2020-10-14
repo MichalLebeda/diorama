@@ -3,6 +3,7 @@ package cz.shroomware.diorama.engine.level.object;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.LampPrototype;
@@ -12,8 +13,8 @@ public class Lamp extends GameObject {
     protected TextureRegion onRegion;
     protected TextureRegion offRegion;
 
-    public Lamp(Vector3 position, LampPrototype prototype) {
-        super(position, prototype.getOffRegion(), prototype);
+    public Lamp(Vector3 position, LampPrototype prototype, Identifier identifier) {
+        super(position, prototype.getOffRegion(), prototype, identifier);
 
         logicComponent = new LogicComponent(identifier);
         logicComponent.addHandler(new Handler("turn_on") {

@@ -43,9 +43,9 @@ public class Portals {
         }
     }
 
-    public void create(float x, float y, float width, float height, String id) {
+    public void create(float x, float y, float width, float height) {
         dirty = true;
-        MetaPortal metaPortal = metaPortals.create(x, y, width, height, id);
+        MetaPortal metaPortal = metaPortals.create(x, y, width, height);
         metaToPortal.put(metaPortal, new Portal(portalConnector, metaPortal, boxFactory, resources));
     }
 
