@@ -30,14 +30,11 @@ public class Logic {
 
     HashMap<String, LogicOperatorPrototype> nameToPureLogicPrototypes = new HashMap<>();
     HashMap<Integer, LogicOperator> idToLogicOperator = new HashMap<>();
-    HashMap<String, Integer> prototypeNameToLastId = new HashMap<>();
-
-    ArrayList<LogicComponent> registeredWithoutId = new ArrayList<>();
 
     public Logic(IdGenerator idGenerator) {
         this.idGenerator = idGenerator;
-        addPureLogicComponentPrototype(new OrGatePrototype());
         addPureLogicComponentPrototype(new AndGatePrototype());
+        addPureLogicComponentPrototype(new OrGatePrototype());
     }
 
     public void addPureLogicComponentPrototype(LogicOperatorPrototype prototype) {
@@ -45,7 +42,6 @@ public class Logic {
             Gdx.app.error("Level", "Prototype already added!!!");
         } else {
             nameToPureLogicPrototypes.put(prototype.getName(), prototype);
-            prototypeNameToLastId.put(prototype.getName(), -1);
         }
     }
 
@@ -210,17 +206,12 @@ public class Logic {
     }
 
     public void register(LogicComponent component) {
-        if (component.getIdentifier().isNameSet()) {
-            if (component instanceof LogicOperator) {
-                idToLogicOperator.put(component.getIdentifier().getId(), (LogicOperator) component);
-            }
-            registered.put(component.getIdentifier().getId(), component);
-            component.onRegister(this);
-            dirty = true;
-        } else {
-            registeredWithoutId.add(component);
-            Gdx.app.log("Logic", "Added component without ID: " + component.toString());
+        if (component instanceof LogicOperator) {
+            idToLogicOperator.put(component.getIdentifier().getId(), (LogicOperator) component);
         }
+        registered.put(component.getIdentifier().getId(), component);
+        component.onRegister(this);
+        dirty = true;
     }
 
     public HashMap<Event, ArrayList<Handler>> getEventToHandlersConnections() {
@@ -307,11 +298,6 @@ public class Logic {
             register(prototype.create(identifier));
 
             String[] idParts = parts[1].split("_");
-            int biggestIndex = prototypeNameToLastId.get(prototype.getName());
-            int biggestIndexCandidate = Integer.parseInt(idParts[1]);
-            if (biggestIndexCandidate > biggestIndex) {
-                prototypeNameToLastId.put(prototype.getName(), biggestIndexCandidate);
-            }
         }
 
         int connectionAmount = Integer.parseInt(bufferedReader.readLine());
@@ -363,21 +349,10 @@ public class Logic {
     }
 
     public LogicOperator createLogicOperator(LogicOperatorPrototype prototype) {
-        int index = prototypeNameToLastId.get(prototype.getName()) + 1;
-        Gdx.app.log("Logic", "Last operator id: " + index);
-//ID:        Identifier identifier = new Identifier(prototype.getName() + "_" + index);
         Identifier identifier = idGenerator.generateId();
         LogicOperator operator = prototype.create(identifier);
         register(operator);
 
-        prototypeNameToLastId.put(prototype.getName(), index);
-
         return operator;
     }
-
-//    public void addLogicOperator(LogicOperator component) {
-//        idToLogicOperator.put(component.getIdentifier().getIdString(), component);
-
-//        register(component.getLogicComponent());
-//    }
 }

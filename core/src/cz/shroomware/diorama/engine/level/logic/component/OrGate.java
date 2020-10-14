@@ -15,6 +15,8 @@ public class OrGate extends LogicOperator {
     public OrGate(LogicOperatorPrototype prototype, Identifier identifier) {
         super(prototype, identifier);
 
+        identifier.setName("OR");
+
         addHandler(new cz.shroomware.diorama.engine.level.logic.Handler("set_a_true") {
             @Override
             public void handle() {

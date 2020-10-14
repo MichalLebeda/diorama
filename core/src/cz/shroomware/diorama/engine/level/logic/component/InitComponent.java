@@ -8,6 +8,8 @@ public class InitComponent extends LogicComponent {
     public InitComponent() {
         super(new Identifier(Utils.INIT_ID));
 
-        addEvent(new Event("on_init"));
+        getIdentifier().setName("Level Started");
+
+        addEvent(new Event("on_start"));
     }
 }

@@ -52,7 +52,7 @@ public abstract class LogicBlock extends VerticalGroup {
         Identifier identifier = logicComponent.getIdentifier();
         DFLabel label = new DFLabel(editorResources.getSkin(),
                 editorResources.getDfShader(),
-                identifier.isNameSet() ? identifier.getName() : logicComponent.toString());
+                identifier.isNameSet() ? identifier.getName() : String.valueOf(identifier.getId()));
         label.setFontScale(0.4f);
         Table topTable = null;
         if (logicComponent instanceof LogicOperator) {
