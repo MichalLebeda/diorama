@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Collection;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.EngineGame;
@@ -29,6 +30,7 @@ import cz.shroomware.diorama.engine.level.logic.component.InitComponent;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
+import cz.shroomware.diorama.engine.level.portal.Portal;
 import cz.shroomware.diorama.engine.level.portal.Portals;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 import cz.shroomware.diorama.engine.physics.LevelContactListener;
@@ -245,15 +247,15 @@ public class Level {
         }
 
         // Test ray against every game object we have
-        for (int i = 0; i < portals.getSize(); i++) {
-            GameObject gameObject = portals.get(i);
-            gameObject.sizeBoundingBox(boundingBox);
+        Collection<Portal> portalsCollection = portals.getPortals();
+        for (Portal portal : portalsCollection) {
+            portal.sizeBoundingBox(boundingBox);
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                if (gameObject.intersectsWithOpaque(ray, intersection.cpy())) {
+                if (portal.intersectsWithOpaque(ray, intersection.cpy())) {
                     float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
                     if (currentObjectDist < minDist) {
                         minDist = currentObjectDist;
-                        candidate = gameObject;
+                        candidate = portal;
                     }
                 }
             }

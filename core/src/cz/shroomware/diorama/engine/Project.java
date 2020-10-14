@@ -9,6 +9,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class Project {
 
         portalConnector = new PortalConnector(game);
 
-        load();
+        loadConnections();
     }
 
     public Project(EditorEngineGame editorEngineGame, FileHandle file) {
@@ -55,10 +56,10 @@ public class Project {
 
         portalConnector = new PortalConnector(game);
 
-        load();
+        loadConnections();
     }
 
-    private void load() {
+    private void loadConnections() {
         String[] levels = getLevelNames();
         for (String levelName : levels) {
             MetaLevel metaLevel = new MetaLevel(this,
@@ -89,6 +90,17 @@ public class Project {
             }
         } else {
             Gdx.app.log("Project", "No portal file");
+        }
+    }
+
+    public void saveConnections() {
+        OutputStream outputStream = getProjectConnectionHandle().write(false);
+        try {
+            portalConnector.save(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

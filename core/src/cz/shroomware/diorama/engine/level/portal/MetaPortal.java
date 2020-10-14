@@ -2,9 +2,10 @@ package cz.shroomware.diorama.engine.level.portal;
 
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Objects;
+
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.MetaLevel;
-import cz.shroomware.diorama.engine.level.logic.Event;
 
 public class MetaPortal {
     protected MetaLevel parentLevel;
@@ -13,7 +14,6 @@ public class MetaPortal {
     protected Vector2 position;
     protected float width;
     protected float height;
-    protected Event event;
 
     public MetaPortal(MetaLevel parentLevel, Vector2 position, float width, float height, String id) {
         this.parentLevel = parentLevel;
@@ -32,9 +32,25 @@ public class MetaPortal {
     }
 
     @Override
-    public String toString() {
-        String string = "";
-        string += position.x + " ";
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MetaPortal that = (MetaPortal) o;
+        return Float.compare(that.width, width) == 0 &&
+                Float.compare(that.height, height) == 0 &&
+                Objects.equals(parentLevel, that.parentLevel) &&
+                Objects.equals(identifier, that.identifier) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(position, that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parentLevel, identifier, name, position, width, height);
+    }
+
+    public String getSaveString() {
+        String string = position.x + " ";
         string += position.y + " ";
         string += width + " ";
         string += height;
@@ -42,6 +58,14 @@ public class MetaPortal {
         if (identifier.isSet()) {
             string += " " + identifier.getIdString();
         }
+
+        return string;
+    }
+
+    @Override
+    public String toString() {
+        String string = parentLevel.getName();
+        string += " " + getSaveString();
         return string;
     }
 
@@ -59,14 +83,6 @@ public class MetaPortal {
 
     public Identifier getIdentifier() {
         return identifier;
-    }
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
     }
 
     public float getX() {

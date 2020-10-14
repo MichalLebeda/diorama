@@ -3,24 +3,21 @@ package cz.shroomware.diorama.engine.level.portal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.Collection;
 import java.util.HashMap;
 
 import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.Resources;
-import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Portals {
     protected MetaPortals metaPortals;
-    protected Array<Portal> portals = new Array<>();
     protected boolean dirty = false;
     protected PortalConnector portalConnector;
     protected BoxFactory boxFactory;
     protected Resources resources;
-    HashMap<String, Portal> idToObject = new HashMap<>();
+    HashMap<MetaPortal, Portal> metaToPortal = new HashMap<>();
 
     public Portals(MetaLevel metaLevel,
                    BoxFactory boxFactory,
@@ -37,42 +34,38 @@ public class Portals {
     }
 
     public void setIgnored(MetaPortal metaPortal) {
-        for (int i = 0; i < portals.size; i++) {
-            Portal portal = portals.get(i);
-            if (metaPortal == portal.getMetaPortal()) {
-                portal.setIgnored();
-            }
-        }
+        metaToPortal.get(metaPortal).setIgnored();
     }
 
     public void drawObjects(MinimalisticDecalBatch decalBatch) {
-        for (GameObject object : portals) {
-            object.drawDecal(decalBatch);
+        for (Portal portal : metaToPortal.values()) {
+            portal.drawDecal(decalBatch);
         }
     }
 
     public void create(float x, float y, float width, float height, String id) {
         dirty = true;
         MetaPortal metaPortal = metaPortals.create(x, y, width, height, id);
-        portals.add(new Portal(portalConnector, metaPortal, boxFactory, resources));
+        metaToPortal.put(metaPortal, new Portal(portalConnector, metaPortal, boxFactory, resources));
     }
 
     public void add(Portal gameObject) {
         dirty = true;
-        portals.add(gameObject);
+        metaToPortal.put(gameObject.getMetaPortal(), gameObject);
     }
 
     public void remove(Portal portal) {
         dirty = true;
-        portals.removeValue(portal, false);
-        idToObject.remove(portal.getIdentifier().getIdString());
+
+        // Remove portal from level list
+        metaToPortal.remove(portal.getMetaPortal());
+
         if (portal.hasBody()) {
             Body body = portal.getBody();
             World world = body.getWorld();
             world.destroyBody(body);
         }
-
-        // Remove portal from level list
+        // Remove meta portal from level list
         metaPortals.remove(portal.getMetaPortal());
         // Remove portal from connections
         portalConnector.removeConnectionWith(portal.getMetaPortal());
@@ -133,14 +126,10 @@ public class Portals {
 //    }
 
     public int getSize() {
-        return portals.size;
+        return metaToPortal.size();
     }
 
-    public GameObject get(int i) {
-        return portals.get(i);
-    }
-
-    public void setDirty() {
-        this.dirty = true;
+    public Collection<Portal> getPortals() {
+        return metaToPortal.values();
     }
 }

@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -25,13 +24,7 @@ import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 
 public class ConnectionGraph extends Stage {
     private static final float CROSS_SIZE = 40;
-    private static final Color EVENT_COLOR = Color.WHITE.cpy().mul(0.9f, 0.9f, 0.9f, 1);
-    private static final Color HANDLER_COLOR = Color.WHITE.cpy().mul(0.4f, 0.4f, 0.4f, 1);
-    private static final Color ARROW_COLOR = Color.WHITE.cpy().mul((
-                    EVENT_COLOR.r + HANDLER_COLOR.r) / 2f,
-            (EVENT_COLOR.g + HANDLER_COLOR.g) / 2f,
-            (EVENT_COLOR.b + HANDLER_COLOR.b) / 2f,
-            1);
+    private static final Color COLOR = Color.WHITE.cpy().mul(0.9f, 0.9f, 0.9f, 1);
     private static final Color REMOVE_COLOR = new Color(1, 0.3f, 0.3f, 0.3f);
 
     ConnectionEditor connectionEditor;
@@ -47,7 +40,6 @@ public class ConnectionGraph extends Stage {
     Preferences preferences;
     float anim = 0;
     float ANIM_DURATION = 4;
-    Color arrowActualArrowColor;
 
     public ConnectionGraph(Project project, ConnectionEditor connectionEditor, EditorResources resources, ShapeRenderer shapeRenderer) {
         super(new ScreenViewport());
@@ -113,7 +105,7 @@ public class ConnectionGraph extends Stage {
 
         Collection<MetaLevel> metaLevels = project.getMetaLevels();
         for (MetaLevel metaLevel : metaLevels) {
-            MetaLevelBlock block = new MetaLevelBlock(metaLevel, resources, Color.RED) {
+            MetaLevelBlock block = new MetaLevelBlock(metaLevel, resources, COLOR) {
                 @Override
                 public void onPortalClicked(PortalButton button) {
                     button.getSlot().highlight();
@@ -170,12 +162,6 @@ public class ConnectionGraph extends Stage {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        arrowActualArrowColor = ARROW_COLOR.cpy();
-        if (anim < ANIM_DURATION / 2) {
-            arrowActualArrowColor.a = Interpolation.circleOut.apply(0, 1, anim / ANIM_DURATION * 2);
-        } else {
-            arrowActualArrowColor.a = Interpolation.circleOut.apply(1, 0, (anim - ANIM_DURATION / 2) / ANIM_DURATION * 2);
-        }
         drawLines();
         shapeRenderer.end();
     }
@@ -198,22 +184,8 @@ public class ConnectionGraph extends Stage {
                 lineStart.y,
                 lineEnd.x,
                 lineEnd.y,
-                EVENT_COLOR,
-                HANDLER_COLOR);
-
-        float length = bPosition.cpy().sub(aPosition).len();
-        float theta = Interpolation.circleOut.apply(0, 1, anim / ANIM_DURATION);
-        Vector2 direction = bPosition.cpy().sub(aPosition).nor();
-        Vector2 arrowPos = direction.cpy().scl(length * (theta));
-        arrowPos.add(aPosition);
-        Vector2 arrowEnd = arrowPos.cpy().sub(direction.scl(30));
-
-        shapeRenderer.setColor(arrowActualArrowColor);
-        arrowEnd.rotateAround(arrowPos, 30);
-        shapeRenderer.line(arrowPos, arrowEnd);
-
-        arrowEnd.rotateAround(arrowPos, -60);
-        shapeRenderer.line(arrowPos, arrowEnd);
+                COLOR,
+                COLOR);
     }
 
 
@@ -223,38 +195,13 @@ public class ConnectionGraph extends Stage {
         startPosition = actor.localToStageCoordinates(startPosition);
         startPosition.add(actor.getWidth() * actor.getScaleX() / 2, actor.getHeight() * actor.getScaleY() / 2);
 
-
         switch (connectionEditor.getMode()) {
             case CONNECT:
-                Vector2 cursorPosition2 = new Vector2(cursorPos.x, cursorPos.y);
-
-                Vector2 arrowPos = startPosition.cpy().add(cursorPosition2).scl(0.5f);
-                Vector2 direction = cursorPosition2.cpy().sub(startPosition).nor();
-                Vector2 arrowEnd = arrowPos.cpy().add(direction.scl(eventFirst ? -30 : 30));
-
-                Color startColor;
-                Color endColor;
-
-                if (eventFirst) {
-                    startColor = EVENT_COLOR;
-                    endColor = HANDLER_COLOR;
-                } else {
-                    startColor = HANDLER_COLOR;
-                    endColor = EVENT_COLOR;
-                }
-
                 shapeRenderer.line(startPosition.x, startPosition.y,
                         cursorPos.x,
                         cursorPos.y,
-                        startColor,
-                        endColor);
-
-                shapeRenderer.setColor(ARROW_COLOR);
-                arrowEnd.rotateAround(arrowPos, 30);
-                shapeRenderer.line(arrowPos, arrowEnd);
-
-                arrowEnd.rotateAround(arrowPos, -60);
-                shapeRenderer.line(arrowPos, arrowEnd);
+                        COLOR,
+                        COLOR);
 
                 break;
             case DISCONNECT:

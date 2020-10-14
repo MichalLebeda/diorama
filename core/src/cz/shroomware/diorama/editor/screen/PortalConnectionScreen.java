@@ -116,9 +116,7 @@ public class PortalConnectionScreen implements Screen, InputProcessor {
     @Override
     public void hide() {
         graph.save();
-//if(fileHandle!=null)        {
-//    logicEditor.getLogic().save(fileHandle);
-//}
+        project.saveConnections();
         dispose();
     }
 

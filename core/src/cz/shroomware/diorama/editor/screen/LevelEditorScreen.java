@@ -36,6 +36,7 @@ import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
+import cz.shroomware.diorama.engine.level.portal.Portal;
 import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
 public class LevelEditorScreen extends BaseLevelScreen {
@@ -158,6 +159,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
         }
     }
 
+    private static final float LABEL_FONT_SIZE = 20;
+
     protected void drawIdLabels() {
         PerspectiveCamera camera = level.getCamera();
 
@@ -166,55 +169,67 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         spriteBatch.begin();
 
-        GameObjects gameObjects = level.getGameObjects();
         BitmapFont font = resources.getFont();
-        float size = 20;
 
+        GameObjects gameObjects = level.getGameObjects();
         for (int i = 0; i < gameObjects.getSize(); i++) {
             GameObject object = gameObjects.get(i);
 
-            Vector3 position = object.getPosition().cpy();
-            Plane plane = new Plane(camera.direction, camera.position);
-            if (plane.testPoint(position) == Plane.PlaneSide.Back) {
-                continue;
-            }
-
-            position = camera.project(position);
-
             if (object.getIdentifier().isSet()) {
-                resources.getSlotDrawable().draw(spriteBatch,
-                        position.x - size / 2,
-                        position.y - size / 2,
-                        size,
-                        size);
-
-                font.setColor(Color.BLACK);
-                font.draw(spriteBatch,
-                        object.getIdentifier().getIdString(),
-                        position.x + 2,
-                        position.y);
-                font.draw(spriteBatch,
-                        object.getIdentifier().getIdString(),
-                        position.x - 2,
-                        position.y);
-                font.draw(spriteBatch,
-                        object.getIdentifier().getIdString(),
-                        position.x,
-                        position.y + 2);
-                font.draw(spriteBatch,
-                        object.getIdentifier().getIdString(),
-                        position.x,
-                        position.y - 2);
-
-                font.setColor(Color.WHITE);
-                font.draw(spriteBatch,
-                        object.getIdentifier().getIdString(),
-                        position.x,
-                        position.y);
+                Vector3 position = object.getPosition().cpy();
+                drawLabel(position, object.getIdentifier().getIdString(), font);
             }
         }
 
+        Collection<Portal> portals = level.getPortals().getPortals();
+        for (Portal portal : portals) {
+            Vector3 position = portal.getPosition().cpy();
+            drawLabel(position, portal.getMetaPortal().getIdentifier().getIdString(), font);
+        }
+
         spriteBatch.end();
+    }
+
+    private void drawLabel(Vector3 position, String text, BitmapFont font) {
+        PerspectiveCamera camera = level.getCamera();
+
+        Plane plane = new Plane(camera.direction, camera.position);
+        if (plane.testPoint(position) == Plane.PlaneSide.Back) {
+            return;
+        }
+
+        position = camera.project(position);
+
+        resources.getSlotDrawable().draw(spriteBatch,
+                position.x - LABEL_FONT_SIZE / 2,
+                position.y - LABEL_FONT_SIZE / 2,
+                LABEL_FONT_SIZE,
+                LABEL_FONT_SIZE);
+
+        font.setColor(Color.BLACK);
+        font.draw(spriteBatch,
+                text,
+                position.x + 2,
+                position.y);
+        font.draw(spriteBatch,
+                text,
+                position.x - 2,
+                position.y);
+        font.draw(spriteBatch,
+                text,
+                position.x,
+                position.y + 2);
+        font.draw(spriteBatch,
+                text,
+                position.x,
+                position.y - 2);
+
+        font.setColor(Color.WHITE);
+        font.draw(spriteBatch,
+                text,
+                position.x,
+                position.y);
+
     }
 
     protected void clampCameraPos(Camera camera) {
@@ -466,9 +481,13 @@ public class LevelEditorScreen extends BaseLevelScreen {
             } else if (editor.isMode(Editor.Mode.DELETE)) {
                 GameObject gameObject = findDecalByScreenCoordinates(screenX, screenY);
                 if (gameObject != null) {
-                    editorTool.removeObject(gameObject, true);
-                    if (showAddRemoveMessages) {
-                        hud.showMessage("DEL " + gameObject.getName());
+                    if (gameObject instanceof Portal) {
+                        level.getPortals().remove((Portal) gameObject);
+                    } else {
+                        editorTool.removeObject(gameObject, true);
+                        if (showAddRemoveMessages) {
+                            hud.showMessage("DEL " + gameObject.getName());
+                        }
                     }
                 }
                 return true;

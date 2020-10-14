@@ -44,7 +44,7 @@ public class MetaPortals {
         outputStream.write((idToPortal.size() + "\n").getBytes());
         Collection<MetaPortal> portals = idToPortal.values();
         for (MetaPortal metaPortal : portals) {
-            outputStream.write((metaPortal.toString() + "\n").getBytes());
+            outputStream.write((metaPortal.getSaveString() + "\n").getBytes());
         }
 
         dirty = false;

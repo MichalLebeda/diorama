@@ -25,24 +25,33 @@ public class PortalConnector {
     public void addConnection(MetaPortal portalA, MetaPortal portalB) {
         if (portalA == null) {
             Gdx.app.error("PortalConnector", "Cannot connect, portalA is null");
+            return;
         }
 
         if (portalB == null) {
             Gdx.app.error("PortalConnector", "Cannot connect, portalB is null");
+            return;
         }
 
-        if (getTargetPortal(portalA) == null && getTargetPortal(portalB) == null) {
-            connections.put(portalA, portalB);
-            Gdx.app.log("PortalConnector", "Connected: "
-                    + portalA.getParentLevel().getName() + ":" + portalA.getIdentifier()
-                    + " - " + portalB.getParentLevel().getName() + ":" + portalB.getIdentifier());
-        } else {
-            Gdx.app.error("PortalConnector", "Cannot connect");
+        if (connectionExists(portalA)) {
+            Gdx.app.log("PortalConnector", "Have to disconnect the old connection");
+            removeConnectionWith(portalA);
         }
+
+        if (connectionExists(portalB)) {
+            Gdx.app.log("PortalConnector", "Have to disconnect the old connection");
+            removeConnectionWith(portalB);
+        }
+
+        connections.put(portalA, portalB);
+
+        Gdx.app.log("PortalConnector", "Connected: "
+                + portalA.getParentLevel().getName() + ":" + portalA.getIdentifier()
+                + " - " + portalB.getParentLevel().getName() + ":" + portalB.getIdentifier());
     }
 
     public void save(OutputStream outputStream) throws IOException {
-        outputStream.write(String.valueOf(connections.size()).getBytes());
+        outputStream.write((connections.size() + "\n").getBytes());
 
         Set<Map.Entry<MetaPortal, MetaPortal>> entries = connections.entrySet();
 
@@ -122,6 +131,14 @@ public class PortalConnector {
     public void removeConnectionWith(MetaPortal portal) {
         connections.remove(portal);
         connections.inverse().remove(portal);
+    }
+
+    public boolean connectionExists(MetaPortal portal) {
+        if (connections.containsValue(portal) || connections.containsKey(portal)) {
+            return true;
+        }
+
+        return false;
     }
 
     public MetaPortal getTargetPortal(MetaPortal entryPortal) {

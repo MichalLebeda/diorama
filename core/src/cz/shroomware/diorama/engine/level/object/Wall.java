@@ -19,13 +19,13 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class Wall extends GameObject {
-    UpdatedDecal leftDecal, rightDecal, frontDecal, backDecal;
-    boolean neighborBack, neighborRight, neighborFront, neighborLeft;
-    TextureRegion region;
-    TextureRegion regionConnectedLeft;
-    TextureRegion regionConnectedRight;
-    TextureRegion regionConnectedBoth;
-    HexRegion topRegions;
+    protected UpdatedDecal leftDecal, rightDecal, frontDecal, backDecal;
+    protected boolean neighborBack, neighborRight, neighborFront, neighborLeft;
+    protected TextureRegion region;
+    protected TextureRegion regionConnectedLeft;
+    protected TextureRegion regionConnectedRight;
+    protected TextureRegion regionConnectedBoth;
+    protected HexRegion topRegions;
 
     public Wall(Vector3 position, WallPrototype prototype, BoxFactory boxFactory) {
         super(position, prototype.getTop().get("oooo"), prototype);
