@@ -25,7 +25,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         updateBackgroundColor(level);
 
         player = new Player(new Vector3(x, y, 0),
-                new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory(), null);
+                new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
     }
 

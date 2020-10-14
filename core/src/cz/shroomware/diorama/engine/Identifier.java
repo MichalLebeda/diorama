@@ -10,18 +10,9 @@ public class Identifier {
         this.id = id;
     }
 
-//    public Identifier(String name) {
-//        this.name = name;
-//    }
-
     public boolean isNameSet() {
         return name != null && !name.isEmpty();
     }
-
-    // TODO: use toString() (?)!
-//    public String getIdString() {
-//        return "" + id;
-//    }
 
     public boolean setName(String name) {
         if (name == null) {

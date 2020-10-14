@@ -51,6 +51,8 @@ public class Utils {
 
     public static final int INIT_ID = -1;
 
+    public static final int PLAYER_ID = -2;
+
     public static float round(float input, float step) {
         return ((Math.round(input / step)) * step);
     }
