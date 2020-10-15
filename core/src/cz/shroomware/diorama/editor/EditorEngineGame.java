@@ -114,12 +114,18 @@ public class EditorEngineGame extends EngineGame {
     }
 
     public void openEditor(MetaLevel metaLevel) {
+        if (editorScreen != null) {
+            editorScreen.dispose();
+        }
         Level level = new Level(metaLevel, this);
         editorScreen = new LevelEditorScreen(this, level);
         setScreen(editorScreen);
     }
 
     public void openEditorWithNewLevel(String name, int width, int height) {
+        if (editorScreen != null) {
+            editorScreen.dispose();
+        }
         Level level = new Level(project.createNewLevel(name), this, width, height);
         editorScreen = new LevelEditorScreen(this, level);
         setScreen(editorScreen);

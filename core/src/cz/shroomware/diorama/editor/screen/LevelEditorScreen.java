@@ -32,6 +32,7 @@ import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.editor.EditorResources;
 import cz.shroomware.diorama.editor.EditorTool;
 import cz.shroomware.diorama.editor.ui.Hud;
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.IdGenerator;
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.Level;
@@ -63,6 +64,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
     protected GameObject currentlyHighlightedObject;
     protected boolean takingScreenshot;
     protected boolean showAddRemoveMessages = false;
+    protected ColorUtil colorUtil;
     boolean dragging = false;
     float time = 0;
 
@@ -74,10 +76,11 @@ public class LevelEditorScreen extends BaseLevelScreen {
         editor = new Editor();
 
         resources = game.getResources();
+        colorUtil = new ColorUtil(game.getResources().getObjectAtlas());
         defaultCursorRegion = resources.getObjectAtlas().findRegion("cursor");
         shadowAtlas = resources.getShadowAtlas();
 
-        updateBackgroundColor(level);
+        updateBackgroundColor(colorUtil, level);
 
         screenCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -576,7 +579,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         Ray ray = camera.getPickRay(screenX, screenY);
 
-        return level.findIntersectingWithRay(ray, camera);
+        return level.findIntersectingWithRay(colorUtil, ray, camera);
     }
 
     @Override
@@ -755,5 +758,12 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         Gdx.app.log("Editor", "hide()");
         super.hide();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        colorUtil.dispose();
     }
 }

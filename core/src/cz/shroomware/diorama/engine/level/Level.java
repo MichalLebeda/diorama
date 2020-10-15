@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.IdGenerator;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
@@ -231,7 +232,7 @@ public class Level {
         return gameObjects.isDirty() || floor.isDirty() || logic.isDirty() || getMetaLevel().getMetaPortals().isDirty();
     }
 
-    public GameObject findIntersectingWithRay(Ray ray, Camera camera) {
+    public GameObject findIntersectingWithRay(ColorUtil colorUtil, Ray ray, Camera camera) {
         Vector3 intersection = new Vector3();
         BoundingBox boundingBox = new BoundingBox();
 
@@ -243,7 +244,7 @@ public class Level {
             GameObject gameObject = gameObjects.get(i);
             gameObject.sizeBoundingBox(boundingBox);
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                if (gameObject.intersectsWithOpaque(ray, intersection.cpy())) {
+                if (gameObject.intersectsWithOpaque(colorUtil, ray, intersection.cpy())) {
                     float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
                     if (currentObjectDist < minDist) {
                         minDist = currentObjectDist;
@@ -258,7 +259,7 @@ public class Level {
         for (Portal portal : portalsCollection) {
             portal.sizeBoundingBox(boundingBox);
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                if (portal.intersectsWithOpaque(ray, intersection.cpy())) {
+                if (portal.intersectsWithOpaque(colorUtil, ray, intersection.cpy())) {
                     float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
                     if (currentObjectDist < minDist) {
                         minDist = currentObjectDist;

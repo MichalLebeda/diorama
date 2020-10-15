@@ -6,13 +6,12 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
-import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Resources;
 
@@ -34,12 +33,11 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
         decalBatch = new MinimalisticDecalBatch();
     }
 
-    protected void updateBackgroundColor(Level level) {
+    protected void updateBackgroundColor(ColorUtil colorUtil, Level level) {
         // Use dominant floor color as background
-        Pixmap pixmap = Utils.extractPixmapFromTextureRegion(level.getFloor().getTileAtIndex(0, 0));
-        backgroundColor = Utils.getDominantColor(pixmap);
+        Color color = colorUtil.getDominantColor(level.getFloor().getTileAtIndex(0, 0));
+        backgroundColor = color;
 //        backgroundColor.mul(0.9f);
-        pixmap.dispose();
     }
 
     public Level getLevel() {

@@ -1,8 +1,6 @@
 package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.Identifiable;
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.UpdatedDecal;
@@ -174,7 +173,7 @@ public abstract class GameObject implements Identifiable {
         return Intersector.intersectRayPlane(ray, plane, intersection);
     }
 
-    public boolean isPixelOpaque(Vector3 intersection, UpdatedDecal decal) {
+    public boolean isPixelOpaque(ColorUtil colorUtil, Vector3 intersection, UpdatedDecal decal) {
         decal.update();
 
         float[] vertices = decal.getVertices();
@@ -197,11 +196,6 @@ public abstract class GameObject implements Identifiable {
         intersection.mul(matrix3);
 
         TextureRegion region = decal.getTextureRegion();
-        Texture texture = region.getTexture();
-        if (!texture.getTextureData().isPrepared()) {
-            texture.getTextureData().prepare();
-        }
-        Pixmap pixmap = texture.getTextureData().consumePixmap();
 
         if (intersection.x > 1) {
             return false;
@@ -219,15 +213,13 @@ public abstract class GameObject implements Identifiable {
             return false;
         }
 
-        int color = pixmap.getPixel((int) (region.getRegionX() + intersection.x * region.getRegionWidth()),
-                (int) (region.getRegionY() + intersection.y * region.getRegionHeight()));
+        int color = colorUtil.getColorByLocalUv(region, intersection.x, intersection.y);
 
-        pixmap.dispose();
         return ((color & 0x000000ff)) / 255f > 0.5f;
     }
 
-    public boolean intersectsWithOpaque(Ray ray, Vector3 boundsIntersection) {
-        return isPixelOpaque(boundsIntersection, decal);
+    public boolean intersectsWithOpaque(ColorUtil colorUtil, Ray ray, Vector3 boundsIntersection) {
+        return isPixelOpaque(colorUtil, boundsIntersection, decal);
     }
 
     public String getName() {
