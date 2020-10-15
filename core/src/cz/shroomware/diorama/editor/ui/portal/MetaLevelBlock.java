@@ -38,19 +38,20 @@ public abstract class MetaLevelBlock extends VerticalGroup {
         this.metaLevel = metaLevel;
 
         setTouchable(Touchable.enabled);
-        pad(15);
-        space(10);
+        pad(30);
+        space(20);
 
         DFLabel label = new DFLabel(editorResources.getSkin(), editorResources.getDfShader(), metaLevel.getName());
         label.setFontScale(0.4f);
         addActor(label);
 
         final VerticalGroup portalVerticalGroup = new VerticalGroup();
-        portalVerticalGroup.columnAlign(Align.left);
+        portalVerticalGroup.columnAlign(Align.center);
+        portalVerticalGroup.space(24);
 
         Collection<MetaPortal> portals = metaLevel.getMetaPortals().getValues();
         for (MetaPortal portal : portals) {
-            final PortalButton portalButton = new PortalButton(editorResources, portal, color);
+            final PortalButton portalButton = new PortalButton(this, editorResources, portal, color);
             portalButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {

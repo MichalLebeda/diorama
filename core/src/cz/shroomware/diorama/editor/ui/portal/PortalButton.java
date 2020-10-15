@@ -5,17 +5,18 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 
 import cz.shroomware.diorama.editor.EditorResources;
-import cz.shroomware.diorama.editor.ui.logic.ConnectionSlot;
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
-import cz.shroomware.diorama.ui.DFLabel;
+import cz.shroomware.diorama.ui.BackgroundLabel;
 
 public class PortalButton extends HorizontalGroup {
     protected MetaPortal metaPortal;
-    protected ConnectionSlot slot;
+    protected MetaLevelBlock metaLevelBlock;
+    protected BackgroundLabel label;
 
-    public PortalButton(EditorResources resources, MetaPortal metaPortal, Color color) {
+    public PortalButton(MetaLevelBlock metaLevelBlock, EditorResources resources, MetaPortal metaPortal, Color color) {
         super();
+        this.metaLevelBlock = metaLevelBlock;
         this.metaPortal = metaPortal;
 
         space(10);
@@ -29,26 +30,27 @@ public class PortalButton extends HorizontalGroup {
             text = String.valueOf(identifier.getId());
         }
 
-        DFLabel label = new DFLabel(resources.getSkin(),
+        label = new BackgroundLabel(resources.getSkin(),
                 resources.getDfShader(),
-                text);
+                text, resources.getSkin().getDrawable("dark-background-pressed"));
+        label.setPad(20, 10);
         addActor(label);
-
-        slot = new ConnectionSlot(resources, color);
-        slot.setSize(10, 10);
-        addActor(slot);
     }
 
     @Override
     public boolean addListener(EventListener listener) {
-        return slot.addListener(listener);
+        return label.addListener(listener);
     }
 
-    public ConnectionSlot getSlot() {
-        return slot;
+    public float getWidthPad() {
+        return label.getWidthWithPadding();
     }
 
     public MetaPortal getMetaPortal() {
         return metaPortal;
+    }
+
+    public MetaLevelBlock getMetaLevelBlock() {
+        return metaLevelBlock;
     }
 }

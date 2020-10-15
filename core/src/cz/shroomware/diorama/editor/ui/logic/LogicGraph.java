@@ -2,13 +2,13 @@ package cz.shroomware.diorama.editor.ui.logic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -28,11 +28,10 @@ import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 
 public class LogicGraph extends Stage {
     private static final float CROSS_SIZE = 40;
-    private static final float ARROW_SIZE = 14;
+    private static final float LINE_WIDTH = 4;
     private static final Color CROSS_COLOR = new Color(0x252525FF);
     private static final Color EVENT_COLOR = new Color(0x57E389FF);
     private static final Color HANDLER_COLOR = new Color(0x613583FF);
-    private static final Color ARROW_COLOR = new Color(0xFAFAFAFF);
     private static final Color REMOVE_COLOR = new Color(0xED333BFF);
 
     EditorResources resources;
@@ -47,6 +46,8 @@ public class LogicGraph extends Stage {
 
     ShapeRenderer shapeRenderer;
     Preferences preferences;
+
+    float zoom;
 
     public LogicGraph(LogicEditor logicEditor, EditorResources resources, ShapeRenderer shapeRenderer) {
         super(new ScreenViewport());
@@ -68,8 +69,7 @@ public class LogicGraph extends Stage {
     }
 
     float anim = 0;
-    float ANIM_DURATION = 4;
-    Color arrowActualArrowColor;
+    float ANIM_DURATION = 5;
 
     public void setPosToCamera(LogicComponent component) {
         LogicBlock block = blocks.get(component);
@@ -175,6 +175,8 @@ public class LogicGraph extends Stage {
         }
     }
 
+    float circleSize;
+
     @Override
     public void draw() {
         anim += Gdx.graphics.getDeltaTime();
@@ -182,29 +184,30 @@ public class LogicGraph extends Stage {
             anim = 0;
         }
 
-        Camera camera = getCamera();
+        OrthographicCamera camera = (OrthographicCamera) getCamera();
         camera.update();
+        zoom = camera.zoom;
+
         shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         shapeRenderer.setColor(CROSS_COLOR);
-        shapeRenderer.line(-CROSS_SIZE, 0, CROSS_SIZE, 0);
-        shapeRenderer.line(0, -CROSS_SIZE, 0, CROSS_SIZE);
+        shapeRenderer.rectLine(-CROSS_SIZE, 0, CROSS_SIZE, 0, LINE_WIDTH * zoom);
+        shapeRenderer.rectLine(0, -CROSS_SIZE, 0, CROSS_SIZE, LINE_WIDTH * zoom);
 
         shapeRenderer.end();
 
         super.draw();
 
         shapeRenderer.setProjectionMatrix(getCamera().combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        arrowActualArrowColor = ARROW_COLOR.cpy();
         if (anim < ANIM_DURATION / 2) {
-            arrowActualArrowColor.a = Interpolation.circleOut.apply(0, 1, anim / ANIM_DURATION * 2);
+            circleSize = Interpolation.circleOut.apply(0.5f, 2, anim / ANIM_DURATION * 2);
         } else {
-            arrowActualArrowColor.a = Interpolation.circleOut.apply(1, 0, (anim - ANIM_DURATION / 2) / ANIM_DURATION * 2);
+            circleSize = Interpolation.circleOut.apply(2, 0.5f, (anim - ANIM_DURATION / 2) / ANIM_DURATION * 2);
         }
         drawLines();
         shapeRenderer.end();
@@ -246,27 +249,19 @@ public class LogicGraph extends Stage {
 
             bezier.valueAt(bezierPos, state);
             Color color = HANDLER_COLOR.cpy().mul(state).add(EVENT_COLOR.cpy().mul(1 - state));
-            shapeRenderer.line(oldPos.x, oldPos.y, bezierPos.x, bezierPos.y, oldColor, color);
+            shapeRenderer.rectLine(oldPos.x, oldPos.y, bezierPos.x, bezierPos.y, LINE_WIDTH * zoom, oldColor, color);
             oldPos.set(bezierPos);
             oldColor.set(color);
         }
 
         float theta = Interpolation.circleOut.apply(0, 1, anim / ANIM_DURATION);
-        Vector2 direction = new Vector2();
-        bezier.derivativeAt(direction, theta);
-        direction.nor();
-        direction.scl(ARROW_SIZE);
 
-        Vector2 arrowPos = new Vector2();
-        bezier.valueAt(arrowPos, (theta));
-        Vector2 arrowEnd = arrowPos.cpy().sub(direction);
+        Vector2 circlePos = new Vector2();
+        bezier.valueAt(circlePos, (theta));
 
-        shapeRenderer.setColor(arrowActualArrowColor);
-        arrowEnd.rotateAround(arrowPos, 30);
-        shapeRenderer.line(arrowPos, arrowEnd);
-
-        arrowEnd.rotateAround(arrowPos, -60);
-        shapeRenderer.line(arrowPos, arrowEnd);
+        float mul = MathUtils.clamp(circleSize, 1f, 1.3f);
+        shapeRenderer.setColor((HANDLER_COLOR.cpy().mul(theta).add(EVENT_COLOR.cpy().mul(1 - theta))).mul(mul, mul, mul, 1));
+        shapeRenderer.circle(circlePos.x, circlePos.y, LINE_WIDTH * zoom * circleSize);
     }
 
 
@@ -316,31 +311,11 @@ public class LogicGraph extends Stage {
 
                     bezier.valueAt(bezierPos, state);
                     Color color = endColor.cpy().mul(state).add(startColor.cpy().mul(1 - state));
-                    shapeRenderer.line(oldPos.x, oldPos.y, bezierPos.x, bezierPos.y, oldColor, color);
+                    shapeRenderer.rectLine(oldPos.x, oldPos.y, bezierPos.x, bezierPos.y, LINE_WIDTH, oldColor, color);
                     oldPos.set(bezierPos);
                     oldColor.set(color);
                 }
 
-                float theta = 0.5f;
-                Vector2 direction = new Vector2();
-                bezier.derivativeAt(direction, theta);
-                direction.nor();
-                if (eventFirst) {
-                    direction.scl(ARROW_SIZE);
-                } else {
-                    direction.scl(-ARROW_SIZE);
-                }
-
-                Vector2 arrowPos = new Vector2();
-                bezier.valueAt(arrowPos, (theta));
-                Vector2 arrowEnd = arrowPos.cpy().sub(direction);
-
-                shapeRenderer.setColor(ARROW_COLOR);
-                arrowEnd.rotateAround(arrowPos, 30);
-                shapeRenderer.line(arrowPos, arrowEnd);
-
-                arrowEnd.rotateAround(arrowPos, -60);
-                shapeRenderer.line(arrowPos, arrowEnd);
                 break;
             }
             case DISCONNECT:
@@ -366,7 +341,7 @@ public class LogicGraph extends Stage {
                     }
 
                     bezier.valueAt(bezierPos, state);
-                    shapeRenderer.line(oldPos.x, oldPos.y, bezierPos.x, bezierPos.y, REMOVE_COLOR, REMOVE_COLOR);
+                    shapeRenderer.rectLine(oldPos.x, oldPos.y, bezierPos.x, bezierPos.y, LINE_WIDTH, REMOVE_COLOR, REMOVE_COLOR);
                     oldPos.set(bezierPos);
                 }
                 break;
@@ -375,7 +350,6 @@ public class LogicGraph extends Stage {
 
     private void drawLines() {
         shapeRenderer.setColor(Color.WHITE);
-        Gdx.gl20.glLineWidth(3);
 
         Set<Map.Entry<Event, ArrayList<Handler>>> eventToHandlersConnectionsSet = logicEditor.getLogic().getEventToHandlersConnections().entrySet();
         for (Map.Entry<Event, ArrayList<Handler>> entry : eventToHandlersConnectionsSet) {
