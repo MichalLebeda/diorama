@@ -10,8 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import cz.shroomware.diorama.editor.EditorEngineGame;
@@ -243,6 +246,20 @@ public class Project {
 
     public Collection<MetaLevel> getMetaLevels() {
         return metaLevels.values();
+    }
+
+    public ArrayList<MetaLevel> getMetaLevelsSorted() {
+        ArrayList<MetaLevel> arrayList = new ArrayList<>(metaLevels.values());
+        Collections.sort(arrayList, new MetaLevelComparator());
+
+        return arrayList;
+    }
+
+    static class MetaLevelComparator implements Comparator<MetaLevel> {
+        @Override
+        public int compare(MetaLevel metaLevelA, MetaLevel metaLevelB) {
+            return metaLevelA.getName().compareToIgnoreCase(metaLevelB.getName());
+        }
     }
 
     public MetaLevel getMetaLevel(String levelName) {

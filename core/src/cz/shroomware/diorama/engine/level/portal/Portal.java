@@ -10,6 +10,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Resources;
+import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
@@ -17,10 +19,11 @@ public class Portal extends GameObject {
     private UpdatedDecal leftDecal, rightDecal, frontDecal, backDecal;
     private PortalConnector portalConnector;
     private MetaPortal metaPortal;
-    private boolean ignored = false;
+    private boolean temporalIgnore = false;
+    private boolean enabled = true;
 
-    public Portal(PortalConnector portalConnector,
-                  MetaPortal metaPortal,
+    public Portal(final PortalConnector portalConnector,
+                  final MetaPortal metaPortal,
                   BoxFactory boxFactory,
                   Resources resources) {
 
@@ -31,6 +34,29 @@ public class Portal extends GameObject {
 
         this.portalConnector = portalConnector;
         this.metaPortal = metaPortal;
+
+        logicComponent = new LogicComponent(metaPortal.identifier);
+        logicComponent.addHandler(new Handler("go_through") {
+            @Override
+            public void handle() {
+                portalConnector.goThrough(metaPortal);
+            }
+        });
+
+        logicComponent.addHandler(new Handler("enable") {
+            @Override
+            public void handle() {
+                setEnabled(true);
+            }
+        });
+
+        logicComponent.addHandler(new Handler("disable") {
+            @Override
+            public void handle() {
+                setEnabled(false);
+            }
+        });
+
 
         float x = metaPortal.getPosition().x;
         float y = metaPortal.getPosition().y;
@@ -174,12 +200,20 @@ public class Portal extends GameObject {
     }
 
     public void setIgnored() {
-        ignored = true;
+        temporalIgnore = true;
+    }
+
+    public void setEnabled(boolean forceIgnore) {
+        this.enabled = forceIgnore;
     }
 
     @Override
     public void onContactBegin() {
-        if (ignored) {
+        if (temporalIgnore) {
+            return;
+        }
+
+        if (!enabled) {
             return;
         }
 
@@ -190,7 +224,7 @@ public class Portal extends GameObject {
 
     @Override
     public void onContactEnd() {
-        ignored = false;
+        temporalIgnore = false;
 
         super.onContactEnd();
     }

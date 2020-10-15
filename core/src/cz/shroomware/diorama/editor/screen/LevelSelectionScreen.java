@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorEngineGame;
@@ -121,7 +121,7 @@ public class LevelSelectionScreen implements Screen {
 
         verticalGroup.clear();
 
-        Collection<MetaLevel> metaLevels = project.getMetaLevels();
+        ArrayList<MetaLevel> metaLevels = project.getMetaLevelsSorted();
         for (final MetaLevel metaLevel : metaLevels) {
             LevelButtonItem horizontalGroup = new LevelButtonItem(game, project, metaLevel) {
                 @Override

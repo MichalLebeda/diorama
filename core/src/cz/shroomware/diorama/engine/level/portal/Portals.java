@@ -9,20 +9,24 @@ import java.util.HashMap;
 
 import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.Resources;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Portals {
     protected MetaPortals metaPortals;
     protected boolean dirty = false;
     protected PortalConnector portalConnector;
+    protected Logic logic;
     protected BoxFactory boxFactory;
     protected Resources resources;
     HashMap<MetaPortal, Portal> metaToPortal = new HashMap<>();
 
     public Portals(MetaLevel metaLevel,
+                   Logic logic,
                    BoxFactory boxFactory,
                    Resources resources) {
         this.portalConnector = metaLevel.getParentProject().getPortalConnector();
+        this.logic = logic;
         this.metaPortals = metaLevel.getMetaPortals();
         this.boxFactory = boxFactory;
         this.resources = resources;
@@ -45,14 +49,18 @@ public class Portals {
     }
 
     public void create(float x, float y, float width, float height) {
-        dirty = true;
         MetaPortal metaPortal = metaPortals.create(x, y, width, height);
-        metaToPortal.put(metaPortal, new Portal(portalConnector, metaPortal, boxFactory, resources));
+        Portal portal = new Portal(portalConnector, metaPortal, boxFactory, resources);
+        add(portal);
     }
 
-    public void add(Portal gameObject) {
+    public void add(Portal portal) {
         dirty = true;
-        metaToPortal.put(gameObject.getMetaPortal(), gameObject);
+        metaToPortal.put(portal.getMetaPortal(), portal);
+
+        if (portal.hasLogicComponent()) {
+            logic.register(portal.getLogicComponent());
+        }
     }
 
     public void remove(Portal portal) {

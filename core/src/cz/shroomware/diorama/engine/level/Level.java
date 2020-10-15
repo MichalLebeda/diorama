@@ -63,7 +63,7 @@ public class Level {
         logic.register(initComponent);
 
         gameObjects = new GameObjects(logic);
-        portals = new Portals(metaLevel,
+        portals = new Portals(metaLevel, logic,
                 boxFactory,
                 resources);
     }
