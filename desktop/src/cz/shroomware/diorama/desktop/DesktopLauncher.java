@@ -11,7 +11,7 @@ import java.util.Locale;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 
 public class DesktopLauncher {
-    public static boolean release = false;
+    public static boolean release = true;
     public static void main(String[] arg) {
         if (!release) {
             packAtlas();
