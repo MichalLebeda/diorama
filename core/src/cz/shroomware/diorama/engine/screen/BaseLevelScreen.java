@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
-import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Resources;
 
@@ -33,9 +32,9 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
         decalBatch = new MinimalisticDecalBatch();
     }
 
-    protected void updateBackgroundColor(ColorUtil colorUtil, Level level) {
+    protected void updateBackgroundColor(Resources resources, Level level) {
         // Use dominant floor color as background
-        Color color = colorUtil.getDominantColor(level.getFloor().getTileAtIndex(0, 0));
+        Color color = resources.getColorUtil().getDominantColor(level.getFloor().getTileAtIndex(0, 0));
         backgroundColor = color;
 //        backgroundColor.mul(0.9f);
     }

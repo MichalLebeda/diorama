@@ -15,15 +15,14 @@ public class EditorResources extends Resources {
     protected TextureAtlas uiAtlas;
     protected Skin skin;
     protected TextureRegion darkBackgroundRegion;
-    protected TextureRegion cursorRegion;
     protected ShaderProgram dfShader;
     protected Drawable slotDrawable;
     protected BitmapFont font;
 
     public EditorResources(Resources resources) {
-        objectAtlas = resources.getObjectAtlas();
-        shadowAtlas = resources.getShadowAtlas();
-        spriteBatchShader = resources.getSpriteBatchShader();
+        setObjectAtlas(resources.getObjectAtlas());
+        setShadowAtlas(resources.getShadowAtlas());
+        setSpriteBatchShader(resources.getSpriteBatchShader());
     }
 
     public Drawable getSlotDrawable() {

@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.editor.EditorEngineGame;
-import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
@@ -18,14 +17,12 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float Y_CAMERA_DISTANCE = 6;
     protected EditorEngineGame game;
     protected Player player;
-    ColorUtil colorUtil;
 
     public TestLevelScreen(EditorEngineGame game, Level level, float x, float y) {
         super(game.getResources(), level);
         this.game = game;
 
-        this.colorUtil = new ColorUtil(game.getResources().getObjectAtlas());
-        updateBackgroundColor(colorUtil, level);
+        updateBackgroundColor(game.getResources(), level);
 
         player = new Player(new Vector3(x, y, 0),
                 new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
@@ -79,8 +76,6 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     public void dispose() {
         spriteBatch.dispose();
         decalBatch.dispose();
-
-        colorUtil.dispose();
     }
 
     @Override
