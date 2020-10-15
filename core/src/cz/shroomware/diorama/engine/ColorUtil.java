@@ -27,7 +27,7 @@ public class ColorUtil implements Disposable {
     }
 
     public int getColorByLocalUv(TextureRegion region, float u, float v) {
-        Pixmap pixmap = textureToPixmap(region.getTexture());
+        Pixmap pixmap = textureToPixmapMap.get(region.getTexture());
 
         if (pixmap == null) {
             Gdx.app.error("ColorUtil", "texture not registered");
