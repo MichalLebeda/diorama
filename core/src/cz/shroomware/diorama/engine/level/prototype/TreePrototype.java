@@ -23,6 +23,7 @@ public class TreePrototype extends AtlasRegionPrototype {
         leaveParticle = resources.getObjectAtlas().findRegion("white");
         Pixmap pixmap = Utils.extractPixmapFromTextureRegion(objectRegion);
         leaveParticleColor = Utils.getDominantOpaqueColor(pixmap);
+        pixmap.dispose();
         leaveParticleColor.mul(1.6f);
     }
 
