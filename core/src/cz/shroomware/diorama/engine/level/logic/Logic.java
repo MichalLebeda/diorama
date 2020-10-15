@@ -107,10 +107,6 @@ public class Logic {
     }
 
     public void connect(Event event, Handler handler) {
-        if (!event.getParent().getIdentifier().isNameSet() | !handler.getParent().getIdentifier().isNameSet()) {
-            Gdx.app.error("Logic", "Cannot connect, missing ID form one of the objects");
-            return;
-        }
         if (eventToHandlersConnections.containsKey(event)) {
             ArrayList<Handler> connectedHandlers = eventToHandlersConnections.get(event);
             if (connectedHandlers.contains(handler)) {

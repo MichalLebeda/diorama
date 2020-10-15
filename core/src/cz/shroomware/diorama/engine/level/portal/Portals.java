@@ -78,6 +78,9 @@ public class Portals {
         metaPortals.remove(portal.getMetaPortal());
         // Remove portal from connections
         portalConnector.removeConnectionWith(portal.getMetaPortal());
+
+        // Unregister non existing portal from Logic system
+        logic.unregister(portal.getLogicComponent());
     }
 
     public boolean isDirty() {

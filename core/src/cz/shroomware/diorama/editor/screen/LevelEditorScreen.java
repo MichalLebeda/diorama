@@ -549,9 +549,8 @@ public class LevelEditorScreen extends BaseLevelScreen {
                     return true;
                 }
             } else if (editor.isMode(Editor.Mode.PORTAL)) {
-                Vector3 intersection = getRayIntersectionWithFloor(screenX, screenY);
-                level.getPortals().create(intersection.x,
-                        intersection.y,
+                level.getPortals().create(cursor.getPosition().x,
+                        cursor.getPosition().y,
                         1,
                         1);
             }
