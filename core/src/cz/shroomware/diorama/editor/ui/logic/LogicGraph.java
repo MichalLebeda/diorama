@@ -28,7 +28,7 @@ import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 
 public class LogicGraph extends Stage {
     private static final float CROSS_SIZE = 40;
-    private static final Color CROSS_COLOR = new Color(0x050505FF);
+    private static final Color CROSS_COLOR = new Color(0x252525FF);
     private static final Color EVENT_COLOR = new Color(0x57E389FF);
     private static final Color HANDLER_COLOR = new Color(0x613583FF);
     private static final Color ARROW_COLOR = new Color(0xFAFAFAFF);

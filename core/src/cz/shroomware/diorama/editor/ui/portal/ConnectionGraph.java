@@ -25,7 +25,7 @@ import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 
 public class ConnectionGraph extends Stage {
     private static final float CROSS_SIZE = 40;
-    private static final Color CROSS_COLOR = new Color(0x050505FF);
+    private static final Color CROSS_COLOR = new Color(0x252525FF);
     private static final Color COLOR = Color.WHITE.cpy().mul(0.9f, 0.9f, 0.9f, 1);
     private static final Color REMOVE_COLOR = new Color(1, 0.3f, 0.3f, 0.3f);
 
