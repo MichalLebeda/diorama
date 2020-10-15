@@ -223,7 +223,7 @@ public class Project {
         }
 
         MetaLevel metaLevel = new MetaLevel(this, levelName, metadataHandle, dataHandle);
-        metaLevels.put(name, metaLevel);
+        metaLevels.put(metaLevel.getName(), metaLevel);
         return metaLevel;
     }
 

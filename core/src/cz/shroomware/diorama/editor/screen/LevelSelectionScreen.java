@@ -109,7 +109,6 @@ public class LevelSelectionScreen implements Screen {
             createLevelLabel.setText("New Level");
 
             projectLabel.setText(project.getName());
-            refreshList();
         }
     }
 
