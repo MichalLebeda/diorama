@@ -2,6 +2,7 @@ package cz.shroomware.diorama.editor.ui.portal;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -147,7 +148,9 @@ public class ConnectionGraph extends Stage {
             anim = 0;
         }
 
-        shapeRenderer.setProjectionMatrix(getCamera().combined);
+        Camera camera = getCamera();
+        camera.update();
+        shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         shapeRenderer.setColor(CROSS_COLOR);
