@@ -28,6 +28,7 @@ import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 
 public class LogicGraph extends Stage {
     private static final float CROSS_SIZE = 40;
+    private static final float ARROW_SIZE = 14;
     private static final Color CROSS_COLOR = new Color(0x252525FF);
     private static final Color EVENT_COLOR = new Color(0x57E389FF);
     private static final Color HANDLER_COLOR = new Color(0x613583FF);
@@ -254,7 +255,7 @@ public class LogicGraph extends Stage {
         Vector2 direction = new Vector2();
         bezier.derivativeAt(direction, theta);
         direction.nor();
-        direction.scl(30);
+        direction.scl(ARROW_SIZE);
 
         Vector2 arrowPos = new Vector2();
         bezier.valueAt(arrowPos, (theta));
@@ -325,9 +326,9 @@ public class LogicGraph extends Stage {
                 bezier.derivativeAt(direction, theta);
                 direction.nor();
                 if (eventFirst) {
-                    direction.scl(30);
+                    direction.scl(ARROW_SIZE);
                 } else {
-                    direction.scl(-30);
+                    direction.scl(-ARROW_SIZE);
                 }
 
                 Vector2 arrowPos = new Vector2();
