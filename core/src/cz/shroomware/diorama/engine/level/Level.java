@@ -190,11 +190,14 @@ public class Level {
 //        return fileHandle.name();
 //    }
 //
-    public void update(float delta) {
-        world.step(delta, 6, 2);
 
+    public void updatePhysics(float delta) {
+        world.step(delta, 6, 2);
+    }
+
+    public void update(float delta) {
         gameObjects.update(delta);
-//        clouds.update(delta);
+        clouds.update(delta);
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {

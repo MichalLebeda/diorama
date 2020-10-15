@@ -53,6 +53,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
             player.setVelocity(SPEED, 0);
         }
 
+        level.updatePhysics(delta);
         level.update(delta);
 
         player.update(0);

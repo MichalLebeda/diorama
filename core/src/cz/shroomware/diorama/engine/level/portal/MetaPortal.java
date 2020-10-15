@@ -2,8 +2,6 @@ package cz.shroomware.diorama.engine.level.portal;
 
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.Objects;
-
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.MetaLevel;
 
@@ -45,17 +43,12 @@ public class MetaPortal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MetaPortal that = (MetaPortal) o;
-        return Float.compare(that.width, width) == 0 &&
-                Float.compare(that.height, height) == 0 &&
-                Objects.equals(parentLevel, that.parentLevel) &&
-                Objects.equals(identifier, that.identifier) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(position, that.position);
+        return identifier.getId() == that.identifier.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parentLevel, identifier, name, position, width, height);
+        return identifier.getId();
     }
 
     public String getSaveString() {
