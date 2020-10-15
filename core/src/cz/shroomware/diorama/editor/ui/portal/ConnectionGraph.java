@@ -113,10 +113,10 @@ public class ConnectionGraph extends Stage {
             MetaLevelBlock block = new MetaLevelBlock(metaLevel, resources, COLOR) {
                 @Override
                 public void onPortalClicked(PortalButton button) {
-//                    button.getSlotA().highlight();
-//                    button.getSlotB().highlight();
+                    button.highlight();
                     if (portalButtonA == null) {
                         portalButtonA = button;
+                        portalButtonA.setColor(2, 2, 2, 1);
 
                         if (connectionEditor.mode == ConnectionEditor.Mode.DISCONNECT) {
                             removeConnection();
@@ -249,15 +249,26 @@ public class ConnectionGraph extends Stage {
         if (portalButtonA != null) {
             Vector2 portalButtonCenter = getGlobalCenterPos(portalButtonA);
 
+            Vector2 firstSlotPosition;
+            float bezierA;
+            float bezierB;
             if (portalButtonCenter.x > cursorPos.x) {
-                Vector2 firstSlotPosition = getGlobalCenterPos(portalButtonA);
+                firstSlotPosition = getGlobalCenterPos(portalButtonA);
                 firstSlotPosition.x -= portalButtonA.getWidthPad() / 2;
-                drawLine(firstSlotPosition, cursorPos2, -200, 200);
-                drawCircleAt(firstSlotPosition);
+                bezierA = -200;
+                bezierB = 200;
             } else {
-                Vector2 firstSlotPosition = getGlobalCenterPos(portalButtonA);
+                firstSlotPosition = getGlobalCenterPos(portalButtonA);
                 firstSlotPosition.x += portalButtonA.getWidthPad() / 2;
-                drawLine(firstSlotPosition, cursorPos2, 200, -200);
+                bezierA = 200;
+                bezierB = -200;
+            }
+
+            if (cursorPos.x > portalButtonCenter.x + portalButtonA.getWidthPad() / 2
+                    || cursorPos.x < portalButtonCenter.x - portalButtonA.getWidthPad() / 2
+                    || cursorPos.y > portalButtonCenter.y + portalButtonA.getHeightPad() / 2
+                    || cursorPos.y < portalButtonCenter.y - portalButtonA.getHeightPad() / 2) {
+                drawLine(firstSlotPosition, cursorPos2, bezierA, bezierB);
                 drawCircleAt(firstSlotPosition);
             }
         }
@@ -265,7 +276,7 @@ public class ConnectionGraph extends Stage {
     }
 
     protected void drawCircleAt(Vector2 pos) {
-        shapeRenderer.circle(pos.x, pos.y, 8 * zoom);
+        shapeRenderer.circle(pos.x, pos.y, 8);
     }
 
     protected Vector2 getGlobalCenterPos(Actor actor) {

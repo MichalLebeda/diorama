@@ -112,7 +112,7 @@ public class BackgroundLabel extends DFLabel {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         Color color = getColor();
-        batch.setColor(color.r, color.g, color.b, color.a);
+        batch.setColor(color.r, color.g, color.b, parentAlpha);
         background.draw(batch, getXWithPadding(), getYWithPadding(), getWidthWithPadding(), getHeightWithPadding());
         super.draw(batch, parentAlpha);
     }

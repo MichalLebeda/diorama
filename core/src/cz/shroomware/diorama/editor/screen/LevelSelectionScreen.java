@@ -43,6 +43,7 @@ public class LevelSelectionScreen implements Screen {
     private Color backgroundColor = new Color(0x303030ff);
     private Project project;
     private IconButton logicEditorButton;
+    private DFLabel infoLabel;
 
     public LevelSelectionScreen(final EditorEngineGame game) {
         this.game = game;
@@ -99,6 +100,10 @@ public class LevelSelectionScreen implements Screen {
             }
         });
         stage.addActor(logicEditorButton);
+
+        infoLabel = new DFLabel(resources.getSkin(), resources.getDfShader(), "");
+        infoLabel.setColor(new Color(0x909090FF));
+        stage.addActor(infoLabel);
     }
 
     public void setProject(Project project) {
@@ -137,6 +142,7 @@ public class LevelSelectionScreen implements Screen {
     @Override
     public void show() {
         Gdx.graphics.setTitle("Project - " + project.getName());
+        infoLabel.setText("Last ID: " + project.getIdGenerator().getLastId());
         //TODO workaround, show called before resize
 //        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         Gdx.input.setInputProcessor(stage);
@@ -167,6 +173,7 @@ public class LevelSelectionScreen implements Screen {
 
         logicEditorButton.setPosition(10, projectLabel.getYWithPadding() - 10 - logicEditorButton.getHeight());
 
+        infoLabel.setPosition(10, 10);
         //TODO: remove this workaround
         refreshList();
 //        updateScrollPaneSize();

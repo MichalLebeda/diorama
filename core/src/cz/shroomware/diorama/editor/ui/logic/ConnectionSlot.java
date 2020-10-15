@@ -27,6 +27,12 @@ public class ConnectionSlot extends Container<Image> {
         clearActions();
         addAction(Actions.sequence(
                 Actions.scaleTo(2, 2, 0.1f, Interpolation.circleOut),
-                Actions.scaleTo(1, 1, 0.1f, Interpolation.circleIn)));
+                Actions.scaleTo(1, 1, 0.1f, Interpolation.circleIn),
+                Actions.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        setTransform(false);
+                    }
+                })));
     }
 }
