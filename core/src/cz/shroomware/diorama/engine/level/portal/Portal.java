@@ -217,8 +217,6 @@ public class Portal extends GameObject {
             return;
         }
 
-        super.onContactBegin();
-
         portalConnector.goThrough(metaPortal);
     }
 
