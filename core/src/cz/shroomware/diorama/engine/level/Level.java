@@ -136,7 +136,7 @@ public class Level {
 
     protected void initCamera() {
         camera = new PerspectiveCamera(
-                0,
+                50,
                 Utils.calculateCameraViewportWidth(),
                 Utils.calculateCameraViewportHeight());
         camera.near = 0.1f;
