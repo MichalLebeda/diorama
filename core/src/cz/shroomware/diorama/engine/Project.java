@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.portal.PortalConnector;
 
@@ -31,16 +30,17 @@ public class Project {
     private String name;
     private FileHandle fileHandle;
     private HashMap<String, MetaLevel> metaLevels = new HashMap<>();
-    private EditorEngineGame game;
+    private EngineGame game;
     private IdGenerator idGenerator;
 
-    public Project(EditorEngineGame editorEngineGame, FileHandle parent, String name) {
+    public Project(EngineGame engineGame, FileHandle parent, String name) {
         this.name = name;
-        this.game = editorEngineGame;
+        this.game = engineGame;
 
         fileHandle = parent.child(name);
 
         if (!fileHandle.exists()) {
+            Gdx.app.error("Project", fileHandle.toString());
             create();
         }
 
@@ -49,12 +49,13 @@ public class Project {
         load();
     }
 
-    public Project(EditorEngineGame editorEngineGame, FileHandle file) {
+    public Project(EngineGame engineGame, FileHandle file) {
         this.fileHandle = file;
         this.name = fileHandle.name();
-        this.game = editorEngineGame;
+        this.game = engineGame;
 
         if (!fileHandle.exists()) {
+            Gdx.app.error("Project", fileHandle.toString());
             create();
         }
 

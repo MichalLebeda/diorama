@@ -10,15 +10,15 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.Set;
 
-import cz.shroomware.diorama.editor.EditorEngineGame;
+import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.MetaLevel;
 
 public class PortalConnector {
-    protected EditorEngineGame game;
+    protected EngineGame game;
     protected BiMap<MetaPortal, MetaPortal> connections = HashBiMap.create();
 
-    public PortalConnector(EditorEngineGame game) {
+    public PortalConnector(EngineGame game) {
         this.game = game;
     }
 

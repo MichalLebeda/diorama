@@ -3,22 +3,21 @@ package cz.shroomware.diorama.engine.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 
-import cz.shroomware.diorama.editor.EditorEngineGame;
+import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 
-public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
+public class LevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float SPEED = 9.0f;
     protected static final float Y_CAMERA_DISTANCE = 6;
-    protected EditorEngineGame game;
+    protected EngineGame game;
     protected Player player;
 
-    public TestLevelScreen(EditorEngineGame game, Level level, float x, float y) {
+    public LevelScreen(EngineGame game, Level level, float x, float y) {
         super(game.getResources(), level);
         this.game = game;
 
@@ -27,6 +26,8 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         player = new Player(new Vector3(x, y, 0),
                 new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
+
+        boxDebug = true;
     }
 
     @Override
@@ -38,6 +39,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
 
     @Override
     public void drawWorld(float delta) {
+        player.setVelocity(0, 2);
         PerspectiveCamera camera = level.getCamera();
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -63,9 +65,9 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
 
         spriteBatch.setProjectionMatrix(camera.combined);
 
+        spriteBatch.setShader(resources.getSpriteBatchShader());
         spriteBatch.begin();
-        spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
-        spriteBatch.getShader().setUniformf("u_background_color", Color.RED);
+        resources.getSpriteBatchShader().setUniformf("u_camera_pos", camera.position);
         level.draw(spriteBatch, decalBatch, delta);
         spriteBatch.end();
 
@@ -80,19 +82,6 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (super.keyDown(keycode)) {
-            return true;
-        }
-
-        switch (keycode) {
-            case Input.Keys.ESCAPE:
-                dispose();
-                game.returnToEditor();
-                return true;
-            case Input.Keys.L:
-                return true;
-        }
-
         return false;
     }
 }

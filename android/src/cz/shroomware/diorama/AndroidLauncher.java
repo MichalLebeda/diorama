@@ -23,6 +23,6 @@ public class AndroidLauncher extends AndroidApplication {
 
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new EngineGame(), config);
+		initialize(new EngineGame("level/test_project"), config);
 	}
 }

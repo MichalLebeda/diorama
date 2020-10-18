@@ -121,7 +121,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
         spriteBatch.getShader().setUniformf("u_background_color", backgroundColor);
-        spriteBatch.getShader().setUniformf("time", time / 10f);
+//        spriteBatch.getShader().setUniformf("time", time / 10f);
 
         level.update(delta);
         level.getPortals().drawObjects(decalBatch);

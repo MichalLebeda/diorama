@@ -8,15 +8,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Resources;
 
 public abstract class BaseLevelScreen implements Screen, InputProcessor {
-    protected ShaderProgram spriteBatchShader;
     protected Level level;
+    Resources resources;
     protected Color backgroundColor = Color.GRAY.cpy();
     protected SpriteBatch spriteBatch;
     protected MinimalisticDecalBatch decalBatch;
@@ -27,7 +26,7 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
     protected BaseLevelScreen(Resources resources, Level level) {
         this.level = level;
 
-        spriteBatchShader = resources.getSpriteBatchShader();
+        this.resources = resources;
         spriteBatch = new SpriteBatch();
         decalBatch = new MinimalisticDecalBatch();
     }
@@ -56,7 +55,7 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT
                 | GL20.GL_DEPTH_BUFFER_BIT);
 
-        spriteBatch.setShader(spriteBatchShader);
+        spriteBatch.setShader(resources.getSpriteBatchShader());
         drawWorld(delta);
 
         if (boxDebug) {

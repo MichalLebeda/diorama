@@ -24,7 +24,7 @@ public class Tile extends Sprite {
     public void draw(SpriteBatch spriteBatch, float delta) {
         //TODO: remove
         if (attachedGameObject != null) {
-            setColor(Color.ORANGE);
+//            setColor(Color.ORANGE);
         } else {
             setColor(Color.WHITE);
         }

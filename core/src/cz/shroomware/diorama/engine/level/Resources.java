@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.engine.level;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
@@ -37,10 +38,17 @@ public class Resources {
     }
 
     public ShaderProgram getSpriteBatchShader() {
+        if (spriteBatchShader == null) {
+            Gdx.app.error("Resoureces", "No SpriteBatch shader");
+        }
         return spriteBatchShader;
     }
 
     public void setSpriteBatchShader(ShaderProgram spriteBatchShader) {
+        if (spriteBatchShader == null) {
+            Gdx.app.error("Resources", "SpriteBatch shader cannot be null");
+            Gdx.app.exit();
+        }
         this.spriteBatchShader = spriteBatchShader;
     }
 }

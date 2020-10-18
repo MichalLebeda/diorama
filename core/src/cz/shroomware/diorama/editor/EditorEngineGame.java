@@ -19,7 +19,6 @@ import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
-import cz.shroomware.diorama.engine.screen.TestLevelScreen;
 
 public class EditorEngineGame extends EngineGame {
     //TODO don't use editorScreen variable
@@ -169,6 +168,7 @@ public class EditorEngineGame extends EngineGame {
         setScreen(levelSelectionScreen);
     }
 
+    @Override
     public void openLevel(MetaPortal metaPortal) {
         Level level = new Level(metaPortal.getParentLevel(), this);
         level.setIgnoredPortal(metaPortal);
@@ -176,6 +176,7 @@ public class EditorEngineGame extends EngineGame {
         setScreen(testLevelScreen);
     }
 
+    @Override
     public void openLevel(MetaLevel metaLevel, float x, float y) {
         Level level = new Level(metaLevel, this);
         TestLevelScreen testLevelScreen = new TestLevelScreen(this, level, x, y);
