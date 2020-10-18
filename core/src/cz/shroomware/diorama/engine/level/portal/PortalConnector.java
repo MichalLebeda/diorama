@@ -10,15 +10,15 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.Set;
 
-import cz.shroomware.diorama.editor.EditorEngineGame;
+import cz.shroomware.diorama.engine.EngineGame;
 import cz.shroomware.diorama.engine.Project;
 import cz.shroomware.diorama.engine.level.MetaLevel;
 
 public class PortalConnector {
-    protected EditorEngineGame game;
+    protected EngineGame game;
     protected BiMap<MetaPortal, MetaPortal> connections = HashBiMap.create();
 
-    public PortalConnector(EditorEngineGame game) {
+    public PortalConnector(EngineGame game) {
         this.game = game;
     }
 
@@ -56,10 +56,10 @@ public class PortalConnector {
         Set<Map.Entry<MetaPortal, MetaPortal>> entries = connections.entrySet();
 
         String levelNameA;
-        String portalIdA;
+        int portalIdA;
 
         String levelNameB;
-        String portalIdB;
+        int portalIdB;
 
         String partA;
         String partB;
@@ -69,10 +69,10 @@ public class PortalConnector {
             MetaPortal portalB = entry.getValue();
 
             levelNameA = portalA.getParentLevel().getName();
-            portalIdA = portalA.getIdentifier().getIdString();
+            portalIdA = portalA.getIdentifier().getId();
 
             levelNameB = portalB.getParentLevel().getName();
-            portalIdB = portalB.getIdentifier().getIdString();
+            portalIdB = portalB.getIdentifier().getId();
 
             partA = levelNameA + ":" + portalIdA;
             partB = levelNameB + ":" + portalIdB;
@@ -89,10 +89,10 @@ public class PortalConnector {
         String partB;
 
         String levelNameA;
-        String portalIdA;
+        int portalIdA;
 
         String levelNameB;
-        String portalIdB;
+        int portalIdB;
 
         String line;
         String[] split;
@@ -104,11 +104,11 @@ public class PortalConnector {
 
             split = partA.split(":");
             levelNameA = split[0];
-            portalIdA = split[1];
+            portalIdA = Integer.parseInt(split[1]);
 
             split = partB.split(":");
             levelNameB = split[0];
-            portalIdB = split[1];
+            portalIdB = Integer.parseInt(split[1]);
 
             MetaLevel metaLevelA = project.getMetaLevel(levelNameA);
             MetaLevel metaLevelB = project.getMetaLevel(levelNameB);

@@ -28,8 +28,9 @@ public abstract class Handler {
     @Override
     public String toString() {
         Identifier parentIdentifier = parent.getIdentifier();
-        return (parentIdentifier.isSet() ? parentIdentifier.getIdString() : parent.toString()) + ":" + name;
+        return parentIdentifier.getId() + ":" + name;
     }
 
     public abstract void handle();
+
 }

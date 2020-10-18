@@ -19,15 +19,15 @@ public class Cursor extends AtlasRegionGameObject {
     TextureRegion defaultRegion;
     boolean itemPlacingAllowed = true;
     boolean visible = true;
-    int floorCursorX;
-    int floorCursorY;
+    float floorCursorX;
+    float floorCursorY;
     float zOffset = 0;
 
     public Cursor(Editor editor,
                   EditorResources resources,
                   Level level,
                   TextureAtlas.AtlasRegion defaultRegion) {
-        super(Vector3.Zero, new AtlasRegionPrototype(resources, defaultRegion));
+        super(Vector3.Zero, new AtlasRegionPrototype(resources, defaultRegion), null);
         this.editor = editor;
         this.level = level;
         this.defaultRegion = defaultRegion;
@@ -44,15 +44,25 @@ public class Cursor extends AtlasRegionGameObject {
             decal.setColor(1, 1, 1, 0.2f);
         }
 
-        // Revert offset for floor cursor
-        floorCursorX = (int) (getPosition().x - editor.getSnapOffsetX());
-        floorCursorY = (int) (getPosition().y - editor.getSnapOffsetY());
+        if (editor.isMode(Editor.Mode.PORTAL)) {
+            if (editor.getHardSnap()) {
+                floorCursorX = (int) (getPosition().x - editor.getSnapOffsetX());
+                floorCursorY = (int) (getPosition().y - editor.getSnapOffsetY());
+            } else {
+                floorCursorX = getPosition().x - 0.5f;
+                floorCursorY = getPosition().y - 0.5f;
+            }
+        } else {
+            // Revert offset for floor cursor
+            floorCursorX = (int) (getPosition().x - editor.getSnapOffsetX());
+            floorCursorY = (int) (getPosition().y - editor.getSnapOffsetY());
 
-        // May be redundant but fixes decal position when user turns snap on,
-        // but no mouse movement occurred yet
-        // TODO: Proper solution would be to handle onSnapOn event.
-        if (editor.getHardSnap()) {
-            setPosition(floorCursorX + 0.5f, floorCursorY + 0.5f);
+            // May be redundant but fixes decal position when user turns snap on,
+            // but no mouse movement occurred yet
+            // TODO: Proper solution would be to handle onSnapOn event.
+            if (editor.getHardSnap()) {
+                setPosition(floorCursorX + 0.5f, floorCursorY + 0.5f);
+            }
         }
 
         switch (editor.getMode()) {

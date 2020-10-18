@@ -23,7 +23,9 @@ import java.io.OutputStream;
 import java.util.Collection;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.EngineGame;
+import cz.shroomware.diorama.engine.IdGenerator;
 import cz.shroomware.diorama.engine.level.fx.Clouds;
 import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.logic.component.InitComponent;
@@ -56,13 +58,13 @@ public class Level {
         world.setContactListener(new LevelContactListener());
         boxFactory = new BoxFactory(world);
 
-        logic = new Logic();
+        logic = new Logic(metaLevel.getParentProject().getIdGenerator());
 
         initComponent = new InitComponent();
         logic.register(initComponent);
 
         gameObjects = new GameObjects(logic);
-        portals = new Portals(metaLevel,
+        portals = new Portals(metaLevel, logic,
                 boxFactory,
                 resources);
     }
@@ -70,7 +72,7 @@ public class Level {
     public Level(MetaLevel metaLevel, EngineGame game, int width, int height) {
         this(game, metaLevel);
 
-        floor = new Floor(game.getResources().getObjectAtlas().findRegion("floor"), width, height);
+        floor = new Floor(game.getResources().getObjectAtlas().findRegion("ground"), width, height);
         clouds = new Clouds(floor, game.getResources().getObjectAtlas());
 
         initCamera();
@@ -98,8 +100,13 @@ public class Level {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             try {
+                IdGenerator idGenerator = metaLevel.getParentProject().getIdGenerator();
                 floor.load(bufferedReader, atlas);
-                gameObjects.load(bufferedReader, gameObjectPrototypes, floor, boxFactory);
+                gameObjects.load(bufferedReader,
+                        gameObjectPrototypes,
+                        floor,
+                        boxFactory,
+                        idGenerator);
 
                 logic.load(bufferedReader);
             } catch (IOException e) {
@@ -184,11 +191,14 @@ public class Level {
 //        return fileHandle.name();
 //    }
 //
-    public void update(float delta) {
-        world.step(delta, 6, 2);
 
+    public void updatePhysics(float delta) {
+        world.step(delta, 6, 2);
+    }
+
+    public void update(float delta) {
         gameObjects.update(delta);
-//        clouds.update(delta);
+        clouds.update(delta);
     }
 
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
@@ -222,7 +232,7 @@ public class Level {
         return gameObjects.isDirty() || floor.isDirty() || logic.isDirty() || getMetaLevel().getMetaPortals().isDirty();
     }
 
-    public GameObject findIntersectingWithRay(Ray ray, Camera camera) {
+    public GameObject findIntersectingWithRay(ColorUtil colorUtil, Ray ray, Camera camera) {
         Vector3 intersection = new Vector3();
         BoundingBox boundingBox = new BoundingBox();
 
@@ -234,7 +244,7 @@ public class Level {
             GameObject gameObject = gameObjects.get(i);
             gameObject.sizeBoundingBox(boundingBox);
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                if (gameObject.intersectsWithOpaque(ray, intersection.cpy())) {
+                if (gameObject.intersectsWithOpaque(colorUtil, ray, intersection.cpy())) {
                     float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
                     if (currentObjectDist < minDist) {
                         minDist = currentObjectDist;
@@ -249,7 +259,7 @@ public class Level {
         for (Portal portal : portalsCollection) {
             portal.sizeBoundingBox(boundingBox);
             if (Intersector.intersectRayBounds(ray, boundingBox, intersection)) {
-                if (portal.intersectsWithOpaque(ray, intersection.cpy())) {
+                if (portal.intersectsWithOpaque(colorUtil, ray, intersection.cpy())) {
                     float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
                     if (currentObjectDist < minDist) {
                         minDist = currentObjectDist;

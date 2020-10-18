@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
@@ -30,8 +31,9 @@ public class Door extends GameObject {
 
     public Door(Vector3 position,
                 DoorPrototype prototype,
-                BoxFactory boxFactory) {
-        super(position, prototype.getDoorPostRegion(), prototype);
+                BoxFactory boxFactory,
+                Identifier identifier) {
+        super(position, prototype.getDoorPostRegion(), prototype, identifier);
 
         movingPart = UpdatedDecal.newDecal(prototype.getDoorRegion(), true);
         movingPart.setPosition(position);

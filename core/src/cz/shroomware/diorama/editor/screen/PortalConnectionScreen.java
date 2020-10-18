@@ -28,7 +28,7 @@ public class PortalConnectionScreen implements Screen, InputProcessor {
     //TODO make ProjectSelScreeen from same parent
     ConnectionGraph graph;
 
-    Color backgroundColor = new Color(0x424242ff);
+    Color backgroundColor = new Color(0x303030ff);
     ShapeRenderer shapeRenderer;
     SpriteBatch spriteBatch;
     OrthographicCamera camera;
@@ -175,7 +175,7 @@ public class PortalConnectionScreen implements Screen, InputProcessor {
                 camera.update();
                 return true;
             case Input.Keys.N:
-//                graph.centerByMax();
+                graph.centerByMax();
                 return true;
         }
         return false;

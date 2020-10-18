@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.Event;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.TriggerPrototype;
@@ -17,8 +18,8 @@ public class Trigger extends GameObject {
     Event pressedEvent;
     Event releasedEvent;
 
-    public Trigger(Vector3 position, TriggerPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype.getUpRegion(), prototype);
+    public Trigger(Vector3 position, TriggerPrototype prototype, BoxFactory boxFactory, Identifier identifier) {
+        super(position, prototype.getUpRegion(), prototype, identifier);
 
         regionUp = prototype.getUpRegion();
         regionDown = prototype.getDownRegion();

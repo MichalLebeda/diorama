@@ -26,6 +26,6 @@ public class Event {
     @Override
     public String toString() {
         Identifier parentIdentifier = parent.getIdentifier();
-        return (parentIdentifier.isSet() ? parent.getIdentifier().getIdString() : parent.toString()) + ":" + name;
+        return parentIdentifier.getId() + ":" + name;
     }
 }

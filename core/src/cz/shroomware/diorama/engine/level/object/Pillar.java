@@ -9,7 +9,9 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.HexRegion;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
@@ -26,8 +28,8 @@ public class Pillar extends GameObject {
     TextureRegion regionConnectedBoth;
     HexRegion topRegions;
 
-    public Pillar(Vector3 position, PillarPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype.getTop().get("oooo"), prototype);
+    public Pillar(Vector3 position, PillarPrototype prototype, BoxFactory boxFactory, Identifier identifier) {
+        super(position, prototype.getTop().get("oooo"), prototype, identifier);
 
         region = prototype.getRegion();
         regionConnectedLeft = prototype.getRegionConnectedLeft();
@@ -111,31 +113,31 @@ public class Pillar extends GameObject {
     }
 
     @Override
-    public boolean intersectsWithOpaque(Ray ray, Vector3 boundsIntersection) {
+    public boolean intersectsWithOpaque(ColorUtil colorUtil, Ray ray, Vector3 boundsIntersection) {
         Vector3 intersection = new Vector3();
 
         findIntersectionRayDecalPlane(ray, decal, intersection);
-        if (isPixelOpaque(intersection, decal)) {
+        if (isPixelOpaque(colorUtil, intersection, decal)) {
             return true;
         }
 
         findIntersectionRayDecalPlane(ray, leftDecal, intersection);
-        if (isPixelOpaque(intersection, leftDecal)) {
+        if (isPixelOpaque(colorUtil, intersection, leftDecal)) {
             return true;
         }
 
         findIntersectionRayDecalPlane(ray, rightDecal, intersection);
-        if (isPixelOpaque(intersection, rightDecal)) {
+        if (isPixelOpaque(colorUtil, intersection, rightDecal)) {
             return true;
         }
 
         findIntersectionRayDecalPlane(ray, frontDecal, intersection);
-        if (isPixelOpaque(intersection, frontDecal)) {
+        if (isPixelOpaque(colorUtil, intersection, frontDecal)) {
             return true;
         }
 
         findIntersectionRayDecalPlane(ray, backDecal, intersection);
-        if (isPixelOpaque(intersection, backDecal)) {
+        if (isPixelOpaque(colorUtil, intersection, backDecal)) {
             return true;
         }
 

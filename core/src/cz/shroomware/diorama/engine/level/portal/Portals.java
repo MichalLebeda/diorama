@@ -9,20 +9,24 @@ import java.util.HashMap;
 
 import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.Resources;
+import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Portals {
     protected MetaPortals metaPortals;
     protected boolean dirty = false;
     protected PortalConnector portalConnector;
+    protected Logic logic;
     protected BoxFactory boxFactory;
     protected Resources resources;
     HashMap<MetaPortal, Portal> metaToPortal = new HashMap<>();
 
     public Portals(MetaLevel metaLevel,
+                   Logic logic,
                    BoxFactory boxFactory,
                    Resources resources) {
         this.portalConnector = metaLevel.getParentProject().getPortalConnector();
+        this.logic = logic;
         this.metaPortals = metaLevel.getMetaPortals();
         this.boxFactory = boxFactory;
         this.resources = resources;
@@ -39,19 +43,24 @@ public class Portals {
 
     public void drawObjects(MinimalisticDecalBatch decalBatch) {
         for (Portal portal : metaToPortal.values()) {
+            portal.update(0);
             portal.drawDecal(decalBatch);
         }
     }
 
-    public void create(float x, float y, float width, float height, String id) {
-        dirty = true;
-        MetaPortal metaPortal = metaPortals.create(x, y, width, height, id);
-        metaToPortal.put(metaPortal, new Portal(portalConnector, metaPortal, boxFactory, resources));
+    public void create(float x, float y, float width, float height) {
+        MetaPortal metaPortal = metaPortals.create(x, y, width, height);
+        Portal portal = new Portal(portalConnector, metaPortal, boxFactory, resources);
+        add(portal);
     }
 
-    public void add(Portal gameObject) {
+    public void add(Portal portal) {
         dirty = true;
-        metaToPortal.put(gameObject.getMetaPortal(), gameObject);
+        metaToPortal.put(portal.getMetaPortal(), portal);
+
+        if (portal.hasLogicComponent()) {
+            logic.register(portal.getLogicComponent());
+        }
     }
 
     public void remove(Portal portal) {
@@ -69,6 +78,9 @@ public class Portals {
         metaPortals.remove(portal.getMetaPortal());
         // Remove portal from connections
         portalConnector.removeConnectionWith(portal.getMetaPortal());
+
+        // Unregister non existing portal from Logic system
+        logic.unregister(portal.getLogicComponent());
     }
 
     public boolean isDirty() {

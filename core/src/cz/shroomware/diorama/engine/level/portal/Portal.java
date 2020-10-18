@@ -2,13 +2,17 @@ package cz.shroomware.diorama.engine.level.portal;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Resources;
+import cz.shroomware.diorama.engine.level.logic.Handler;
+import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
@@ -16,21 +20,44 @@ public class Portal extends GameObject {
     private UpdatedDecal leftDecal, rightDecal, frontDecal, backDecal;
     private PortalConnector portalConnector;
     private MetaPortal metaPortal;
-    private boolean ignored = false;
+    private boolean temporalIgnore = false;
+    private boolean enabled = true;
 
-    public Portal(PortalConnector portalConnector,
-                  MetaPortal metaPortal,
+    public Portal(final PortalConnector portalConnector,
+                  final MetaPortal metaPortal,
                   BoxFactory boxFactory,
                   Resources resources) {
 
         super(new Vector3(metaPortal.getPosition(), 0),
                 resources.getObjectAtlas().findRegion("cursor"),
-                null);
-
-        identifier = metaPortal.identifier;
+                null,
+                metaPortal.getIdentifier());
 
         this.portalConnector = portalConnector;
         this.metaPortal = metaPortal;
+
+        logicComponent = new LogicComponent(metaPortal.identifier);
+        logicComponent.addHandler(new Handler("go_through") {
+            @Override
+            public void handle() {
+                portalConnector.goThrough(metaPortal);
+            }
+        });
+
+        logicComponent.addHandler(new Handler("enable") {
+            @Override
+            public void handle() {
+                setEnabled(true);
+            }
+        });
+
+        logicComponent.addHandler(new Handler("disable") {
+            @Override
+            public void handle() {
+                setEnabled(false);
+            }
+        });
+
 
         float x = metaPortal.getPosition().x;
         float y = metaPortal.getPosition().y;
@@ -68,7 +95,7 @@ public class Portal extends GameObject {
         backDecal.setWidth(decal.getWidth());
         backDecal.setHeight(2);
 
-        updatePosition(body.getPosition().x, body.getPosition().y);
+        positionDirty = true;
     }
 
     @Override
@@ -138,31 +165,31 @@ public class Portal extends GameObject {
     }
 
     @Override
-    public boolean intersectsWithOpaque(Ray ray, Vector3 boundsIntersection) {
+    public boolean intersectsWithOpaque(ColorUtil colorUtil, Ray ray, Vector3 boundsIntersection) {
         Vector3 intersection = new Vector3();
 
         findIntersectionRayDecalPlane(ray, decal, intersection);
-        if (isPixelOpaque(intersection, decal)) {
+        if (isPixelOpaque(colorUtil, intersection, decal)) {
             return true;
         }
 
         findIntersectionRayDecalPlane(ray, leftDecal, intersection);
-        if (isPixelOpaque(intersection, leftDecal)) {
+        if (isPixelOpaque(colorUtil, intersection, leftDecal)) {
             return true;
         }
 
         findIntersectionRayDecalPlane(ray, rightDecal, intersection);
-        if (isPixelOpaque(intersection, rightDecal)) {
+        if (isPixelOpaque(colorUtil, intersection, rightDecal)) {
             return true;
         }
 
         findIntersectionRayDecalPlane(ray, frontDecal, intersection);
-        if (isPixelOpaque(intersection, frontDecal)) {
+        if (isPixelOpaque(colorUtil, intersection, frontDecal)) {
             return true;
         }
 
         findIntersectionRayDecalPlane(ray, backDecal, intersection);
-        if (isPixelOpaque(intersection, backDecal)) {
+        if (isPixelOpaque(colorUtil, intersection, backDecal)) {
             return true;
         }
 
@@ -174,23 +201,29 @@ public class Portal extends GameObject {
     }
 
     public void setIgnored() {
-        ignored = true;
+        temporalIgnore = true;
+    }
+
+    public void setEnabled(boolean forceIgnore) {
+        this.enabled = forceIgnore;
     }
 
     @Override
     public void onContactBegin() {
-        if (ignored) {
+        if (temporalIgnore) {
             return;
         }
 
-        super.onContactBegin();
+        if (!enabled) {
+            return;
+        }
 
         portalConnector.goThrough(metaPortal);
     }
 
     @Override
     public void onContactEnd() {
-        ignored = false;
+        temporalIgnore = false;
 
         super.onContactEnd();
     }
@@ -198,5 +231,19 @@ public class Portal extends GameObject {
     @Override
     public String getName() {
         return "portal";
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+        metaPortal.setPosition(x, y);
+        metaPortal.getParentLevel().getMetaPortals().setDirty();
+    }
+
+    @Override
+    public void setPosition(Vector2 position) {
+        super.setPosition(position);
+        metaPortal.setPosition(position);
+        metaPortal.getParentLevel().getMetaPortals().setDirty();
     }
 }

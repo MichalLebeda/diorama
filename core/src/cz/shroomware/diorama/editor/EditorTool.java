@@ -15,6 +15,7 @@ import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
+import cz.shroomware.diorama.engine.level.portal.Portal;
 
 public class EditorTool {
     Floor floor;
@@ -196,6 +197,8 @@ public class EditorTool {
             }
         }
 
-        gameObjects.setDirty();
+        if (!(gameObject instanceof Portal)) {
+            gameObjects.setDirty();
+        }
     }
 }

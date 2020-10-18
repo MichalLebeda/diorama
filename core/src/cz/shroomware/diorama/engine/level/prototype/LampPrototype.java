@@ -3,6 +3,7 @@ package cz.shroomware.diorama.engine.level.prototype;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.Lamp;
@@ -24,8 +25,8 @@ public class LampPrototype extends Prototype {
     }
 
     @Override
-    public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
-        return new Lamp(position, this);
+    public GameObject createAt(Vector3 position, BoxFactory boxFactory, Identifier identifier) {
+        return new Lamp(position, this, identifier);
     }
 
     @Override

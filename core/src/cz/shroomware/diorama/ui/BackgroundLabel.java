@@ -13,48 +13,84 @@ import com.badlogic.gdx.utils.Null;
 import static cz.shroomware.diorama.Utils.DARK_BACKGROUND_DRAWABLE;
 
 public class BackgroundLabel extends DFLabel {
-    private static final float PAD = 20;
+    private float padHorizontal = 20;
+    private float padVertical = 10;
 
     protected Drawable background;
+
+    public BackgroundLabel(Skin skin, ShaderProgram dfShader, CharSequence text, Drawable background) {
+        super(skin, dfShader, text);
+        this.background = background;
+    }
 
     public BackgroundLabel(Skin skin, ShaderProgram dfShader, CharSequence text) {
         super(skin, dfShader, text);
         background = skin.getDrawable(DARK_BACKGROUND_DRAWABLE);
     }
 
+    public void setPad(float pad) {
+        this.padHorizontal = pad;
+        this.padVertical = pad;
+        layout();
+        pack();
+    }
+
+    public void setPad(float padHorizontal, float padVertical) {
+        this.padHorizontal = padHorizontal;
+        this.padVertical = padVertical;
+        layout();
+        pack();
+    }
+
     public float getXWithPadding() {
-        return super.getX() - getPad();
+        return super.getX() - getPadHorizontal();
     }
 
     public float getYWithPadding() {
-        return super.getY() - getPad();
+        return super.getY() - getPadVertical();
     }
 
     public float getWidthWithPadding() {
-        return super.getWidth() + 2 * getPad();
+        return super.getWidth() + 2 * getPadHorizontal();
     }
 
     public float getHeightWithPadding() {
-        return super.getHeight() + 2 * getPad();
+        return super.getHeight() + 2 * getPadVertical();
     }
 
     @Override
     public void setPosition(float x, float y) {
-        super.setPosition(x + getPad(), y + getPad());
+        super.setPosition(x + getPadHorizontal(), y + getPadVertical());
     }
 
     @Override
     public void setX(float x) {
-        super.setX(x + getPad());
+        super.setX(x + getPadHorizontal());
     }
 
     @Override
     public void setY(float y) {
-        super.setY(y + getPad());
+        super.setY(y + getPadVertical());
     }
 
-    public float getPad() {
-        return PAD;
+    public float getPadHorizontal() {
+        return padHorizontal;
+    }
+
+    public void setPadHorizontal(float padHorizontal) {
+        this.padHorizontal = padHorizontal;
+        layout();
+        pack();
+    }
+
+    public float getPadVertical() {
+        return padVertical;
+    }
+
+    public void setPadVertical(float padVertical) {
+        this.padVertical = padVertical;
+        layout();
+        pack();
     }
 
     @Override
@@ -70,13 +106,13 @@ public class BackgroundLabel extends DFLabel {
     Actor hit(float x, float y, boolean touchable) {
         if (touchable && this.getTouchable() != Touchable.enabled) return null;
         if (!isVisible()) return null;
-        return x >= -PAD && x < getWidth() + PAD && y >= -PAD && y < getHeight() + PAD ? this : null;
+        return x >= -padHorizontal && x < getWidth() + padHorizontal && y >= -padHorizontal && y < getHeight() + padHorizontal ? this : null;
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         Color color = getColor();
-        batch.setColor(color.r, color.g, color.b, color.a);
+        batch.setColor(color.r, color.g, color.b, parentAlpha);
         background.draw(batch, getXWithPadding(), getYWithPadding(), getWidthWithPadding(), getHeightWithPadding());
         super.draw(batch, parentAlpha);
     }

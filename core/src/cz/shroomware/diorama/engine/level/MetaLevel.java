@@ -36,7 +36,7 @@ public class MetaLevel {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             try {
-                metaPortals.load(bufferedReader);
+                metaPortals.load(bufferedReader, parentProject.getIdGenerator());
             } catch (IOException e) {
                 e.printStackTrace();
             }

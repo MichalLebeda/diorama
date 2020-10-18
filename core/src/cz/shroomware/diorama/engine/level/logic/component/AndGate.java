@@ -15,6 +15,8 @@ public class AndGate extends LogicOperator {
     public AndGate(LogicOperatorPrototype prototype, Identifier identifier) {
         super(prototype, identifier);
 
+        identifier.setName("AND");
+
         addHandler(new cz.shroomware.diorama.engine.level.logic.Handler("set_a_true") {
             @Override
             public void handle() {

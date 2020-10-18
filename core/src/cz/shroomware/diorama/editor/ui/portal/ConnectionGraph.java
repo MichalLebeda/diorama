@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -23,9 +24,10 @@ import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 
 public class ConnectionGraph extends Stage {
+    private static final float LINE_WIDTH = 4;
     private static final float CROSS_SIZE = 40;
-    private static final Color COLOR = Color.WHITE.cpy().mul(0.9f, 0.9f, 0.9f, 1);
-    private static final Color REMOVE_COLOR = new Color(1, 0.3f, 0.3f, 0.3f);
+    private static final Color CROSS_COLOR = new Color(0x252525FF);
+    private static final Color COLOR = new Color(0xF0F0F0FF);
 
     ConnectionEditor connectionEditor;
     Project project;
@@ -41,6 +43,7 @@ public class ConnectionGraph extends Stage {
     float anim = 0;
     float ANIM_DURATION = 4;
 
+    float zoom;
     public ConnectionGraph(Project project, ConnectionEditor connectionEditor, EditorResources resources, ShapeRenderer shapeRenderer) {
         super(new ScreenViewport());
         this.project = project;
@@ -94,6 +97,8 @@ public class ConnectionGraph extends Stage {
         preferences.flush();
     }
 
+    Vector2 tmpVec = new Vector2();
+
     public void update(boolean savePositions) {
         if (savePositions) {
             save();
@@ -108,9 +113,10 @@ public class ConnectionGraph extends Stage {
             MetaLevelBlock block = new MetaLevelBlock(metaLevel, resources, COLOR) {
                 @Override
                 public void onPortalClicked(PortalButton button) {
-                    button.getSlot().highlight();
+                    button.highlight();
                     if (portalButtonA == null) {
                         portalButtonA = button;
+                        portalButtonA.setColor(2, 2, 2, 1);
 
                         if (connectionEditor.mode == ConnectionEditor.Mode.DISCONNECT) {
                             removeConnection();
@@ -146,95 +152,180 @@ public class ConnectionGraph extends Stage {
             anim = 0;
         }
 
-        shapeRenderer.setProjectionMatrix(getCamera().combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        OrthographicCamera camera = (OrthographicCamera) getCamera();
+        camera.update();
+        zoom = camera.zoom;
 
-        shapeRenderer.setColor(Color.GRAY);
-        shapeRenderer.line(-CROSS_SIZE, 0, CROSS_SIZE, 0);
-        shapeRenderer.line(0, -CROSS_SIZE, 0, CROSS_SIZE);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        shapeRenderer.setColor(CROSS_COLOR);
+        shapeRenderer.rectLine(-CROSS_SIZE, 0, CROSS_SIZE, 0, LINE_WIDTH * zoom);
+        shapeRenderer.rectLine(0, -CROSS_SIZE, 0, CROSS_SIZE, LINE_WIDTH * zoom);
 
         shapeRenderer.end();
 
         super.draw();
 
         shapeRenderer.setProjectionMatrix(getCamera().combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        if (connectionEditor.getMode() == ConnectionEditor.Mode.DISCONNECT) {
+            cancelConnection();
+        }
 
         drawLines();
         shapeRenderer.end();
     }
 
-    private void drawLine(Actor actorA, Actor actorB) {
-        Vector2 aPosition = new Vector2(0, 0);
-        Vector2 bPosition = new Vector2(0, 0);
+    private void drawLine(Vector2 start, Vector2 end, float bezierA, float bezierB) {
+        Vector2 p1 = new Vector2(start);
+        Vector2 p2 = new Vector2(start.cpy().add(bezierA, 0));
+        Vector2 p3 = new Vector2(end.cpy().add(bezierB, 0));
+        Vector2 p4 = new Vector2(end);
+        Bezier<Vector2> bezier = new Bezier<>(p1, p2, p3, p4);
 
-        aPosition = actorA.localToStageCoordinates(aPosition);
-        aPosition.add(actorA.getWidth() * actorA.getScaleX() / 2, actorA.getHeight() * actorA.getScaleY() / 2);
+        float sample = 1 / 20f;
 
-        bPosition = actorB.localToStageCoordinates(bPosition);
-        bPosition.add(actorB.getWidth() * actorB.getScaleX() / 2, actorB.getHeight() * actorB.getScaleY() / 2);
+        float state = 0;
 
-        Vector2 lineStart = aPosition;
-        Vector2 lineEnd = bPosition;
+        Vector2 bezierPos = new Vector2();
+        bezier.valueAt(bezierPos, state);
 
-        shapeRenderer.line(
-                lineStart.x,
-                lineStart.y,
-                lineEnd.x,
-                lineEnd.y,
-                COLOR,
-                COLOR);
-    }
+        Vector2 oldPos = bezierPos.cpy();
+        while (state < 1) {
+            state += sample;
+            if (state > 1) {
+                state = 1;
+            }
 
-
-    // TODO simplify
-    private void drawLineFromActor(Actor actor, Vector3 cursorPos, boolean eventFirst) {
-        Vector2 startPosition = new Vector2(0, 0);
-        startPosition = actor.localToStageCoordinates(startPosition);
-        startPosition.add(actor.getWidth() * actor.getScaleX() / 2, actor.getHeight() * actor.getScaleY() / 2);
-
-        switch (connectionEditor.getMode()) {
-            case CONNECT:
-                shapeRenderer.line(startPosition.x, startPosition.y,
-                        cursorPos.x,
-                        cursorPos.y,
-                        COLOR,
-                        COLOR);
-
-                break;
-            case DISCONNECT:
-                shapeRenderer.line(startPosition.x, startPosition.y,
-                        cursorPos.x,
-                        cursorPos.y,
-                        REMOVE_COLOR,
-                        REMOVE_COLOR);
-                break;
+            bezier.valueAt(bezierPos, state);
+            shapeRenderer.rectLine(oldPos.x, oldPos.y, bezierPos.x, bezierPos.y, LINE_WIDTH * zoom);
+            oldPos.set(bezierPos);
         }
     }
 
     private void drawLines() {
-        shapeRenderer.setColor(Color.WHITE);
-        Gdx.gl20.glLineWidth(3);
+        shapeRenderer.setColor(COLOR);
 
         Set<Map.Entry<MetaPortal, MetaPortal>> connections = project.getPortalConnector().getConnections();
         for (Map.Entry<MetaPortal, MetaPortal> entry : connections) {
-            PortalButton portalButtonA;
-            PortalButton portalButtonB;
 
-            portalButtonA = portalButtons.get(entry.getKey());
-            portalButtonB = portalButtons.get(entry.getValue());
-            drawLine(portalButtonA.getSlot(), portalButtonB.getSlot());
+            PortalButton portalButtonA = portalButtons.get(entry.getKey());
+            PortalButton portalButtonB = portalButtons.get(entry.getValue());
+
+            Actor parentA = portalButtonA.getMetaLevelBlock();
+            Actor parentB = portalButtonB.getMetaLevelBlock();
+
+            if (parentA.getX() + parentA.getWidth() / 2 > parentB.getX() + parentB.getWidth() / 2) {
+                Vector2 firstSlotPosition = getGlobalCenterPos(portalButtonA);
+                Vector2 secondSlotPosition = getGlobalCenterPos(portalButtonB);
+
+                firstSlotPosition.x -= portalButtonA.getWidthPad() / 2;
+                secondSlotPosition.x += portalButtonB.getWidthPad() / 2;
+
+                drawLine(firstSlotPosition, secondSlotPosition, -200, 200);
+                drawCircleAt(firstSlotPosition);
+                drawCircleAt(secondSlotPosition);
+            } else {
+                Vector2 firstSlotPosition = getGlobalCenterPos(portalButtonA);
+                Vector2 secondSlotPosition = getGlobalCenterPos(portalButtonB);
+
+                firstSlotPosition.x += portalButtonA.getWidthPad() / 2;
+                secondSlotPosition.x -= portalButtonB.getWidthPad() / 2;
+
+                drawLine(firstSlotPosition, secondSlotPosition, 200, -200);
+                drawCircleAt(firstSlotPosition);
+                drawCircleAt(secondSlotPosition);
+            }
         }
 
         Vector3 cursorPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         cursorPos = getCamera().unproject(cursorPos);
+        Vector2 cursorPos2 = new Vector2(cursorPos.x, cursorPos.y);
 
         if (portalButtonA != null) {
-            drawLineFromActor(portalButtonA.getSlot(), cursorPos, true);
+            Vector2 portalButtonCenter = getGlobalCenterPos(portalButtonA);
+
+            Vector2 firstSlotPosition;
+            float bezierA;
+            float bezierB;
+            if (portalButtonCenter.x > cursorPos.x) {
+                firstSlotPosition = getGlobalCenterPos(portalButtonA);
+                firstSlotPosition.x -= portalButtonA.getWidthPad() / 2;
+                bezierA = -200;
+                bezierB = 200;
+            } else {
+                firstSlotPosition = getGlobalCenterPos(portalButtonA);
+                firstSlotPosition.x += portalButtonA.getWidthPad() / 2;
+                bezierA = 200;
+                bezierB = -200;
+            }
+
+            if (cursorPos.x > portalButtonCenter.x + portalButtonA.getWidthPad() / 2
+                    || cursorPos.x < portalButtonCenter.x - portalButtonA.getWidthPad() / 2
+                    || cursorPos.y > portalButtonCenter.y + portalButtonA.getHeightPad() / 2
+                    || cursorPos.y < portalButtonCenter.y - portalButtonA.getHeightPad() / 2) {
+                drawLine(firstSlotPosition, cursorPos2, bezierA, bezierB);
+                drawCircleAt(firstSlotPosition);
+            }
         }
         shapeRenderer.end();
+    }
+
+    public void centerByMax() {
+        if (blocks.isEmpty()) {
+            return;
+        }
+
+        Actor leftmost = null,
+                rightmost = null,
+                top = null,
+                bottom = null;
+
+        for (MetaLevelBlock block : blocks.values()) {
+            if (leftmost == null || block.getX() < leftmost.getX()) {
+                leftmost = block;
+            }
+            if (rightmost == null || block.getX() + block.getWidth() > rightmost.getX() + rightmost.getWidth()) {
+                rightmost = block;
+            }
+            if (top == null || block.getY() + block.getHeight() > top.getY() + top.getHeight()) {
+                top = block;
+            }
+            if (bottom == null || block.getY() < bottom.getY()) {
+                bottom = block;
+            }
+        }
+
+        Vector2 size = new Vector2();
+        Vector2 position = new Vector2();
+
+        size.set(rightmost.getX() - leftmost.getX(),
+                top.getY() - bottom.getY());
+        size.add(rightmost.getWidth(), top.getHeight());
+
+        position.set(leftmost.getX(), bottom.getY());
+
+        for (MetaLevelBlock block : blocks.values()) {
+            block.setPosition(-position.x + block.getX() - size.x / 2,
+                    -position.y + block.getY() - size.y / 2);
+        }
+    }
+
+    protected void drawCircleAt(Vector2 pos) {
+        shapeRenderer.circle(pos.x, pos.y, 8);
+    }
+
+    protected Vector2 getGlobalCenterPos(Actor actor) {
+        tmpVec.set(0, 0);
+        actor.localToStageCoordinates(tmpVec);
+        tmpVec.add(actor.getWidth() * actor.getScaleX() / 2,
+                actor.getHeight() * actor.getScaleY() / 2);
+
+        return tmpVec.cpy();
     }
 
     public void move(int amountX, int amountY) {

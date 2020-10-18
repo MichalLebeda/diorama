@@ -10,11 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
-import cz.shroomware.diorama.editor.EditorEngineGame;
 import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.portal.PortalConnector;
 
@@ -28,35 +30,71 @@ public class Project {
     private String name;
     private FileHandle fileHandle;
     private HashMap<String, MetaLevel> metaLevels = new HashMap<>();
-    private EditorEngineGame game;
+    private EngineGame game;
+    private IdGenerator idGenerator;
 
-    public Project(EditorEngineGame editorEngineGame, FileHandle parent, String name) {
+    public Project(EngineGame engineGame, FileHandle parent, String name) {
         this.name = name;
-        this.game = editorEngineGame;
+        this.game = engineGame;
 
         fileHandle = parent.child(name);
 
         if (!fileHandle.exists()) {
+            Gdx.app.error("Project", fileHandle.toString());
             create();
         }
 
         portalConnector = new PortalConnector(game);
 
+        load();
+    }
+
+    public Project(EngineGame engineGame, FileHandle file) {
+        this.fileHandle = file;
+        this.name = fileHandle.name();
+        this.game = engineGame;
+
+        if (!fileHandle.exists()) {
+            Gdx.app.error("Project", fileHandle.toString());
+            create();
+        }
+
+        portalConnector = new PortalConnector(game);
+
+        load();
+    }
+
+    private void load() {
+        loadIdGenerator();
         loadConnections();
     }
 
-    public Project(EditorEngineGame editorEngineGame, FileHandle file) {
-        this.fileHandle = file;
-        this.name = fileHandle.name();
-        this.game = editorEngineGame;
+    private void loadIdGenerator() {
+        FileHandle projectConfigHandle = getProjectConfigHandle();
+        if (projectConfigHandle.exists()) {
+            InputStream inputStream = projectConfigHandle.read();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-        if (!fileHandle.exists()) {
-            create();
+            try {
+                int lastId = Integer.parseInt(bufferedReader.readLine());
+                idGenerator = new IdGenerator(lastId);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                bufferedReader.close();
+                inputStreamReader.close();
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            idGenerator = new IdGenerator(-1);
+            Gdx.app.log("Project", "No project file");
         }
 
-        portalConnector = new PortalConnector(game);
-
-        loadConnections();
     }
 
     private void loadConnections() {
@@ -112,6 +150,15 @@ public class Project {
 
         getLevelDirHandle().mkdirs();
     }
+
+    public void saveConfig() {
+        if (idGenerator.isDirty()) {
+            Gdx.app.log("IdGenerator", "saved, last id: " + idGenerator.getLastId());
+            FileHandle file = getProjectConfigHandle();
+            file.writeString(idGenerator.getLastId() + "\n", false);
+        }
+    }
+
 
     public String getName() {
         return name;
@@ -177,7 +224,7 @@ public class Project {
         }
 
         MetaLevel metaLevel = new MetaLevel(this, levelName, metadataHandle, dataHandle);
-        metaLevels.put(name, metaLevel);
+        metaLevels.put(metaLevel.getName(), metaLevel);
         return metaLevel;
     }
 
@@ -202,11 +249,29 @@ public class Project {
         return metaLevels.values();
     }
 
+    public ArrayList<MetaLevel> getMetaLevelsSorted() {
+        ArrayList<MetaLevel> arrayList = new ArrayList<>(metaLevels.values());
+        Collections.sort(arrayList, new MetaLevelComparator());
+
+        return arrayList;
+    }
+
+    static class MetaLevelComparator implements Comparator<MetaLevel> {
+        @Override
+        public int compare(MetaLevel metaLevelA, MetaLevel metaLevelB) {
+            return metaLevelA.getName().compareToIgnoreCase(metaLevelB.getName());
+        }
+    }
+
     public MetaLevel getMetaLevel(String levelName) {
         return metaLevels.get(levelName);
     }
 
     public PortalConnector getPortalConnector() {
         return portalConnector;
+    }
+
+    public IdGenerator getIdGenerator() {
+        return idGenerator;
     }
 }

@@ -18,19 +18,21 @@ import java.util.HashMap;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorResources;
-import cz.shroomware.diorama.editor.ui.IconButton;
 import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 import cz.shroomware.diorama.ui.DFLabel;
 
 public abstract class MetaLevelBlock extends VerticalGroup {
+    private static final float MAX_DRAG_FOR_CLICK = 20;
     protected MetaLevel metaLevel;
     protected Vector2 relativeDragPos = new Vector2();
     protected Drawable background;
-    protected IconButton deleteButton = null;
 
     HashMap<MetaPortal, PortalButton> portalButtonHashMap = new HashMap<>();
     boolean draggedBefore = false;
+
+    float dragged = 0;
+    Vector2 lastDraggedPos = new Vector2();
 
     public MetaLevelBlock(MetaLevel metaLevel,
                           final EditorResources editorResources,
@@ -38,23 +40,26 @@ public abstract class MetaLevelBlock extends VerticalGroup {
         this.metaLevel = metaLevel;
 
         setTouchable(Touchable.enabled);
-        pad(15);
-        space(10);
+        pad(30);
+        space(20);
 
         DFLabel label = new DFLabel(editorResources.getSkin(), editorResources.getDfShader(), metaLevel.getName());
         label.setFontScale(0.4f);
         addActor(label);
 
         final VerticalGroup portalVerticalGroup = new VerticalGroup();
-        portalVerticalGroup.columnAlign(Align.left);
+        portalVerticalGroup.columnAlign(Align.center);
+        portalVerticalGroup.space(24);
 
         Collection<MetaPortal> portals = metaLevel.getMetaPortals().getValues();
         for (MetaPortal portal : portals) {
-            final PortalButton portalButton = new PortalButton(editorResources, portal, color);
+            final PortalButton portalButton = new PortalButton(this, editorResources, portal, color);
             portalButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    onPortalClicked(portalButton);
+                    if (!draggedBefore || dragged < MAX_DRAG_FOR_CLICK) {
+                        onPortalClicked(portalButton);
+                    }
                 }
             });
             portalButtonHashMap.put(portal, portalButton);
@@ -83,14 +88,14 @@ public abstract class MetaLevelBlock extends VerticalGroup {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 draggedBefore = false;
+                dragged = 0;
+                lastDraggedPos.set(x, y);
 
-                if (deleteButton != null) {
-                    Vector2 click = new Vector2(event.getStageX(), event.getStageY());
-                    click = deleteButton.stageToLocalCoordinates(click);
-                    if (deleteButton.hit(click.x, click.y, false) != null) {
-                        Gdx.app.error("LogicBlock", "possible interception");
-                        return true;
-                    }
+                Vector2 click = new Vector2(event.getStageX(), event.getStageY());
+                click = portalVerticalGroup.stageToLocalCoordinates(click);
+                if (portalVerticalGroup.hit(click.x, click.y, false) != null) {
+                    Gdx.app.log("LogicBlock", "possible drag");
+                    return true;
                 }
 
                 return false;
@@ -101,9 +106,14 @@ public abstract class MetaLevelBlock extends VerticalGroup {
                 super.touchDragged(event, x, y, pointer);
 
                 if (!draggedBefore) {
-                    Gdx.app.error("LogicBlock", "Button will intercept click");
+                    Gdx.app.log("LogicBlock", "Button drag, no click will be registered");
                 }
+                lastDraggedPos.sub(x, y);
+                dragged += lastDraggedPos.len();
+                lastDraggedPos.set(x, y);
                 draggedBefore = true;
+
+                Gdx.app.log("dragged", dragged + "");
             }
         });
 

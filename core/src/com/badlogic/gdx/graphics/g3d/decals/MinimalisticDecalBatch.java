@@ -87,7 +87,7 @@ public class MinimalisticDecalBatch implements Disposable {
         shaderProgram.setUniformi("u_texture", 0);
         shaderProgram.setUniformf("u_camera_pos", camera.position);
         shaderProgram.setUniformf("u_background_color", backgroundColor);
-        shaderProgram.setUniformf("time", time);
+//        shaderProgram.setUniformf("time", time);
         // batch vertices
         DecalMaterial lastMaterial = null;
         int idx = 0;

@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.editor.EditorEngineGame;
@@ -40,9 +40,10 @@ public class LevelSelectionScreen implements Screen {
     private EditorEngineGame game;
     private EditorResources resources;
     private Stage stage;
-    private Color backgroundColor = new Color(0x424242ff);
+    private Color backgroundColor = new Color(0x303030ff);
     private Project project;
     private IconButton logicEditorButton;
+    private DFLabel infoLabel;
 
     public LevelSelectionScreen(final EditorEngineGame game) {
         this.game = game;
@@ -99,6 +100,10 @@ public class LevelSelectionScreen implements Screen {
             }
         });
         stage.addActor(logicEditorButton);
+
+        infoLabel = new DFLabel(resources.getSkin(), resources.getDfShader(), "");
+        infoLabel.setColor(new Color(0x909090FF));
+        stage.addActor(infoLabel);
     }
 
     public void setProject(Project project) {
@@ -109,7 +114,6 @@ public class LevelSelectionScreen implements Screen {
             createLevelLabel.setText("New Level");
 
             projectLabel.setText(project.getName());
-            refreshList();
         }
     }
 
@@ -121,7 +125,7 @@ public class LevelSelectionScreen implements Screen {
 
         verticalGroup.clear();
 
-        Collection<MetaLevel> metaLevels = project.getMetaLevels();
+        ArrayList<MetaLevel> metaLevels = project.getMetaLevelsSorted();
         for (final MetaLevel metaLevel : metaLevels) {
             LevelButtonItem horizontalGroup = new LevelButtonItem(game, project, metaLevel) {
                 @Override
@@ -138,6 +142,7 @@ public class LevelSelectionScreen implements Screen {
     @Override
     public void show() {
         Gdx.graphics.setTitle("Project - " + project.getName());
+        infoLabel.setText("Last ID: " + project.getIdGenerator().getLastId());
         //TODO workaround, show called before resize
 //        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         Gdx.input.setInputProcessor(stage);
@@ -168,6 +173,7 @@ public class LevelSelectionScreen implements Screen {
 
         logicEditorButton.setPosition(10, projectLabel.getYWithPadding() - 10 - logicEditorButton.getHeight());
 
+        infoLabel.setPosition(10, 10);
         //TODO: remove this workaround
         refreshList();
 //        updateScrollPaneSize();

@@ -29,7 +29,7 @@ public class LogicEditorScreen implements Screen, InputProcessor {
     LogicGraph graph;
     LogicHud hud;
 
-    Color backgroundColor = new Color(0x424242ff);
+    Color backgroundColor = new Color(0x303030ff);
     ShapeRenderer shapeRenderer;
     SpriteBatch spriteBatch;
     OrthographicCamera camera;

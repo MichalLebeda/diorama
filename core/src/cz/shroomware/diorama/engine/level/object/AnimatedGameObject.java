@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.ObjectShadowPair;
 import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
@@ -17,8 +18,8 @@ public class AnimatedGameObject extends GameObject {
     RegionAnimation animation;
     float time;
 
-    public AnimatedGameObject(Vector3 position, AnimatedPrototype prototype) {
-        super(position, prototype.getAnimation().first().getObject(), prototype);
+    public AnimatedGameObject(Vector3 position, AnimatedPrototype prototype, Identifier identifier) {
+        super(position, prototype.getAnimation().first().getObject(), prototype, identifier);
         animation = prototype.getAnimation();
         createShadowSprite();
         setRandomAnimOffset();

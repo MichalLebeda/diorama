@@ -8,17 +8,32 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
+import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.MetaLevel;
 import cz.shroomware.diorama.engine.level.Prototypes;
 import cz.shroomware.diorama.engine.level.Resources;
+import cz.shroomware.diorama.engine.level.portal.MetaPortal;
+import cz.shroomware.diorama.engine.screen.LevelScreen;
 
 public class EngineGame extends Game {
     protected Resources resources;
     protected int lastWindowedWidth;
     protected int lastWindowedHeight;
-//    protected LevelSwitcher levelSwitcher = null;
+    //    protected LevelSwitcher levelSwitcher = null;
     protected Screen lastScreen = null;
     protected Prototypes gameObjectPrototypes;
     protected Project project;
+
+    String projectName = null;
+
+    public EngineGame() {
+
+    }
+
+    public EngineGame(String projectName) {
+        this.projectName = projectName;
+    }
+
 
     @Override
     public void render() {
@@ -45,8 +60,20 @@ public class EngineGame extends Game {
         resources.setObjectAtlas(objectAtlas);
         resources.setShadowAtlas(shadowsAtlas);
         resources.setSpriteBatchShader(spriteBatchShader);
+        resources.getSpriteBatchShader();
 
         gameObjectPrototypes = new Prototypes(resources);
+
+        if (projectName != null) {
+            FileHandle levelFileHandle = Gdx.files.internal(projectName);
+            Project project = new Project(this, levelFileHandle);
+            setProject(project);
+
+            if (projectName != null) {
+                MetaLevel metaLevel = project.getMetaLevel("level_0");
+                openLevel(metaLevel, 32, 0);
+            }
+        }
     }
 
     @Override
@@ -73,6 +100,10 @@ public class EngineGame extends Game {
 
     @Override
     public void setScreen(Screen screen) {
+        if (this.project != null) {
+            this.project.saveConfig();
+        }
+
         lastScreen = getScreen();
         super.setScreen(screen);
     }
@@ -85,6 +116,18 @@ public class EngineGame extends Game {
 //        return levelSwitcher;
 //    }
 
+    public void openLevel(MetaPortal metaPortal) {
+        Level level = new Level(metaPortal.getParentLevel(), this);
+        level.setIgnoredPortal(metaPortal);
+        LevelScreen levelScreen = new LevelScreen(this, level, metaPortal.getX(), metaPortal.getY());
+        setScreen(levelScreen);
+    }
+
+    public void openLevel(MetaLevel metaLevel, float x, float y) {
+        Level level = new Level(metaLevel, this);
+        LevelScreen levelScreen = new LevelScreen(this, level, x, y);
+        setScreen(levelScreen);
+    }
 
     public Project getProject() {
         return project;

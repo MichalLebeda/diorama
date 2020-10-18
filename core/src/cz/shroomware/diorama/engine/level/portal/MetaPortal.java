@@ -2,8 +2,6 @@ package cz.shroomware.diorama.engine.level.portal;
 
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.Objects;
-
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.MetaLevel;
 
@@ -15,20 +13,29 @@ public class MetaPortal {
     protected float width;
     protected float height;
 
-    public MetaPortal(MetaLevel parentLevel, Vector2 position, float width, float height, String id) {
+    public MetaPortal(MetaLevel parentLevel,
+                      Vector2 position,
+                      float width,
+                      float height,
+                      Identifier identifier) {
         this.parentLevel = parentLevel;
         this.position = position;
         this.width = width;
         this.height = height;
-        this.identifier = new Identifier(id);
+        this.identifier = identifier;
     }
 
-    public MetaPortal(MetaLevel parentLevel, float x, float y, float width, float height, String id) {
+    public MetaPortal(MetaLevel parentLevel,
+                      float x,
+                      float y,
+                      float width,
+                      float height,
+                      Identifier identifier) {
         this.parentLevel = parentLevel;
         this.position = new Vector2(x, y);
         this.width = width;
         this.height = height;
-        this.identifier = new Identifier(id);
+        this.identifier = identifier;
     }
 
     @Override
@@ -36,17 +43,12 @@ public class MetaPortal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MetaPortal that = (MetaPortal) o;
-        return Float.compare(that.width, width) == 0 &&
-                Float.compare(that.height, height) == 0 &&
-                Objects.equals(parentLevel, that.parentLevel) &&
-                Objects.equals(identifier, that.identifier) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(position, that.position);
+        return identifier.getId() == that.identifier.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parentLevel, identifier, name, position, width, height);
+        return identifier.getId();
     }
 
     public String getSaveString() {
@@ -54,10 +56,7 @@ public class MetaPortal {
         string += position.y + " ";
         string += width + " ";
         string += height;
-
-        if (identifier.isSet()) {
-            string += " " + identifier.getIdString();
-        }
+        string += " " + identifier.toString();
 
         return string;
     }
@@ -95,5 +94,13 @@ public class MetaPortal {
 
     public MetaLevel getParentLevel() {
         return parentLevel;
+    }
+
+    public void setPosition(float x, float y) {
+        this.position.set(x, y);
+    }
+
+    public void setPosition(Vector2 position) {
+        this.position.set(position);
     }
 }

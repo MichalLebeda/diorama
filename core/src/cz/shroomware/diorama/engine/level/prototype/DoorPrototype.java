@@ -3,6 +3,7 @@ package cz.shroomware.diorama.engine.level.prototype;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.object.Door;
 import cz.shroomware.diorama.engine.level.object.GameObject;
@@ -26,8 +27,8 @@ public class DoorPrototype extends Prototype {
     }
 
     @Override
-    public GameObject createAt(Vector3 position, BoxFactory boxFactory) {
-        return new Door(position, this, boxFactory);
+    public GameObject createAt(Vector3 position, BoxFactory boxFactory, Identifier identifier) {
+        return new Door(position, this, boxFactory, identifier);
     }
 
     @Override

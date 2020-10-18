@@ -35,7 +35,7 @@ public class ProjectSelectionScreen implements Screen {
     private EditorEngineGame game;
     private EditorResources resources;
     private Stage stage;
-    private Color backgroundColor = new Color(0x424242ff);
+    private Color backgroundColor = new Color(0x303030ff);
     private FileHandle currentDir;
 
     public ProjectSelectionScreen(final EditorEngineGame game, final FileHandle startFileHandle) {

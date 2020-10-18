@@ -3,13 +3,15 @@ package cz.shroomware.diorama.engine.level.object;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
+import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Player extends AtlasRegionGameObject {
 
     public Player(Vector3 position, AtlasRegionPrototype prototype, BoxFactory boxFactory) {
-        super(position, prototype);
+        super(position, prototype, new Identifier(Utils.PLAYER_ID));
         attachToBody(createBody(boxFactory));
 
         decal.setZ(decal.getHeight() / 2);
