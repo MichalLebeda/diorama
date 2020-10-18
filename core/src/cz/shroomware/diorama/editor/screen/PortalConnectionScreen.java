@@ -175,7 +175,7 @@ public class PortalConnectionScreen implements Screen, InputProcessor {
                 camera.update();
                 return true;
             case Input.Keys.N:
-//                graph.centerByMax();
+                graph.centerByMax();
                 return true;
         }
         return false;

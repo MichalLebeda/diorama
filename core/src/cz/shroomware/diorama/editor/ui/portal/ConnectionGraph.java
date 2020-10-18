@@ -275,6 +275,46 @@ public class ConnectionGraph extends Stage {
         shapeRenderer.end();
     }
 
+    public void centerByMax() {
+        if (blocks.isEmpty()) {
+            return;
+        }
+
+        Actor leftmost = null,
+                rightmost = null,
+                top = null,
+                bottom = null;
+
+        for (MetaLevelBlock block : blocks.values()) {
+            if (leftmost == null || block.getX() < leftmost.getX()) {
+                leftmost = block;
+            }
+            if (rightmost == null || block.getX() + block.getWidth() > rightmost.getX() + rightmost.getWidth()) {
+                rightmost = block;
+            }
+            if (top == null || block.getY() + block.getHeight() > top.getY() + top.getHeight()) {
+                top = block;
+            }
+            if (bottom == null || block.getY() < bottom.getY()) {
+                bottom = block;
+            }
+        }
+
+        Vector2 size = new Vector2();
+        Vector2 position = new Vector2();
+
+        size.set(rightmost.getX() - leftmost.getX(),
+                top.getY() - bottom.getY());
+        size.add(rightmost.getWidth(), top.getHeight());
+
+        position.set(leftmost.getX(), bottom.getY());
+
+        for (MetaLevelBlock block : blocks.values()) {
+            block.setPosition(-position.x + block.getX() - size.x / 2,
+                    -position.y + block.getY() - size.y / 2);
+        }
+    }
+
     protected void drawCircleAt(Vector2 pos) {
         shapeRenderer.circle(pos.x, pos.y, 8);
     }
