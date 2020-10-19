@@ -19,6 +19,7 @@
     | MIDDLE BUTTON + MOUSE        Rotate camera |
     | MIDDLE BUTTON + SHIFT + MOUSE   Pan camera |
     | SHIFT + LEFT BUTTON + MOUSE      Move World|
+    | SCROLL                                Zoom |
     +--------------------------------------------+
 +----------------------------------------------------+
 |                   Logic Editor                     |
