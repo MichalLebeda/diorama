@@ -11,7 +11,9 @@ import java.util.Locale;
 import cz.shroomware.diorama.editor.EditorEngineGame;
 
 public class DesktopLauncher {
-    public static boolean release = false;
+    private static final boolean release = false;
+    private static final boolean forceUpdate = false;
+
     public static void main(String[] arg) {
         if (!release) {
             packAtlas();
@@ -34,31 +36,28 @@ public class DesktopLauncher {
         settings.maxHeight = 2048;
         settings.paddingX = 16;
         settings.paddingY = 16;
-        settings.silent = true;
         settings.duplicatePadding = false;
         settings.filterMag = Texture.TextureFilter.Nearest;
         settings.filterMin = Texture.TextureFilter.Nearest;
-        boolean forceUpdate = false;
 
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
-        TexturePacker.process(settings, "../../raw_shadows", "atlas", "shadows");
         switch (ostype) {
             case Windows:
-                File atlasFile = new File("atlas\\auto.atlas");
+                File atlasFile = new File("atlas\\shadows.atlas");
                 if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\raw_shadows\\").lastModified()) {
                     TexturePacker.process(settings, "..\\..\\raw_shadows\\", "atlas", "shadows");
-                    System.out.println("atlas packed");
+                    System.out.println("Shadow atlas: packed");
                 } else {
-                    System.out.println("nothing to pack");
+                    System.out.println("Shadow atlas: nothing to pack");
                 }
                 break;
-            case Linux:
+            default: // workaround, not reporting Linux
                 atlasFile = new File("atlas/shadows.atlas");
                 if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("../../raw_shadows").lastModified()) {
                     TexturePacker.process(settings, "../../raw_shadows", "atlas", "shadows");
-                    System.out.println("atlas packed");
+                    System.out.println("Shadow atlas: packed");
                 } else {
-                    System.out.println("nothing to pack");
+                    System.out.println("Shadow atlas: nothing to pack");
                 }
                 break;
         }
@@ -69,31 +68,28 @@ public class DesktopLauncher {
         settings.maxHeight = 2048;
         settings.paddingX = 4;
         settings.paddingY = 4;
-        settings.silent = true;
         settings.duplicatePadding = true;
         settings.filterMag = Texture.TextureFilter.Nearest;
         settings.filterMin = Texture.TextureFilter.Nearest;
-        boolean forceUpdate = false;
 
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
-        TexturePacker.process(settings, "../../raw_assets", "atlas", "auto");
         switch (ostype) {
             case Windows:
                 File atlasFile = new File("atlas\\auto.atlas");
                 if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\raw_assets\\").lastModified()) {
                     TexturePacker.process(settings, "..\\..\\raw_assets\\", "atlas", "auto");
-                    System.out.println("atlas packed");
+                    System.out.println("Atlas: packed");
                 } else {
-                    System.out.println("nothing to pack");
+                    System.out.println("Atlas: nothing to pack");
                 }
                 break;
-            case Linux:
+            default: // workaround, not reporting Linux
                 atlasFile = new File("atlas/auto.atlas");
                 if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("../../raw_assets").lastModified()) {
                     TexturePacker.process(settings, "../../raw_assets", "atlas", "auto");
-                    System.out.println("atlas packed");
+                    System.out.println("Atlas: packed");
                 } else {
-                    System.out.println("nothing to pack");
+                    System.out.println("Atlas: nothing to pack");
                 }
                 break;
         }
@@ -105,31 +101,28 @@ public class DesktopLauncher {
         settings.maxHeight = 2048;
         settings.paddingX = 4;
         settings.paddingY = 4;
-        settings.silent = true;
         settings.duplicatePadding = true;
         settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear;
-        boolean forceUpdate = false;
 
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
-        TexturePacker.process(settings, "../../ui_raw_assets", "atlas", "ui");
         switch (ostype) {
             case Windows:
                 File atlasFile = new File("atlas\\ui.atlas");
                 if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\ui_raw_assets\\").lastModified()) {
                     TexturePacker.process(settings, "..\\..\\ui_raw_assets\\", "atlas", "ui");
-                    System.out.println("atlas packed");
+                    System.out.println("UI Atlas: packed");
                 } else {
-                    System.out.println("nothing to pack");
+                    System.out.println("UI Atlas: nothing to pack");
                 }
                 break;
-            case Linux:
+            default: // workaround, not reporting Linux
                 atlasFile = new File("atlas/ui.atlas");
                 if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("../../ui_raw_assets").lastModified()) {
                     TexturePacker.process(settings, "../../ui_raw_assets", "atlas", "ui");
-                    System.out.println("atlas packed");
+                    System.out.println("UI Atlas: packed");
                 } else {
-                    System.out.println("nothing to pack");
+                    System.out.println("UI Atlas: nothing to pack");
                 }
                 break;
         }
