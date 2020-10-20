@@ -13,6 +13,7 @@ public class Player extends AtlasRegionGameObject {
     public Player(Vector3 position, AtlasRegionPrototype prototype, BoxFactory boxFactory) {
         super(position, prototype, new Identifier(Utils.PLAYER_ID));
         attachToBody(createBody(boxFactory));
+        createShadowSprite(prototype);
 
         decal.setZ(decal.getHeight() / 2);
     }
