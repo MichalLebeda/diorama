@@ -42,7 +42,7 @@ public class Wall extends GameObject {
 
         leftDecal = UpdatedDecal.newDecal(prototype.getLeftRegion(), true);
         leftDecal.rotateX(90);
-        leftDecal.rotateY(90);
+        leftDecal.rotateY(-90);
         leftDecal.setWidth(leftDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         leftDecal.setHeight(leftDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
@@ -59,6 +59,7 @@ public class Wall extends GameObject {
 
         backDecal = UpdatedDecal.newDecal(prototype.getBackRegion(), true);
         backDecal.rotateX(90);
+        backDecal.rotateY(180);
         backDecal.setWidth(backDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         backDecal.setHeight(backDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
@@ -147,9 +148,7 @@ public class Wall extends GameObject {
 
         if (!neighborBack) {
             findIntersectionRayDecalPlane(ray, backDecal, intersection);
-            if (isPixelOpaque(colorUtil, intersection, backDecal)) {
-                return true;
-            }
+            return isPixelOpaque(colorUtil, intersection, backDecal);
         }
 
         return false;
@@ -188,13 +187,13 @@ public class Wall extends GameObject {
                 backDecal.setTextureRegion(regionConnectedBoth);
             } else {
                 frontDecal.setTextureRegion(regionConnectedLeft);
-                backDecal.setTextureRegion(regionConnectedLeft);
+                backDecal.setTextureRegion(regionConnectedRight);
             }
         } else {
             tile = floor.getTileByOffset(tileAttachedTo, 1, 0);
             if (tile != null && tile.hasAttachedObjectOfClass(Wall.class)) {
                 frontDecal.setTextureRegion(regionConnectedRight);
-                backDecal.setTextureRegion(regionConnectedRight);
+                backDecal.setTextureRegion(regionConnectedLeft);
             } else {
                 frontDecal.setTextureRegion(region);
                 backDecal.setTextureRegion(region);
@@ -208,13 +207,13 @@ public class Wall extends GameObject {
                 leftDecal.setTextureRegion(regionConnectedBoth);
                 rightDecal.setTextureRegion(regionConnectedBoth);
             } else {
-                leftDecal.setTextureRegion(regionConnectedLeft);
+                leftDecal.setTextureRegion(regionConnectedRight);
                 rightDecal.setTextureRegion(regionConnectedLeft);
             }
         } else {
             tile = floor.getTileByOffset(tileAttachedTo, 0, 1);
             if (tile != null && tile.hasAttachedObjectOfClass(Wall.class)) {
-                leftDecal.setTextureRegion(regionConnectedRight);
+                leftDecal.setTextureRegion(regionConnectedLeft);
                 rightDecal.setTextureRegion(regionConnectedRight);
             } else {
                 leftDecal.setTextureRegion(region);
