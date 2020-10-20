@@ -1,5 +1,6 @@
 package cz.shroomware.diorama.engine.level.fx;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -15,21 +16,6 @@ public class Clouds {
 
     public Clouds(Floor floor, TextureAtlas atlas) {
         OpenSimplexNoise noise = new OpenSimplexNoise(39832928);
-
-
-//        for (int i = 0; i < 2000; i++) {
-//            Decal decal = Decal.newDecal(resources.getObjectAtlas().findRegions("cloud").random());
-////            decal.setPosition(MathUtils.random(0f, Floor.GRID_SIZE + 1f),
-////                    MathUtils.random(0f, Floor.GRID_SIZE + 1f),
-////                    MathUtils.random(2,4f));
-////            decal.setPosition(MathUtils.random(0f, Floor.GRID_SIZE + 1f),
-////                    MathUtils.random(0f, Floor.GRID_SIZE + 1f),
-////                    MathUtils.random(2,4f));
-//            decal.rotateX(90);
-//            decal.setWidth(((float) decal.getTextureRegion().getRegionWidth()) / Utils.PIXELS_PER_METER);
-//            decal.setHeight(((float) decal.getTextureRegion().getRegionHeight()) / Utils.PIXELS_PER_METER);
-//            array.add(decal);
-//        }
 
         for (float y = 0; y < floor.getHeight(); y += 0.9f) {
             for (float x = 0; x < floor.getWidth(); x += 0.8f) {
@@ -55,8 +41,12 @@ public class Clouds {
         }
     }
 
-    public void draw(MinimalisticDecalBatch decalBatch) {
+    public void draw(Camera camera, MinimalisticDecalBatch decalBatch) {
         for (Cloud cloud : array) {
+            // Notice it is squared distance
+            if (cloud.getPosition().dst2(camera.position) > 4000) {
+                continue;
+            }
             cloud.draw(decalBatch);
         }
     }

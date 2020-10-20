@@ -56,4 +56,8 @@ public class Cloud {
             particleEmitter.draw(decalBatch);
         }
     }
+
+    public Vector3 getPosition() {
+        return decal.getPosition();
+    }
 }
