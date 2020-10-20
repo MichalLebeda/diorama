@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 public class Utils {
     public static final boolean RAIN = false;
 
+    public static final boolean SSAO = true;
+
     public static final String DARK_BACKGROUND_DRAWABLE = "dark-background";
 
     public static final String DARK_BACKGROUND_PRESSED_DRAWABLE = "dark-background-pressed";
