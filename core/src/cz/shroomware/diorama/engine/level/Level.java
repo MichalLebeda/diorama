@@ -210,10 +210,10 @@ public class Level {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glDepthMask(false);
 
-        gameObjects.drawShadows(spriteBatch);
+//        gameObjects.drawShadows(spriteBatch);
         gameObjects.drawObjects(decalBatch);
 
-        clouds.draw(decalBatch);
+        clouds.draw(camera, decalBatch);
     }
 
     public boolean isInBounds(float x, float y) {
