@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
@@ -57,7 +56,6 @@ public class LevelEditorScreen extends BaseLevelScreen {
     protected TextureAtlas.AtlasRegion defaultCursorRegion;
     protected Cursor cursor;
     protected Hud hud;
-    protected OrthographicCamera screenCamera;
     protected Vector2 lastDragScreenPos = new Vector2();
     protected Vector3 cameraLastDragWorldPos;
     protected GameObject currentlyHighlightedObject;
@@ -78,8 +76,6 @@ public class LevelEditorScreen extends BaseLevelScreen {
         shadowAtlas = resources.getShadowAtlas();
 
         updateBackgroundColor(resources, level);
-
-        screenCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         editorTool = new EditorTool(level, editor);
 
@@ -734,17 +730,14 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
     @Override
     public void resize(int width, int height) {
+        super.resize(width, height);
+
         PerspectiveCamera camera = level.getCamera();
         if (camera != null) {
             camera.viewportWidth = Utils.calculateCameraViewportWidth();
             camera.viewportHeight = Utils.calculateCameraViewportHeight();
             camera.update();
         }
-
-        screenCamera.viewportWidth = width;
-        screenCamera.viewportHeight = height;
-        screenCamera.position.set(((float) width) / 2, ((float) height / 2), 0);
-        screenCamera.update();
 
         hud.resize(width, height);
     }

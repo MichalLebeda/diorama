@@ -42,7 +42,7 @@ public class Pillar extends GameObject {
 
         leftDecal = UpdatedDecal.newDecal(prototype.getLeftRegion(), true);
         leftDecal.rotateX(90);
-        leftDecal.rotateY(90);
+        leftDecal.rotateY(-90);
         leftDecal.setWidth(leftDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         leftDecal.setHeight(leftDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
@@ -59,6 +59,7 @@ public class Pillar extends GameObject {
 
         backDecal = UpdatedDecal.newDecal(prototype.getBackRegion(), true);
         backDecal.rotateX(90);
+        backDecal.rotateY(180);
         backDecal.setWidth(backDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         backDecal.setHeight(backDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
@@ -137,11 +138,7 @@ public class Pillar extends GameObject {
         }
 
         findIntersectionRayDecalPlane(ray, backDecal, intersection);
-        if (isPixelOpaque(colorUtil, intersection, backDecal)) {
-            return true;
-        }
-
-        return false;
+        return isPixelOpaque(colorUtil, intersection, backDecal);
     }
 
     @Override

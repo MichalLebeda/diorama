@@ -27,6 +27,7 @@ public class DesktopLauncher {
         config.setBackBufferConfig(8, 8, 8, 8, 8, 8, 3);
         config.setWindowSizeLimits(640, 480, 16000, 9000);
         config.setTitle("Editor");
+        config.useOpenGL3(true, 3, 3);
         new Lwjgl3Application(new EditorEngineGame(), config);
     }
 
