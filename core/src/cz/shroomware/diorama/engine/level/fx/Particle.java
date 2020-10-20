@@ -2,14 +2,15 @@ package cz.shroomware.diorama.engine.level.fx;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
+
+import cz.shroomware.diorama.engine.UpdatedDecal;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public abstract class Particle {
-    Decal decal;
+    UpdatedDecal decal;
 
     float time = 0;
 
@@ -22,7 +23,7 @@ public abstract class Particle {
     }
 
     public Particle(Vector3 position, TextureRegion region) {
-        decal = Decal.newDecal(region, true);
+        decal = UpdatedDecal.newDecal(region, true);
         decal.setPosition(position);
         decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
         decal.setHeight(region.getRegionHeight() / PIXELS_PER_METER);

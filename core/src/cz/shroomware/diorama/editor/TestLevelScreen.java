@@ -14,7 +14,8 @@ import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
 public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float SPEED = 9.0f;
-    protected static final float Y_CAMERA_DISTANCE = 7;
+    protected static final float Y_CAMERA_DISTANCE = -7;
+    protected static final float Z_CAMERA_DISTANCE = 7;
     protected EditorEngineGame game;
     protected Player player;
 
@@ -25,8 +26,10 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         updateBackgroundColor(game.getResources(), level);
 
         player = new Player(new Vector3(x, y, 0),
-                new AtlasRegionPrototype(game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
+                new AtlasRegionPrototype(game.getResources(), game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
         level.getGameObjects().add(player);
+
+        decalBatch.setOffset(0.3f);
     }
 
     @Override
@@ -57,7 +60,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         level.update(delta);
 
         player.update(0);
-        camera.position.set(player.getPosition().cpy().add(0, -Y_CAMERA_DISTANCE, 5));
+        camera.position.set(player.getPosition().cpy().add(0, Y_CAMERA_DISTANCE, Z_CAMERA_DISTANCE));
         camera.lookAt(player.getPosition());
         camera.update();
 

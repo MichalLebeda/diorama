@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
+import cz.shroomware.diorama.engine.UpdatedDecal;
+
 /**
  * Decal batch that is simpler to use
  */
@@ -19,7 +21,8 @@ public class MinimalisticDecalBatch implements Disposable {
     public ShaderProgram shaderProgram;
     private float[] vertices;
     private Mesh mesh;
-    private Array<Decal> decals;
+    private final Array<UpdatedDecal> decals;
+    private float offset;
 
     public MinimalisticDecalBatch(ShaderProgram shaderProgram) {
         initialize(DEFAULT_SIZE);
@@ -33,7 +36,15 @@ public class MinimalisticDecalBatch implements Disposable {
         compileShader();
     }
 
-    public void add(Decal decal) {
+    public float getOffset() {
+        return offset;
+    }
+
+    public void setOffset(float offset) {
+        this.offset = offset;
+    }
+
+    public void add(UpdatedDecal decal) {
         decals.add(decal);
     }
 
@@ -91,7 +102,7 @@ public class MinimalisticDecalBatch implements Disposable {
         // batch vertices
         DecalMaterial lastMaterial = null;
         int idx = 0;
-        for (Decal decal : decals) {
+        for (UpdatedDecal decal : decals) {
             if (lastMaterial == null || !lastMaterial.equals(decal.getMaterial())) {
                 if (idx > 0) {
                     flush(shaderProgram, idx);
@@ -102,7 +113,7 @@ public class MinimalisticDecalBatch implements Disposable {
             }
 
 //            decal.lookAt(camera.position, Vector3.Z);
-            decal.update();
+            decal.update(offset);
             System.arraycopy(decal.vertices, 0, vertices, idx, decal.vertices.length);
             idx += decal.vertices.length;
             // if our batch is full we have to flush it

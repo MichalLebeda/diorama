@@ -101,8 +101,8 @@ public class Door extends GameObject {
     }
 
     protected void setAngleRelative(float relativeAngle) {
-        float originX = decal.getVertices()[Decal.X1];
-        float originY = decal.getVertices()[Decal.Y1];
+        float originX = decal.getVertices()[Decal.X3];
+        float originY = decal.getVertices()[Decal.Y3];
 
         rotOriginVector.set(originX, originY);
 

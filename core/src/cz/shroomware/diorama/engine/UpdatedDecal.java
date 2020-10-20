@@ -118,7 +118,26 @@ public class UpdatedDecal extends Decal {
         return super.getVertices();
     }
 
-    @Override
+    private void offsetVerticleY(int verticle, float offset) {
+        vertices[verticle] += vertices[verticle + 1] * offset;
+    }
+
+    protected void transformVertices(float offset) {
+        super.transformVertices();
+
+        offsetVerticleY(Y1, offset);
+        offsetVerticleY(Y2, offset);
+        offsetVerticleY(Y3, offset);
+        offsetVerticleY(Y4, offset);
+    }
+
+    public void update(float offset) {
+        if (!updated) {
+            resetVertices();
+            transformVertices(offset);
+        }
+    }
+
     public void update() {
         super.update();
     }
