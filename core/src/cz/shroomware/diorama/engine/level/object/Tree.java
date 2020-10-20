@@ -18,6 +18,7 @@ public class Tree extends GameObject {
         super(position, prototype.getObjectRegion(), prototype, identifier);
         particleEmitter = createParticleEmitter(position, prototype);
         attachToBody(createBody(boxFactory));
+        createShadowSprite(prototype);
     }
 
     protected Body createBody(BoxFactory boxFactory) {
