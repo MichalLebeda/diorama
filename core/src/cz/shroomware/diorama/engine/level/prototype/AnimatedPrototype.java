@@ -24,6 +24,9 @@ public class AnimatedPrototype extends Prototype {
 
     @Override
     public TextureRegion getIconRegion() {
+        if(regionAnimation.getKeyFrames().length==0){
+            return null;
+        }
         return regionAnimation.first().getObject();
     }
 

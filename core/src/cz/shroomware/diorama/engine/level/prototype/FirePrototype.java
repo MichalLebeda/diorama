@@ -41,6 +41,9 @@ public class FirePrototype extends Prototype {
 
     @Override
     public TextureRegion getIconRegion() {
+        if (fireAnim.getKeyFrames().length == 0) {
+            return null;
+        }
         return fireAnim.getKeyFrame(0);
     }
 
