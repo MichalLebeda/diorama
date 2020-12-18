@@ -24,7 +24,7 @@ import cz.shroomware.diorama.engine.level.Resources;
 
 public abstract class BaseLevelScreen implements Screen, InputProcessor {
     protected Level level;
-    Resources resources;
+    protected Resources resources;
     protected Color backgroundColor = Color.GRAY.cpy();
     protected SpriteBatch spriteBatch;
     protected MinimalisticDecalBatch decalBatch;
@@ -35,7 +35,6 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
     protected OrthographicCamera screenCamera;
 
     protected boolean boxDebug = false;
-
 
     protected BaseLevelScreen(Resources resources, Level level) {
         this.level = level;

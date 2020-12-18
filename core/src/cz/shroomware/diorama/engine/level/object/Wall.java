@@ -10,9 +10,9 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.engine.ColorUtil;
+import cz.shroomware.diorama.engine.CustomDecal;
 import cz.shroomware.diorama.engine.HexRegion;
 import cz.shroomware.diorama.engine.Identifier;
-import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.prototype.WallPrototype;
@@ -21,7 +21,7 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public class Wall extends GameObject {
-    protected UpdatedDecal leftDecal, rightDecal, frontDecal, backDecal;
+    protected CustomDecal leftDecal, rightDecal, frontDecal, backDecal;
     protected boolean neighborBack, neighborRight, neighborFront, neighborLeft;
     protected TextureRegion region;
     protected TextureRegion regionConnectedLeft;
@@ -40,24 +40,24 @@ public class Wall extends GameObject {
 
         decal.setRotationX(0);
 
-        leftDecal = UpdatedDecal.newDecal(prototype.getLeftRegion(), true);
+        leftDecal = CustomDecal.newDecal(prototype.getLeftRegion(), true);
         leftDecal.rotateX(90);
         leftDecal.rotateY(-90);
         leftDecal.setWidth(leftDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         leftDecal.setHeight(leftDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        rightDecal = UpdatedDecal.newDecal(prototype.getRightRegion(), true);
+        rightDecal = CustomDecal.newDecal(prototype.getRightRegion(), true);
         rightDecal.rotateX(90);
         rightDecal.rotateY(90);
         rightDecal.setWidth(rightDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         rightDecal.setHeight(rightDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        frontDecal = UpdatedDecal.newDecal(prototype.getFrontRegion(), true);
+        frontDecal = CustomDecal.newDecal(prototype.getFrontRegion(), true);
         frontDecal.rotateX(90);
         frontDecal.setWidth(frontDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);
         frontDecal.setHeight(frontDecal.getTextureRegion().getRegionHeight() / PIXELS_PER_METER);
 
-        backDecal = UpdatedDecal.newDecal(prototype.getBackRegion(), true);
+        backDecal = CustomDecal.newDecal(prototype.getBackRegion(), true);
         backDecal.rotateX(90);
         backDecal.rotateY(180);
         backDecal.setWidth(backDecal.getTextureRegion().getRegionWidth() / PIXELS_PER_METER);

@@ -49,6 +49,12 @@ public class Utils {
 
     public static final int PLAYER_ID = -2;
 
+    public static final float CAMERA_LEVEL = 1f;
+
+    public static final float Z_OFFSET_PER_METER = 0;
+
+    public static final float AIM_SENSITIVITY = 0.5f;
+
     public static final Color color = new Color();
 
     public static float round(float input, float step) {

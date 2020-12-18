@@ -2,11 +2,14 @@ package cz.shroomware.diorama.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 
+import cz.shroomware.diorama.Utils;
+import cz.shroomware.diorama.engine.CameraController;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
@@ -14,10 +17,10 @@ import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
 public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float SPEED = 9.0f;
-    protected static final float Y_CAMERA_DISTANCE = -7;
-    protected static final float Z_CAMERA_DISTANCE = 7;
     protected EditorEngineGame game;
     protected Player player;
+    protected CameraController cameraController;
+    protected InputMultiplexer inputMultiplexer;
 
     public TestLevelScreen(EditorEngineGame game, Level level, float x, float y) {
         super(game.getResources(), level);
@@ -25,18 +28,33 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
 
         updateBackgroundColor(game.getResources(), level);
 
-        player = new Player(new Vector3(x, y, 0),
-                new AtlasRegionPrototype(game.getResources(), game.getResources().getObjectAtlas().findRegion("dwarf")), level.getBoxFactory());
+        AtlasRegionPrototype playerPrototype = new AtlasRegionPrototype(
+                game.getResources(),
+                game.getResources().getObjectAtlas().findRegion("dwarf"));
+        player = new Player(new Vector3(x, y, 0), playerPrototype, level.getBoxFactory(), level.getCamera());
         level.getGameObjects().add(player);
 
-        decalBatch.setOffset(0.3f);
+        cameraController = new CameraController(level.getCamera());
+
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(this);
+        inputMultiplexer.addProcessor(cameraController);
+
+        decalBatch.setOffset(Utils.Z_OFFSET_PER_METER);
     }
 
     @Override
     public void show() {
         Gdx.graphics.setTitle("Test: " + level.getMetaLevel().getName());
 
-        Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(inputMultiplexer);
+        Gdx.input.setCursorCatched(true);
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        Gdx.input.setCursorCatched(false);
     }
 
     @Override
@@ -60,8 +78,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         level.update(delta);
 
         player.update(0);
-        camera.position.set(player.getPosition().cpy().add(0, Y_CAMERA_DISTANCE, Z_CAMERA_DISTANCE));
-        camera.lookAt(player.getPosition());
+//        camera.lookAt(player.getPosition());
         camera.update();
 
         spriteBatch.setProjectionMatrix(camera.combined);
@@ -73,6 +90,12 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         spriteBatch.end();
 
         decalBatch.render(camera, backgroundColor, 0);
+
+        spriteBatch.setShader(null);
+        spriteBatch.setProjectionMatrix(screenCamera.combined);
+        spriteBatch.begin();
+        spriteBatch.draw(resources.getObjectAtlas().findRegion("cursor"), screenCamera.viewportWidth / 2, screenCamera.viewportHeight / 2);
+        spriteBatch.end();
     }
 
     @Override

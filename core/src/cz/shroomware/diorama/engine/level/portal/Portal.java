@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import cz.shroomware.diorama.engine.ColorUtil;
-import cz.shroomware.diorama.engine.UpdatedDecal;
+import cz.shroomware.diorama.engine.CustomDecal;
 import cz.shroomware.diorama.engine.level.Resources;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
@@ -17,7 +17,7 @@ import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Portal extends GameObject {
-    private UpdatedDecal leftDecal, rightDecal, frontDecal, backDecal;
+    private CustomDecal leftDecal, rightDecal, frontDecal, backDecal;
     private PortalConnector portalConnector;
     private MetaPortal metaPortal;
     private boolean temporalIgnore = false;
@@ -73,24 +73,24 @@ public class Portal extends GameObject {
         decal.setRotationX(0);
         decal.setZ(2);
 
-        leftDecal = UpdatedDecal.newDecal(decal.getTextureRegion(), true);
+        leftDecal = CustomDecal.newDecal(decal.getTextureRegion(), true);
         leftDecal.rotateX(90);
         leftDecal.rotateY(90);
         leftDecal.setWidth(decal.getHeight());
         leftDecal.setHeight(2);
 
-        rightDecal = UpdatedDecal.newDecal(decal.getTextureRegion(), true);
+        rightDecal = CustomDecal.newDecal(decal.getTextureRegion(), true);
         rightDecal.rotateX(90);
         rightDecal.rotateY(90);
         rightDecal.setWidth(decal.getHeight());
         rightDecal.setHeight(2);
 
-        frontDecal = UpdatedDecal.newDecal(decal.getTextureRegion(), true);
+        frontDecal = CustomDecal.newDecal(decal.getTextureRegion(), true);
         frontDecal.rotateX(90);
         frontDecal.setWidth(decal.getWidth());
         frontDecal.setHeight(2);
 
-        backDecal = UpdatedDecal.newDecal(decal.getTextureRegion(), true);
+        backDecal = CustomDecal.newDecal(decal.getTextureRegion(), true);
         backDecal.rotateX(90);
         backDecal.setWidth(decal.getWidth());
         backDecal.setHeight(2);

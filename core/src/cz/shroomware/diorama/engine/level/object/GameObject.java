@@ -18,9 +18,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.ColorUtil;
+import cz.shroomware.diorama.engine.CustomDecal;
 import cz.shroomware.diorama.engine.Identifiable;
 import cz.shroomware.diorama.engine.Identifier;
-import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.Floor;
 import cz.shroomware.diorama.engine.level.Tile;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
@@ -31,7 +31,7 @@ import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public abstract class GameObject implements Identifiable {
     protected Prototype prototype = null;
-    protected UpdatedDecal decal;
+    protected CustomDecal decal;
     protected Sprite shadowSprite;
     protected Tile tileAttachedTo = null;
     protected LogicComponent logicComponent = null;
@@ -47,7 +47,7 @@ public abstract class GameObject implements Identifiable {
         this.prototype = prototype;
         this.identifier = identifier;
 
-        decal = UpdatedDecal.newDecal(region, true);
+        decal = CustomDecal.newDecal(region, true);
         decal.rotateX(90);
         decal.setPosition(position);
         decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
@@ -74,12 +74,12 @@ public abstract class GameObject implements Identifiable {
         Vector3 min = new Vector3();
         Vector3 max = new Vector3();
         float[] vertices = decal.getVertices();
-        min.set(vertices[UpdatedDecal.X1],
-                vertices[UpdatedDecal.Y1],
-                vertices[UpdatedDecal.Z1]);
-        max.set(vertices[UpdatedDecal.X4],
-                vertices[UpdatedDecal.Y4],
-                vertices[UpdatedDecal.Z4]);
+        min.set(vertices[CustomDecal.X1],
+                vertices[CustomDecal.Y1],
+                vertices[CustomDecal.Z1]);
+        max.set(vertices[CustomDecal.X4],
+                vertices[CustomDecal.Y4],
+                vertices[CustomDecal.Z4]);
         boundingBox.set(min, max);
     }
 
@@ -151,7 +151,7 @@ public abstract class GameObject implements Identifiable {
         decal.setRotation(quaternion);
     }
 
-    public boolean findIntersectionRayDecalPlane(Ray ray, UpdatedDecal testDecal, Vector3 intersection) {
+    public boolean findIntersectionRayDecalPlane(Ray ray, CustomDecal testDecal, Vector3 intersection) {
         // Bottom right in decal coordinates relative to origin
         Vector3 vecA = new Vector3(testDecal.getWidth(), 0, 0);
         // Top left in decal coordinates relative to origin
@@ -173,16 +173,16 @@ public abstract class GameObject implements Identifiable {
         return Intersector.intersectRayPlane(ray, plane, intersection);
     }
 
-    public boolean isPixelOpaque(ColorUtil colorUtil, Vector3 intersection, UpdatedDecal decal) {
+    public boolean isPixelOpaque(ColorUtil colorUtil, Vector3 intersection, CustomDecal decal) {
         decal.update();
 
         float[] vertices = decal.getVertices();
-        Vector3 vecA = new Vector3(vertices[UpdatedDecal.X2] - vertices[UpdatedDecal.X1],
-                vertices[UpdatedDecal.Y2] - vertices[UpdatedDecal.Y1],
-                vertices[UpdatedDecal.Z2] - vertices[UpdatedDecal.Z1]);
-        Vector3 vecB = new Vector3(vertices[UpdatedDecal.X3] - vertices[UpdatedDecal.X1],
-                vertices[UpdatedDecal.Y3] - vertices[UpdatedDecal.Y1],
-                vertices[UpdatedDecal.Z3] - vertices[UpdatedDecal.Z1]);
+        Vector3 vecA = new Vector3(vertices[CustomDecal.X2] - vertices[CustomDecal.X1],
+                vertices[CustomDecal.Y2] - vertices[CustomDecal.Y1],
+                vertices[CustomDecal.Z2] - vertices[CustomDecal.Z1]);
+        Vector3 vecB = new Vector3(vertices[CustomDecal.X3] - vertices[CustomDecal.X1],
+                vertices[CustomDecal.Y3] - vertices[CustomDecal.Y1],
+                vertices[CustomDecal.Z3] - vertices[CustomDecal.Z1]);
         Vector3 vecC = vecA.cpy().crs(vecB);
 
         Matrix3 matrix3 = new Matrix3(
@@ -191,7 +191,7 @@ public abstract class GameObject implements Identifiable {
                         vecC.x, vecC.y, vecC.z});
         matrix3.inv();
 
-        Vector3 origin = new Vector3(vertices[UpdatedDecal.X1], vertices[UpdatedDecal.Y1], vertices[UpdatedDecal.Z1]);
+        Vector3 origin = new Vector3(vertices[CustomDecal.X1], vertices[CustomDecal.Y1], vertices[CustomDecal.Z1]);
         intersection.add(origin.scl(-1));
         intersection.mul(matrix3);
 
@@ -295,12 +295,12 @@ public abstract class GameObject implements Identifiable {
     //TODO: fix, looks bad
     public Vector3 getNormalVector() {
         float[] vertices = decal.getVertices();
-        Vector3 vecA = new Vector3(vertices[UpdatedDecal.X2] - vertices[UpdatedDecal.X1],
-                vertices[UpdatedDecal.Y2] - vertices[UpdatedDecal.Y1],
-                vertices[UpdatedDecal.Z2] - vertices[UpdatedDecal.Z1]);
-        Vector3 vecB = new Vector3(vertices[UpdatedDecal.X3] - vertices[UpdatedDecal.X1],
-                vertices[UpdatedDecal.Y3] - vertices[UpdatedDecal.Y1],
-                vertices[UpdatedDecal.Z3] - vertices[UpdatedDecal.Z1]);
+        Vector3 vecA = new Vector3(vertices[CustomDecal.X2] - vertices[CustomDecal.X1],
+                vertices[CustomDecal.Y2] - vertices[CustomDecal.Y1],
+                vertices[CustomDecal.Z2] - vertices[CustomDecal.Z1]);
+        Vector3 vecB = new Vector3(vertices[CustomDecal.X3] - vertices[CustomDecal.X1],
+                vertices[CustomDecal.Y3] - vertices[CustomDecal.Y1],
+                vertices[CustomDecal.Z3] - vertices[CustomDecal.Z1]);
         return vecA.cpy().crs(vecB);
     }
 

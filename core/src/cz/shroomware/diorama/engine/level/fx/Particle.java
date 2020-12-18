@@ -5,12 +5,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 
-import cz.shroomware.diorama.engine.UpdatedDecal;
+import cz.shroomware.diorama.engine.CustomDecal;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public abstract class Particle {
-    UpdatedDecal decal;
+    CustomDecal decal;
 
     float time = 0;
 
@@ -23,7 +23,7 @@ public abstract class Particle {
     }
 
     public Particle(Vector3 position, TextureRegion region) {
-        decal = UpdatedDecal.newDecal(region, true);
+        decal = CustomDecal.newDecal(region, true);
         decal.setPosition(position);
         decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
         decal.setHeight(region.getRegionHeight() / PIXELS_PER_METER);

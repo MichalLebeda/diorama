@@ -7,10 +7,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
-import cz.shroomware.diorama.engine.UpdatedDecal;
+import cz.shroomware.diorama.engine.CustomDecal;
 
 public class Cloud {
-    protected UpdatedDecal decal;
+    protected CustomDecal decal;
     protected float time = MathUtils.random(0f, 2f * (float) Math.PI);
     protected float speed = MathUtils.random(0.9f, 4f);
     protected Vector3 origPos;
@@ -18,7 +18,8 @@ public class Cloud {
     ParticleEmitter particleEmitter;
 
     public Cloud(final TextureAtlas atlas, Vector3 position) {
-        decal = UpdatedDecal.newDecal(atlas.findRegions("cloud").random());
+        decal = CustomDecal.newDecal(atlas.findRegions("cloud").random());
+        decal.setBillboard(true);
         decal.setPosition(position);
         decal.rotateX(90);
         decal.setWidth(((float) decal.getTextureRegion().getRegionWidth()) / Utils.PIXELS_PER_METER);
