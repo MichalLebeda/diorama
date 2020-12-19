@@ -2,7 +2,11 @@ package cz.shroomware.diorama;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+
+import cz.shroomware.diorama.engine.ObjectShadowPair;
 
 public class Utils {
     public static final boolean RAIN = false;
@@ -80,5 +84,15 @@ public class Utils {
     public static float calculateCameraViewportWidth() {
         double ratio = (double) Gdx.graphics.getWidth() / (double) Gdx.graphics.getHeight();
         return (float) (calculateCameraViewportHeight() * ratio);
+    }
+
+    public static Array<ObjectShadowPair> atlasRegionToObjectShadowPair(Array<TextureAtlas.AtlasRegion> regions) {
+        Array<ObjectShadowPair> pairs = new Array<>(ObjectShadowPair.class);
+
+        for (TextureAtlas.AtlasRegion region : regions) {
+            pairs.add(new ObjectShadowPair(region, null));
+        }
+
+        return pairs;
     }
 }

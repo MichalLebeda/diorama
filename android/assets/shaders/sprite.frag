@@ -11,6 +11,7 @@ varying vec4 v_position;
 uniform vec3 u_camera_pos;
 uniform sampler2D u_texture;
 
+const float EFFECT_DIST = 14.0;
 void main(){
     vec4 texel = texture2D(u_texture, v_texCoords);
     if (texel.a == 0.0){
@@ -20,7 +21,7 @@ void main(){
     gl_FragColor = v_color * texel;
 
     float distance = distance(u_camera_pos.xy, v_position.xy);
-    if (distance>20.0){
-        gl_FragColor.a = mix(gl_FragColor.a, 0.0, pow((distance-20.0)/40.0, 2.0));
+    if (distance>EFFECT_DIST){
+        gl_FragColor.a = mix(gl_FragColor.a, 0.0, pow((distance-EFFECT_DIST)/(2.0*EFFECT_DIST), 2.0));
     }
 }

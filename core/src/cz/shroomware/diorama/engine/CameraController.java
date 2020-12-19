@@ -42,22 +42,7 @@ public class CameraController implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        camera.rotateAround(camera.position, Vector3.Z, -Gdx.input.getDeltaX() * Utils.AIM_SENSITIVITY);
-        Vector3 axis = camera.direction.cpy().crs(camera.up);
-
-        float verticalScrollDelta = -Gdx.input.getDeltaY() * Utils.AIM_SENSITIVITY;
-        Gdx.app.log("vertical scroll", "" + verticalScroll);
-        if (verticalScroll > 0) {
-//            if(verticalScrollDelta+verticalScroll>90){
-//                verticalScroll = 90-verticalScrollDelta;
-//            }
-            camera.rotateAround(camera.position, axis, -Gdx.input.getDeltaY() * Utils.AIM_SENSITIVITY);
-        } else {
-//            if(verticalScrollDelta+verticalScroll<-90){
-//                verticalScroll = 90-verticalScrollDelta;
-//            }
-            camera.rotateAround(camera.position, axis, -Gdx.input.getDeltaY() * Utils.AIM_SENSITIVITY);
-        }
+        mouseMoved(screenX, screenY);
         return false;
     }
 
@@ -68,7 +53,6 @@ public class CameraController implements InputProcessor {
         Vector3 axis = camera.direction.cpy().crs(camera.up);
 
         float verticalScrollDelta = -Gdx.input.getDeltaY() * Utils.AIM_SENSITIVITY;
-        Gdx.app.log("vertical scroll", "" + verticalScroll);
 
         if (verticalScrollDelta > 0) {
             if (verticalScrollDelta + verticalScroll > 40) {

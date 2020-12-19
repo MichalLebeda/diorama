@@ -89,7 +89,7 @@ public class BoxFactory {
         return body;
     }
 
-    public Body addDynCircle(float x, float y, float radius, short categoryBits, short maskBits) {
+    public Body addDynCircle(float x, float y, float radius) {
 
         //Dynamic Body
         BodyDef bodyDef = new BodyDef();
@@ -106,8 +106,8 @@ public class BoxFactory {
         fixtureDef.density = defDensity;
         fixtureDef.friction = defFriction;
         fixtureDef.restitution = defRestitution;
-        fixtureDef.filter.categoryBits = categoryBits;
-        fixtureDef.filter.maskBits = maskBits;
+//        fixtureDef.filter.categoryBits = categoryBits;
+//        fixtureDef.filter.maskBits = maskBits;
 
         body.createFixture(fixtureDef);
         body.setLinearDamping(30);

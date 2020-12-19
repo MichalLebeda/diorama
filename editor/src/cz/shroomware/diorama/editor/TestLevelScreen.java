@@ -16,7 +16,7 @@ import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
 public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
-    protected static final float SPEED = 9.0f;
+    protected static final float SPEED = 14.0f;
     protected EditorEngineGame game;
     protected Player player;
     protected CameraController cameraController;
@@ -30,7 +30,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
 
         AtlasRegionPrototype playerPrototype = new AtlasRegionPrototype(
                 game.getResources(),
-                game.getResources().getObjectAtlas().findRegion("dwarf"));
+                game.getResources().getObjectAtlas().findRegion("zombie"));
         player = new Player(new Vector3(x, y, 0), playerPrototype, level.getBoxFactory(), level.getCamera());
         level.getGameObjects().add(player);
 
@@ -75,9 +75,10 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         }
 
         level.updatePhysics(delta);
-        level.update(delta);
 
         player.update(0);
+        level.updateBasedOnPlayer(delta, level.getFloor(), player);
+
 //        camera.lookAt(player.getPosition());
         camera.update();
 

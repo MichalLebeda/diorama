@@ -31,6 +31,7 @@ import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.logic.component.InitComponent;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
+import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 import cz.shroomware.diorama.engine.level.portal.Portal;
 import cz.shroomware.diorama.engine.level.portal.Portals;
@@ -198,6 +199,11 @@ public class Level {
 
     public void update(float delta) {
         gameObjects.update(delta);
+        clouds.update(delta);
+    }
+
+    public void updateBasedOnPlayer(float delta, Floor floor, Player player) {
+        gameObjects.updateInGame(delta, floor, player);
         clouds.update(delta);
     }
 

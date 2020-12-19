@@ -9,6 +9,7 @@ import cz.shroomware.diorama.engine.RegionAnimation;
 import cz.shroomware.diorama.engine.level.prototype.AnimatedPrototype;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.shroomware.diorama.engine.level.prototype.DoorPrototype;
+import cz.shroomware.diorama.engine.level.prototype.EnemyPrototype;
 import cz.shroomware.diorama.engine.level.prototype.FirePrototype;
 import cz.shroomware.diorama.engine.level.prototype.LampPrototype;
 import cz.shroomware.diorama.engine.level.prototype.PillarPrototype;
@@ -28,6 +29,7 @@ public class Prototypes {
         addGameObjectPrototype(new PillarPrototype(resources));
         addGameObjectPrototype(new LampPrototype(resources));
         addGameObjectPrototype(new FirePrototype(resources));
+        addGameObjectPrototype(new EnemyPrototype(resources, "zombie"));
 
         Array<String> blacklist = new Array<>();
         blacklist.add("cursor");

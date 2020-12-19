@@ -39,6 +39,12 @@ public class GameObjects {
         }
     }
 
+    public void updateInGame(float delta, Floor floor, Player player) {
+        for (GameObject object : gameObjects) {
+            object.updateBasedOnPlayer(delta, floor, player);
+        }
+    }
+
     public void drawShadows(Batch batch) {
         for (GameObject object : gameObjects) {
             object.drawShadow(batch);

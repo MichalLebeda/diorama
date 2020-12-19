@@ -96,6 +96,10 @@ public abstract class GameObject implements Identifiable {
         }
     }
 
+    public void updateBasedOnPlayer(float delta, Floor floor, Player player) {
+        update(delta);
+    }
+
     public void drawDecal(MinimalisticDecalBatch decalBatch) {
         //TODO: remove
 //        if (!selected && tileAttachedTo != null) {
