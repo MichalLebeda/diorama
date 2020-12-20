@@ -23,7 +23,8 @@ public class Prototypes {
     protected Array<Prototype> gameObjectPrototypes = new Array<>();
 
     public Prototypes(Resources resources) {
-        addGameObjectPrototype(new WallPrototype(resources));
+        addGameObjectPrototype(new WallPrototype(resources, "house_wall"));
+        addGameObjectPrototype(new WallPrototype(resources, "wall"));
         addGameObjectPrototype(new TriggerPrototype(resources));
         addGameObjectPrototype(new DoorPrototype(resources));
         addGameObjectPrototype(new PillarPrototype(resources));

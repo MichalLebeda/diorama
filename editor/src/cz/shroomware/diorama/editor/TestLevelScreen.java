@@ -10,10 +10,13 @@ import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.CameraController;
+import cz.shroomware.diorama.engine.ai.Node;
 import cz.shroomware.diorama.engine.level.Level;
 import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
+
+import static cz.shroomware.diorama.Utils.path;
 
 public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float SPEED = 14.0f;
@@ -88,6 +91,11 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
         spriteBatch.getShader().setUniformf("u_background_color", Color.RED);
         level.draw(spriteBatch, decalBatch, delta);
+        if (path != null) {
+            for (Node node : path) {
+                spriteBatch.draw(resources.getObjectAtlas().findRegion("cursor"), node.getX(), node.getY(), 0.1f, 0.1f);
+            }
+        }
         spriteBatch.end();
 
         decalBatch.render(camera, backgroundColor, 0);

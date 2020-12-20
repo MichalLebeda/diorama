@@ -71,8 +71,6 @@ public class Door extends GameObject {
             } else {
                 animateToRelativeAngle(OPEN_RELATIVE_ANGLE);
             }
-
-            body.getFixtureList().get(0).setSensor(true);
         }
     }
 
@@ -81,7 +79,6 @@ public class Door extends GameObject {
             open = false;
             animateToRelativeAngle(0);
             movingPart.setPosition(getPosition());
-            body.getFixtureList().get(0).setSensor(false);
         }
     }
 
@@ -130,6 +127,16 @@ public class Door extends GameObject {
             relativeAngle = Interpolation.bounceOut.apply(startRelativeAngle, targetRelativeAngle, alpha);
             setAngleRelative(relativeAngle);
         }
+
+        if (open) {
+            if (!body.getFixtureList().get(0).isSensor()) {
+                body.getFixtureList().get(0).setSensor(true);
+            }
+        } else {
+            if (body.getFixtureList().get(0).isSensor()) {
+                body.getFixtureList().get(0).setSensor(false);
+            }
+        }
     }
 
     @Override
@@ -143,5 +150,10 @@ public class Door extends GameObject {
     protected void updatePosition(float originX, float originY) {
         super.updatePosition(originX, originY);
         movingPart.setPosition(originX, originY, movingPart.getZ());
+    }
+
+    @Override
+    public boolean canWalk() {
+        return open;
     }
 }

@@ -381,6 +381,10 @@ public abstract class GameObject implements Identifiable {
     public void onContactEnd() {
     }
 
+    public boolean canWalk() {
+        return false;
+    }
+
 
 //    public Vector2 setPositionPixelPerfect(Vector2 worldPos) {
 //        // round to texels

@@ -13,18 +13,11 @@ import cz.shroomware.diorama.engine.physics.BoxFactory;
 public class PillarPrototype extends Prototype {
     Resources resources;
     TextureRegion region;
-    TextureRegion regionConnectedLeft;
-    TextureRegion regionConnectedRight;
-    TextureRegion regionConnectedBoth;
     HexRegion topRegions;
 
     public PillarPrototype(Resources resources) {
         this.resources = resources;
-        this.region = resources.getObjectAtlas().findRegion("wall");
-        this.regionConnectedLeft = resources.getObjectAtlas().findRegion("wall_left");
-        this.regionConnectedRight = resources.getObjectAtlas().findRegion("wall_right");
-        this.regionConnectedBoth = resources.getObjectAtlas().findRegion("wall_both");
-        topRegions = new HexRegion(resources.getObjectAtlas(), "wall_top_");
+        this.region = resources.getObjectAtlas().findRegion("box");
     }
 
     @Override
@@ -44,11 +37,7 @@ public class PillarPrototype extends Prototype {
 
     @Override
     public boolean dependenciesFulfilled() {
-        return region != null &&
-                topRegions.size() == 16 &&
-                regionConnectedLeft != null &&
-                regionConnectedRight != null &&
-                regionConnectedBoth != null;
+        return region != null;
     }
 
     @Override
@@ -78,17 +67,5 @@ public class PillarPrototype extends Prototype {
 
     public TextureRegion getRegion() {
         return region;
-    }
-
-    public TextureRegion getRegionConnectedLeft() {
-        return regionConnectedLeft;
-    }
-
-    public TextureRegion getRegionConnectedRight() {
-        return regionConnectedRight;
-    }
-
-    public TextureRegion getRegionConnectedBoth() {
-        return regionConnectedBoth;
     }
 }

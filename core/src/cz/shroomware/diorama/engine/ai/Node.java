@@ -1,18 +1,20 @@
 package cz.shroomware.diorama.engine.ai;
 
+import cz.shroomware.diorama.engine.level.Tile;
+
 public class Node {
-    public boolean canWalk;
     public int x_index, y_index;
+    public Tile origTile;
 
     public Node parent;
     public double f = 0;
     public double g = 0;
     public double h = 0;
 
-    public Node(int x, int y, boolean canWalk) {
+    public Node(int x, int y, Tile origTile) {
         this.x_index = x;
         this.y_index = y;
-        this.canWalk = canWalk;
+        this.origTile = origTile;
     }
 
     public void setHeuristic(double h) {
@@ -23,7 +25,7 @@ public class Node {
     }
 
     public boolean observe(Node parent, double g) {
-        if (canWalk && g < this.g) {
+        if (canWalk() && g < this.g) {
 //            Gdx.app.log("Observed", "x:" + x_index + " y:" + y_index);
             this.parent = parent;
             this.g = g;
@@ -40,5 +42,13 @@ public class Node {
 
     public float getY() {
         return y_index + 0.5f;
+    }
+
+    public boolean canWalk() {
+        if (origTile.hasAttachedObject()) {
+            return origTile.getAttachedGameObject().canWalk();
+        }
+
+        return true;
     }
 }

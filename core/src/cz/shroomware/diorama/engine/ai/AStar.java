@@ -93,7 +93,7 @@ public class AStar {
                 }
             }
 
-            newG = currentNode.g + 1.444;
+            newG = currentNode.g + 1.344;
 
             neighbor = grid.getNode(currentNode.x_index + 1, currentNode.y_index + 1);
             if (neighbor != null) {

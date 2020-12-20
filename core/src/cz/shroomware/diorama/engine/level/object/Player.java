@@ -28,7 +28,7 @@ public class Player extends AtlasRegionGameObject {
     }
 
     protected Body createBody(BoxFactory boxFactory) {
-        Body body = boxFactory.addDynBoxCenter(decal.getX(), decal.getY(), 0.5f, 0.5f, false);
+        Body body = boxFactory.addDynCircle(decal.getX(), decal.getY(), 0.2f);
         body.setFixedRotation(true);
         body.setLinearDamping(40);
         return body;

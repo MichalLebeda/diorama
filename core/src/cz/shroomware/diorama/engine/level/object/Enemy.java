@@ -26,8 +26,10 @@ public class Enemy extends GameObject {
     protected RegionAnimation animation;
     protected AStar aStar;
     protected float time;
-    Array<Node> path = null;
-    int untilNextAstar = 10;
+    protected Array<Node> path = null;
+    protected int untilNextAstar = MathUtils.random(0, 200);
+    protected Vector2 velocity = null;
+    protected int health = 100;
 
     public Enemy(Vector3 position, EnemyPrototype prototype, Identifier identifier, BoxFactory boxFactory) {
         super(position, prototype.getAnimation().first().getObject(), prototype, identifier);
@@ -35,7 +37,7 @@ public class Enemy extends GameObject {
         createShadowSprite();
         setRandomAnimOffset();
 
-        Body body = boxFactory.addDynCircle(position.x, position.y, 0.3f);
+        Body body = boxFactory.addDynCircle(position.x, position.y, 0.2f);
 
         attachToBody(body);
         decal.setBillboard(true);
@@ -86,23 +88,29 @@ public class Enemy extends GameObject {
             path = aStar.findPath(currentTile.getXIndex(), currentTile.getYIndex(),
                     playerTile.getXIndex(), playerTile.getYIndex());
 
-            untilNextAstar = MathUtils.random(10, 40);
+            untilNextAstar = MathUtils.random(10, 200);
         }
-//
-//
+
+        Utils.path = path;
+
         if (path != null && !path.isEmpty()) {
             Node node = path.first();
             Vector2 targetTilePosition = new Vector2(node.getX(), node.getY());
 
-            Vector2 velocity = targetTilePosition.cpy().sub(body.getPosition());
-            velocity.nor().scl(10);
+            Vector2 targetVelocity = targetTilePosition.cpy().sub(body.getPosition());
+            targetVelocity.nor().scl(4);
+
+            if (velocity == null) {
+                velocity = targetVelocity.cpy();
+            } else {
+                velocity.scl(0.96f).add(targetVelocity.scl(0.04f));
+            }
 
             body.setLinearVelocity(velocity);
 
-            if (getBody().getPosition().dst(targetTilePosition) < 0.06) {
+            if (getBody().getPosition().dst(targetTilePosition) < 0.86) {
                 path.removeIndex(0);
             }
-
         } else {
             body.setLinearVelocity(0, 0);
         }

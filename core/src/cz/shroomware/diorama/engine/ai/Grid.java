@@ -14,7 +14,7 @@ public class Grid {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                Node node = new Node(x, y, !floor.getTileAtIndex(x, y).hasAttachedObject());
+                Node node = new Node(x, y, floor.getTileAtIndex(x, y));
 
                 nodes[x][y] = node;
             }
@@ -27,9 +27,10 @@ public class Grid {
             for (int x = 0; x < width; x++) {
                 node = nodes[x][y];
 
-                node.setHeuristic(Math.sqrt(
-                        Math.pow(node.x_index - targetNode.x_index, 2)
-                                + Math.pow(node.y_index - targetNode.y_index, 2)));
+//                node.setHeuristic(Math.sqrt(
+//                        Math.pow(node.x_index - targetNode.x_index, 2)
+//                                + Math.pow(node.y_index - targetNode.y_index, 2)));
+                node.setHeuristic(node.x_index - targetNode.x_index + node.y_index - targetNode.y_index);
             }
         }
     }
@@ -49,6 +50,6 @@ public class Grid {
             return false;
         }
 
-        return node.canWalk;
+        return node.canWalk();
     }
 }

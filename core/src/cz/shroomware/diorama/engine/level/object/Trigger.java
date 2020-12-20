@@ -81,4 +81,9 @@ public class Trigger extends GameObject {
     public void setRotation(Quaternion quaternion) {
         // Trigger has fixed rotation
     }
+
+    @Override
+    public boolean canWalk() {
+        return true;
+    }
 }

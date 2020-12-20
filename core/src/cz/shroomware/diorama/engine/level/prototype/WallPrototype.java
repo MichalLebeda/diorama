@@ -17,14 +17,16 @@ public class WallPrototype extends Prototype {
     TextureRegion regionConnectedRight;
     TextureRegion regionConnectedBoth;
     HexRegion topRegions;
+    String name;
 
-    public WallPrototype(Resources resources) {
+    public WallPrototype(Resources resources, String name) {
         this.resources = resources;
-        this.region = resources.getObjectAtlas().findRegion("wall");
-        this.regionConnectedLeft = resources.getObjectAtlas().findRegion("wall_left");
-        this.regionConnectedRight = resources.getObjectAtlas().findRegion("wall_right");
-        this.regionConnectedBoth = resources.getObjectAtlas().findRegion("wall_both");
-        topRegions = new HexRegion(resources.getObjectAtlas(), "wall_top_");
+        this.name = name;
+        this.region = resources.getObjectAtlas().findRegion(name);
+        this.regionConnectedLeft = resources.getObjectAtlas().findRegion(name + "_left");
+        this.regionConnectedRight = resources.getObjectAtlas().findRegion(name + "_right");
+        this.regionConnectedBoth = resources.getObjectAtlas().findRegion(name + "_both");
+        topRegions = new HexRegion(resources.getObjectAtlas(), name + "_top_");
     }
 
     @Override
@@ -39,7 +41,7 @@ public class WallPrototype extends Prototype {
 
     @Override
     public String getName() {
-        return "wall";
+        return name;
     }
 
     @Override
