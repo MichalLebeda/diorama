@@ -569,7 +569,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
 
         Ray ray = camera.getPickRay(screenX, screenY);
 
-        return level.findIntersectingWithRay(resources.getColorUtil(), ray, camera);
+        return level.findIntersectingWithRay(resources.getColorUtil(), ray, camera, null);
     }
 
     @Override

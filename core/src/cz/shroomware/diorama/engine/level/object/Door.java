@@ -6,7 +6,9 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.CustomDecal;
 import cz.shroomware.diorama.engine.Identifier;
 import cz.shroomware.diorama.engine.level.logic.Handler;
@@ -155,5 +157,13 @@ public class Door extends GameObject {
     @Override
     public boolean canWalk() {
         return open;
+    }
+
+    @Override
+    public boolean intersectsWithOpaque(ColorUtil colorUtil, Ray ray, Vector3 boundsIntersection) {
+        if (!open) {
+            return true;
+        }
+        return super.intersectsWithOpaque(colorUtil, ray, boundsIntersection);
     }
 }

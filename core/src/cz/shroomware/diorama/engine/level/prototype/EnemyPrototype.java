@@ -14,25 +14,32 @@ import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class EnemyPrototype extends Prototype {
-    RegionAnimation regionAnimation;
+    RegionAnimation animation;
+    RegionAnimation shotAnimation;
     String name;
 
     public EnemyPrototype(Resources resources, String name) {
         Array<TextureAtlas.AtlasRegion> regions = resources.getObjectAtlas().findRegions(name);
-        this.regionAnimation = RegionAnimation.fromAtlasRegion(0.1f, regions, Animation.PlayMode.LOOP);
+        Array<TextureAtlas.AtlasRegion> shotRegions = resources.getObjectAtlas().findRegions(name + "_shot");
+        this.animation = RegionAnimation.fromAtlasRegion(0.1f, regions, Animation.PlayMode.LOOP);
+        this.shotAnimation = RegionAnimation.fromAtlasRegion(0.2f, shotRegions, Animation.PlayMode.LOOP);
         this.name = name;
     }
 
     public RegionAnimation getAnimation() {
-        return regionAnimation;
+        return animation;
+    }
+
+    public RegionAnimation getShotAnimation() {
+        return shotAnimation;
     }
 
     @Override
     public TextureRegion getIconRegion() {
-        if (regionAnimation.getKeyFrames().length == 0) {
+        if (animation.getKeyFrames().length == 0) {
             return null;
         }
-        return regionAnimation.first().getObject();
+        return animation.first().getObject();
     }
 
     @Override

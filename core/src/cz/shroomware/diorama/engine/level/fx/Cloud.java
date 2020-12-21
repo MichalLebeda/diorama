@@ -15,7 +15,7 @@ public class Cloud {
     protected float speed = MathUtils.random(0.9f, 4f);
     protected Vector3 origPos;
 
-    ParticleEmitter particleEmitter;
+    BoxParticleEmitter particleEmitter;
 
     public Cloud(final TextureAtlas atlas, Vector3 position) {
         decal = CustomDecal.newDecal(atlas.findRegions("cloud").random());
@@ -26,7 +26,7 @@ public class Cloud {
         decal.setHeight(((float) decal.getTextureRegion().getRegionHeight()) / Utils.PIXELS_PER_METER);
         origPos = decal.getPosition().cpy();
 
-        particleEmitter = new ParticleEmitter(position,
+        particleEmitter = new BoxParticleEmitter(position,
                 new Vector3(decal.getWidth(), 0, decal.getHeight() / 3f), 4.2f) {
             @Override
             protected Particle createParticle(Vector3 position) {

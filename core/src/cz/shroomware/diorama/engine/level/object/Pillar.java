@@ -68,7 +68,7 @@ public class Pillar extends GameObject {
     protected Body createBody(BoxFactory boxFactory) {
         Body body = boxFactory.addDynBoxCenter(decal.getX(), decal.getY(), 1, 1, false);
         body.setFixedRotation(true);
-        body.setLinearDamping(40);
+        body.setLinearDamping(10);
         return body;
     }
 

@@ -6,24 +6,40 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.utils.Array;
 
 import cz.shroomware.diorama.Utils;
 import cz.shroomware.diorama.engine.CameraController;
-import cz.shroomware.diorama.engine.ai.Node;
 import cz.shroomware.diorama.engine.level.Level;
+import cz.shroomware.diorama.engine.level.fx.AnimParticle;
+import cz.shroomware.diorama.engine.level.fx.GravityParticle;
+import cz.shroomware.diorama.engine.level.fx.Particle;
+import cz.shroomware.diorama.engine.level.fx.ParticleEmitter;
+import cz.shroomware.diorama.engine.level.object.Enemy;
+import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.shroomware.diorama.engine.screen.BaseLevelScreen;
 
-import static cz.shroomware.diorama.Utils.path;
-
 public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
-    protected static final float SPEED = 14.0f;
+    protected static final float SPEED = 8.0f;
     protected EditorEngineGame game;
     protected Player player;
     protected CameraController cameraController;
     protected InputMultiplexer inputMultiplexer;
+    protected Animation<TextureAtlas.AtlasRegion> gunAnimation;
+    protected Sprite gunSprite;
+    protected float gunAnimTime = 0;
+    protected boolean gunAnimPlaying = false;
+    protected ParticleEmitter particleEmitter;
+    protected Array<TextureAtlas.AtlasRegion> enemyParticles;
 
     public TestLevelScreen(EditorEngineGame game, Level level, float x, float y) {
         super(game.getResources(), level);
@@ -44,6 +60,27 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         inputMultiplexer.addProcessor(cameraController);
 
         decalBatch.setOffset(Utils.Z_OFFSET_PER_METER);
+
+        Array<TextureAtlas.AtlasRegion> frames = resources.getObjectAtlas().findRegions("gun");
+        gunAnimation = new Animation<TextureAtlas.AtlasRegion>(0.05f, frames);
+        gunSprite = new Sprite(gunAnimation.getKeyFrame(0));
+        gunSprite.setOrigin(gunSprite.getWidth() / 2, 0);
+        gunSprite.setScale(10);
+        gunSprite.setPosition(Gdx.graphics.getWidth() / 2f - gunSprite.getWidth() / 2, 0);
+
+        final Animation<TextureRegion> smokeAnim = new Animation<TextureRegion>(0.1f, resources.getObjectAtlas().findRegions("smoke"));
+        final TextureRegion particleRegion = resources.getObjectAtlas().findRegion("aim");
+        particleEmitter = new ParticleEmitter() {
+            @Override
+            protected Particle createParticle(Vector3 position) {
+                AnimParticle particle = new AnimParticle(position, smokeAnim);
+                particle.setVelocityZ(MathUtils.random(0, 1f));
+                particle.setVelocityX(MathUtils.random(-1, 1f));
+                return particle;
+            }
+        };
+
+        enemyParticles = resources.getObjectAtlas().findRegions("enemy_particle");
     }
 
     @Override
@@ -91,11 +128,13 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
         spriteBatch.getShader().setUniformf("u_background_color", Color.RED);
         level.draw(spriteBatch, decalBatch, delta);
-        if (path != null) {
-            for (Node node : path) {
-                spriteBatch.draw(resources.getObjectAtlas().findRegion("cursor"), node.getX(), node.getY(), 0.1f, 0.1f);
-            }
-        }
+//        if (path != null) {
+//            for (Node node : path) {
+//                spriteBatch.draw(resources.getObjectAtlas().findRegion("cursor"), node.getX(), node.getY(), 0.1f, 0.1f);
+//            }
+//        }
+        particleEmitter.update(delta);
+        particleEmitter.draw(decalBatch);
         spriteBatch.end();
 
         decalBatch.render(camera, backgroundColor, 0);
@@ -103,7 +142,16 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         spriteBatch.setShader(null);
         spriteBatch.setProjectionMatrix(screenCamera.combined);
         spriteBatch.begin();
-        spriteBatch.draw(resources.getObjectAtlas().findRegion("cursor"), screenCamera.viewportWidth / 2, screenCamera.viewportHeight / 2);
+        spriteBatch.draw(resources.getObjectAtlas().findRegion("aim"), screenCamera.viewportWidth / 2, screenCamera.viewportHeight / 2);
+        if (gunAnimPlaying) {
+            gunAnimTime += delta;
+            if (gunAnimTime > gunAnimation.getAnimationDuration()) {
+                gunAnimTime = 0;
+                gunAnimPlaying = false;
+            }
+            gunSprite.setRegion(gunAnimation.getKeyFrame(gunAnimTime));
+        }
+        gunSprite.draw(spriteBatch);
         spriteBatch.end();
     }
 
@@ -111,6 +159,105 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     public void dispose() {
         spriteBatch.dispose();
         decalBatch.dispose();
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Vector3 intersection = new Vector3();
+        Ray ray = level.getCamera().getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+        GameObject object = level.findIntersectingWithRay(resources.getColorUtil(), ray, level.getCamera(), intersection);
+
+
+        float offset = 0.1f;
+
+        if (object != null) {
+            Gdx.app.log("hit", object.getPrototype().getName());
+            object.hit(player.getBody().getPosition());
+
+            if (object instanceof Enemy) {
+                int particles = MathUtils.random(1, 4);
+                for (int i = 0; i < particles; i++) {
+                    Particle particle = new GravityParticle(intersection.cpy().add(
+                            MathUtils.random(-0.1f, 0.1f),
+                            MathUtils.random(-0.1f, 0.1f),
+                            MathUtils.random(-0.1f, 0.1f)),
+                            enemyParticles.random());
+                    final float vel = 3;
+                    particle.setVelocity(
+                            MathUtils.random(-vel, vel),
+                            MathUtils.random(-vel, vel),
+                            10
+                    );
+                    particleEmitter.spawn(particle);
+                    particleEmitter.spawn(intersection.cpy().add(
+                            MathUtils.random(-offset, offset),
+                            MathUtils.random(-offset, offset),
+                            MathUtils.random(-offset, offset)
+                    ));
+                }
+            } else {
+                particleEmitter.spawn(intersection.cpy().add(
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset)
+                ));
+                particleEmitter.spawn(intersection.cpy().add(
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset)
+                ));
+                particleEmitter.spawn(intersection.cpy().add(
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset)
+                ));
+            }
+        } else {
+            PerspectiveCamera camera = level.getCamera();
+            if (camera.direction.z < 0) {
+                Gdx.app.log("direction", "");
+                float multiplier = camera.position.z / -camera.direction.z;
+                Vector3 spawnPos = camera.position.cpy().add(camera.direction.cpy().scl(multiplier));
+                particleEmitter.spawn(spawnPos.cpy().add(
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset)
+                ));
+                particleEmitter.spawn(spawnPos.cpy().add(
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset)
+                ));
+                particleEmitter.spawn(spawnPos.cpy().add(
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset),
+                        MathUtils.random(-offset, offset)
+                ));
+            }
+        }
+
+//        ray = level.getCamera().getPickRay(Gdx.graphics.getWidth() / 2f - 30, Gdx.graphics.getHeight() / 2f);
+//        GameObject object2 = level.findIntersectingWithRay(resources.getColorUtil(), ray, level.getCamera(), intersection);
+//
+//        if (object2 != null && object2 != object) {
+//            Gdx.app.log("hit", object2.getPrototype().getName());
+//            object2.hit(player.getBody().getPosition());
+//        }
+//        particleEmitter.spawn(intersection);
+//
+//        ray = level.getCamera().getPickRay(Gdx.graphics.getWidth() / 2f + 30, Gdx.graphics.getHeight() / 2f);
+//        GameObject object3 = level.findIntersectingWithRay(resources.getColorUtil(), ray, level.getCamera(),intersection);
+//
+//        if (object3 != null && object3 != object2 && object3 != object) {
+//            Gdx.app.log("hit", object3.getPrototype().getName());
+//            object3.hit(player.getBody().getPosition());
+//        }
+//        particleEmitter.spawn(intersection);
+
+
+        gunAnimPlaying = true;
+        gunAnimTime = 0;
+        return true;
     }
 
     @Override
@@ -129,5 +276,11 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         }
 
         return false;
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        gunSprite.setPosition(Gdx.graphics.getWidth() / 2f - gunSprite.getWidth() / 2, 0);
     }
 }

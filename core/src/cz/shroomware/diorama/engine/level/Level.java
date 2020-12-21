@@ -238,7 +238,7 @@ public class Level {
         return gameObjects.isDirty() || floor.isDirty() || logic.isDirty() || getMetaLevel().getMetaPortals().isDirty();
     }
 
-    public GameObject findIntersectingWithRay(ColorUtil colorUtil, Ray ray, Camera camera) {
+    public GameObject findIntersectingWithRay(ColorUtil colorUtil, Ray ray, Camera camera, Vector3 intersectionResult) {
         Vector3 intersection = new Vector3();
         BoundingBox boundingBox = new BoundingBox();
 
@@ -254,6 +254,9 @@ public class Level {
                     float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
                     if (currentObjectDist < minDist) {
                         minDist = currentObjectDist;
+                        if (intersectionResult != null) {
+                            intersectionResult.set(intersection);
+                        }
                         candidate = gameObject;
                     }
                 }

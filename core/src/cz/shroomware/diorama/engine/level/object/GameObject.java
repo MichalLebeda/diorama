@@ -173,6 +173,7 @@ public abstract class GameObject implements Identifiable {
         // Calculate normal
         Vector3 vecNormal = vecA.crs(vecB);
 
+        //TODO: pass Plane as a parameter
         Plane plane = new Plane(vecNormal, testDecal.getPosition());
         return Intersector.intersectRayPlane(ray, plane, intersection);
     }
@@ -383,6 +384,18 @@ public abstract class GameObject implements Identifiable {
 
     public boolean canWalk() {
         return false;
+    }
+
+    public boolean shouldBeRemoved() {
+        return false;
+    }
+
+    public void hit(Vector2 playerPosition) {
+        if (hasBody()) {
+            Vector2 velocity = body.getPosition().cpy().sub(playerPosition);
+            velocity.nor().scl(40);
+            body.setLinearVelocity(velocity);
+        }
     }
 
 

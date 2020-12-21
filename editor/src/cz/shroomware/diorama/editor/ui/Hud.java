@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
@@ -40,6 +41,7 @@ public class Hud extends Stage {
     IconButton plusButtonY;
     BackgroundLabel xOffsetLabel;
     BackgroundLabel yOffsetLabel;
+    Image image;
 
     IconButton logicEditorButton;
     ScrollPane scrollPane;
@@ -203,6 +205,10 @@ public class Hud extends Stage {
         });
         snapTable.add(plusButtonY);
 
+        image = new Image(resources.getObjectAtlas().findRegion("white"));
+        image.getDrawable().setMinHeight(100);
+        image.setSize(100, 100);
+        addActor(image);
 //        colorIndicator = new Image(game.getEditorResources().getUiAtlas().findRegion("white")) {
 //            @Override
 //            public float getMinHeight() {
@@ -238,6 +244,7 @@ public class Hud extends Stage {
 
     @Override
     public void draw() {
+        image.setColor(Utils.color);
         if (editor.getHardSnap()) {
             snapTable.setVisible(true);
             xOffsetLabel.setText(Integer.toString((int) (editor.getSnapOffsetX() / (1 / Utils.PIXELS_PER_METER))));
