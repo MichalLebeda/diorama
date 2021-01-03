@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-import cz.shroomware.diorama.engine.CustomDecal;
+import cz.michallebeda.diorama.engine.CustomDecal;
 
 /**
  * Decal batch that is simpler to use

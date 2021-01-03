@@ -17,7 +17,7 @@ android {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
-        applicationId "cz.shroomware.diorama"
+        applicationId "cz.michallebeda.diorama"
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
@@ -86,7 +86,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'cz.shroomware.diorama/cz.shroomware.diorama.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'cz.michallebeda.diorama/cz.michallebeda.diorama.AndroidLauncher'
 }
 
 eclipse.project.name = appName + "-android"
