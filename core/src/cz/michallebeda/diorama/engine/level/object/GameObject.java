@@ -1,5 +1,6 @@
 package cz.michallebeda.diorama.engine.level.object;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -121,7 +122,11 @@ public abstract class GameObject implements Identifiable {
     public String toString() {
         String string = "";
 
-        string += prototype.getName() + " ";
+        if (prototype != null) {
+            string += prototype.getName() + " ";
+        } else {
+            Gdx.app.log("class", this.getClass().toString());
+        }
         string += decal.getX() + " ";
         string += decal.getY() + " ";
         string += decal.getZ() + " ";

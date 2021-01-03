@@ -62,6 +62,8 @@ public class Utils {
 
     public static final Color color = new Color();
 
+    public static final Vector2 raycastHit = new Vector2();
+
     public static Array<Node> path = null;
 
     public static float round(float input, float step) {

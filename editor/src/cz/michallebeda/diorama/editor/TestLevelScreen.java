@@ -36,6 +36,8 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected InputMultiplexer inputMultiplexer;
     protected Animation<TextureAtlas.AtlasRegion> gunAnimation;
     protected Sprite gunSprite;
+    protected Sprite healthBar;
+    protected Sprite healthBarBg;
     protected float gunAnimTime = 0;
     protected boolean gunAnimPlaying = false;
     protected ParticleEmitter particleEmitter;
@@ -67,6 +69,14 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         gunSprite.setOrigin(gunSprite.getWidth() / 2, 0);
         gunSprite.setScale(10);
         gunSprite.setPosition(Gdx.graphics.getWidth() / 2f - gunSprite.getWidth() / 2, 0);
+
+        healthBarBg = new Sprite(resources.getObjectAtlas().findRegion("healthbar_bg"));
+        healthBarBg.setSize(Gdx.graphics.getWidth(), 20);
+        healthBarBg.setPosition(0, Gdx.graphics.getHeight() - healthBarBg.getHeight());
+
+        healthBar = new Sprite(resources.getObjectAtlas().findRegion("healthbar"));
+        updateHealthBar();
+        healthBar.setPosition(0, Gdx.graphics.getHeight() - healthBar.getHeight());
 
         final Animation<TextureRegion> smokeAnim = new Animation<TextureRegion>(0.1f, resources.getObjectAtlas().findRegions("smoke"));
         final TextureRegion particleRegion = resources.getObjectAtlas().findRegion("aim");
@@ -119,7 +129,6 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         player.update(0);
         level.updateBasedOnPlayer(delta, level.getFloor(), player);
 
-//        camera.lookAt(player.getPosition());
         camera.update();
 
         spriteBatch.setProjectionMatrix(camera.combined);
@@ -128,6 +137,8 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
         spriteBatch.getShader().setUniformf("u_background_color", Color.RED);
         level.draw(spriteBatch, decalBatch, delta);
+
+        //TODO: remove
 //        if (path != null) {
 //            for (Node node : path) {
 //                spriteBatch.draw(resources.getObjectAtlas().findRegion("cursor"), node.getX(), node.getY(), 0.1f, 0.1f);
@@ -152,6 +163,11 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
             gunSprite.setRegion(gunAnimation.getKeyFrame(gunAnimTime));
         }
         gunSprite.draw(spriteBatch);
+
+        updateHealthBar();
+        healthBarBg.draw(spriteBatch);
+        healthBar.draw(spriteBatch);
+
         spriteBatch.end();
     }
 
@@ -236,25 +252,6 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
             }
         }
 
-//        ray = level.getCamera().getPickRay(Gdx.graphics.getWidth() / 2f - 30, Gdx.graphics.getHeight() / 2f);
-//        GameObject object2 = level.findIntersectingWithRay(resources.getColorUtil(), ray, level.getCamera(), intersection);
-//
-//        if (object2 != null && object2 != object) {
-//            Gdx.app.log("hit", object2.getPrototype().getName());
-//            object2.hit(player.getBody().getPosition());
-//        }
-//        particleEmitter.spawn(intersection);
-//
-//        ray = level.getCamera().getPickRay(Gdx.graphics.getWidth() / 2f + 30, Gdx.graphics.getHeight() / 2f);
-//        GameObject object3 = level.findIntersectingWithRay(resources.getColorUtil(), ray, level.getCamera(),intersection);
-//
-//        if (object3 != null && object3 != object2 && object3 != object) {
-//            Gdx.app.log("hit", object3.getPrototype().getName());
-//            object3.hit(player.getBody().getPosition());
-//        }
-//        particleEmitter.spawn(intersection);
-
-
         gunAnimPlaying = true;
         gunAnimTime = 0;
         return true;
@@ -282,5 +279,13 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     public void resize(int width, int height) {
         super.resize(width, height);
         gunSprite.setPosition(Gdx.graphics.getWidth() / 2f - gunSprite.getWidth() / 2, 0);
+
+        updateHealthBar();
+        healthBarBg.setPosition(0, Gdx.graphics.getHeight() - healthBar.getHeight());
+        healthBar.setPosition(0, Gdx.graphics.getHeight() - healthBar.getHeight());
+    }
+
+    public void updateHealthBar() {
+        healthBar.setSize(player.getHealth() / player.getMaxHealth() * Gdx.graphics.getWidth(), 20);
     }
 }

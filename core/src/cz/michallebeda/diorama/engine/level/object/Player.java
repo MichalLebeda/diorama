@@ -1,5 +1,6 @@
 package cz.michallebeda.diorama.engine.level.object;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
@@ -13,7 +14,8 @@ import cz.michallebeda.diorama.engine.level.prototype.AtlasRegionPrototype;
 import cz.michallebeda.diorama.engine.physics.BoxFactory;
 
 public class Player extends AtlasRegionGameObject {
-    PerspectiveCamera camera;
+    protected PerspectiveCamera camera;
+    protected float health = 100;
 
     public Player(Vector3 position, AtlasRegionPrototype prototype, BoxFactory boxFactory, PerspectiveCamera camera) {
         super(position, prototype, new Identifier(Utils.PLAYER_ID));
@@ -60,5 +62,25 @@ public class Player extends AtlasRegionGameObject {
     @Override
     protected void updatePosition(float originX, float originY) {
         super.updatePosition(originX, originY);
+    }
+
+    public float getHealth() {
+        return health;
+    }
+
+    public float getMaxHealth() {
+        return 100;
+    }
+
+    public void subtractHealth(float health) {
+        Gdx.app.log("Player", "substracted: " + health);
+        this.health -= health;
+        if (this.health < 0) {
+            this.health = 0;
+        }
+    }
+
+    public boolean isAlive() {
+        return health > 0;
     }
 }
