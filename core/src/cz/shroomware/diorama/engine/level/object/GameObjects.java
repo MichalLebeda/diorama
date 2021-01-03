@@ -37,6 +37,19 @@ public class GameObjects {
         for (GameObject object : gameObjects) {
             object.update(delta);
         }
+
+    }
+
+    public void updateInGame(float delta, Floor floor, Player player) {
+        GameObject object = null;
+        for (int i = 0; i < gameObjects.size; i++) {
+            object = gameObjects.get(i);
+            object.updateBasedOnPlayer(delta, floor, player);
+            if (object.shouldBeRemoved()) {
+                removeInGame(object);
+                i--;
+            }
+        }
     }
 
     public void drawShadows(Batch batch) {
@@ -63,6 +76,21 @@ public class GameObjects {
 
     public void remove(GameObject gameObject) {
         dirty = true;
+        gameObjects.removeValue(gameObject, false);
+        idToObject.remove(gameObject.getIdentifier().getId());
+        if (gameObject.hasBody()) {
+            Body body = gameObject.getBody();
+            World world = body.getWorld();
+            world.destroyBody(body);
+        }
+
+        if (gameObject.hasLogicComponent()) {
+            // Unregister object from the logic system
+            logic.unregister(gameObject.getLogicComponent());
+        }
+    }
+
+    public void removeInGame(GameObject gameObject) {
         gameObjects.removeValue(gameObject, false);
         idToObject.remove(gameObject.getIdentifier().getId());
         if (gameObject.hasBody()) {

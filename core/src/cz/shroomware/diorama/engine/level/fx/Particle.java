@@ -5,28 +5,28 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 
-import cz.shroomware.diorama.engine.UpdatedDecal;
+import cz.shroomware.diorama.engine.CustomDecal;
 
 import static cz.shroomware.diorama.Utils.PIXELS_PER_METER;
 
 public abstract class Particle {
-    UpdatedDecal decal;
-
     float time = 0;
-
+    CustomDecal decal;
     Vector3 velocity = new Vector3();
 
     public Particle(Vector3 position, TextureRegion region, Color color) {
         this(position, region);
 
         decal.setColor(color);
+        decal.setBillboard(true);
     }
 
     public Particle(Vector3 position, TextureRegion region) {
-        decal = UpdatedDecal.newDecal(region, true);
+        decal = CustomDecal.newDecal(region, true);
         decal.setPosition(position);
         decal.setWidth(region.getRegionWidth() / PIXELS_PER_METER);
         decal.setHeight(region.getRegionHeight() / PIXELS_PER_METER);
+        decal.setBillboard(true);
     }
 
     public void setVelocity(float x, float y, float z) {
@@ -47,9 +47,13 @@ public abstract class Particle {
 
     public abstract boolean toRemove();
 
-    public void draw(MinimalisticDecalBatch decalBatch, float delta) {
+    public void update(float delta) {
         incrementTime(delta);
         applyVelocity(delta);
+    }
+
+    public void draw(MinimalisticDecalBatch decalBatch, float delta) {
+        update(delta);
         decalBatch.add(decal);
     }
 

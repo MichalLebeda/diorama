@@ -31,6 +31,7 @@ import cz.shroomware.diorama.engine.level.logic.Logic;
 import cz.shroomware.diorama.engine.level.logic.component.InitComponent;
 import cz.shroomware.diorama.engine.level.object.GameObject;
 import cz.shroomware.diorama.engine.level.object.GameObjects;
+import cz.shroomware.diorama.engine.level.object.Player;
 import cz.shroomware.diorama.engine.level.portal.MetaPortal;
 import cz.shroomware.diorama.engine.level.portal.Portal;
 import cz.shroomware.diorama.engine.level.portal.Portals;
@@ -136,7 +137,7 @@ public class Level {
 
     protected void initCamera() {
         camera = new PerspectiveCamera(
-                45,
+                65,
                 Utils.calculateCameraViewportWidth(),
                 Utils.calculateCameraViewportHeight());
         camera.near = 0.1f;
@@ -201,6 +202,11 @@ public class Level {
         clouds.update(delta);
     }
 
+    public void updateBasedOnPlayer(float delta, Floor floor, Player player) {
+        gameObjects.updateInGame(delta, floor, player);
+        clouds.update(delta);
+    }
+
     public void draw(SpriteBatch spriteBatch, MinimalisticDecalBatch decalBatch, float delta) {
         floor.draw(spriteBatch, delta);
 
@@ -232,7 +238,7 @@ public class Level {
         return gameObjects.isDirty() || floor.isDirty() || logic.isDirty() || getMetaLevel().getMetaPortals().isDirty();
     }
 
-    public GameObject findIntersectingWithRay(ColorUtil colorUtil, Ray ray, Camera camera) {
+    public GameObject findIntersectingWithRay(ColorUtil colorUtil, Ray ray, Camera camera, Vector3 intersectionResult) {
         Vector3 intersection = new Vector3();
         BoundingBox boundingBox = new BoundingBox();
 
@@ -248,6 +254,9 @@ public class Level {
                     float currentObjectDist = camera.position.cpy().add(intersection.cpy().scl(-1)).len();
                     if (currentObjectDist < minDist) {
                         minDist = currentObjectDist;
+                        if (intersectionResult != null) {
+                            intersectionResult.set(intersection);
+                        }
                         candidate = gameObject;
                     }
                 }

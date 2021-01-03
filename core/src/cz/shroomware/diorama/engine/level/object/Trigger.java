@@ -2,6 +2,7 @@ package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -17,6 +18,7 @@ public class Trigger extends GameObject {
     int contacts = 0;
     Event pressedEvent;
     Event releasedEvent;
+    boolean hit = false;
 
     public Trigger(Vector3 position, TriggerPrototype prototype, BoxFactory boxFactory, Identifier identifier) {
         super(position, prototype.getUpRegion(), prototype, identifier);
@@ -46,8 +48,9 @@ public class Trigger extends GameObject {
     public void update(float delta) {
         super.update(delta);
 
-        if (contacts > 0) {
+        if (contacts > 0 || hit) {
             decal.setTextureRegion(regionDown);
+            hit = false;
         } else {
             decal.setTextureRegion(regionUp);
         }
@@ -80,5 +83,17 @@ public class Trigger extends GameObject {
     @Override
     public void setRotation(Quaternion quaternion) {
         // Trigger has fixed rotation
+    }
+
+    @Override
+    public boolean canWalk() {
+        return true;
+    }
+
+    @Override
+    public void hit(Vector2 playerPosition) {
+        onContactBegin();
+        onContactEnd();
+        hit = true;
     }
 }

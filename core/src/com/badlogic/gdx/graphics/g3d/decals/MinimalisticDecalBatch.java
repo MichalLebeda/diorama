@@ -8,10 +8,11 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-import cz.shroomware.diorama.engine.UpdatedDecal;
+import cz.shroomware.diorama.engine.CustomDecal;
 
 /**
  * Decal batch that is simpler to use
@@ -21,7 +22,7 @@ public class MinimalisticDecalBatch implements Disposable {
     public ShaderProgram shaderProgram;
     private float[] vertices;
     private Mesh mesh;
-    private final Array<UpdatedDecal> decals;
+    private final Array<CustomDecal> decals;
     private float offset;
 
     public MinimalisticDecalBatch(ShaderProgram shaderProgram) {
@@ -44,7 +45,7 @@ public class MinimalisticDecalBatch implements Disposable {
         this.offset = offset;
     }
 
-    public void add(UpdatedDecal decal) {
+    public void add(CustomDecal decal) {
         decals.add(decal);
     }
 
@@ -89,6 +90,7 @@ public class MinimalisticDecalBatch implements Disposable {
     }
 
     public void render(Camera camera, Color backgroundColor,float time) {
+        Vector3 cameraPos = camera.position.cpy();
         beforeGroups();
 
         ShaderProgram shaderProgram = this.shaderProgram;
@@ -102,7 +104,7 @@ public class MinimalisticDecalBatch implements Disposable {
         // batch vertices
         DecalMaterial lastMaterial = null;
         int idx = 0;
-        for (UpdatedDecal decal : decals) {
+        for (CustomDecal decal : decals) {
             if (lastMaterial == null || !lastMaterial.equals(decal.getMaterial())) {
                 if (idx > 0) {
                     flush(shaderProgram, idx);
@@ -112,7 +114,10 @@ public class MinimalisticDecalBatch implements Disposable {
                 lastMaterial = decal.material;
             }
 
-//            decal.lookAt(camera.position, Vector3.Z);
+            if (decal.isBillboard()) {
+                cameraPos.z = decal.getZ();
+                decal.lookAt(cameraPos, Vector3.Z);
+            }
             decal.update(offset);
             System.arraycopy(decal.vertices, 0, vertices, idx, decal.vertices.length);
             idx += decal.vertices.length;

@@ -23,6 +23,8 @@ public class AnimatedGameObject extends GameObject {
         animation = prototype.getAnimation();
         createShadowSprite();
         setRandomAnimOffset();
+
+        decal.setBillboard(true);
     }
 
     private void createShadowSprite() {

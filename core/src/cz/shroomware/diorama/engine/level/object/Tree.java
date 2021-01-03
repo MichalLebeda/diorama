@@ -2,23 +2,27 @@ package cz.shroomware.diorama.engine.level.object;
 
 import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 
+import cz.shroomware.diorama.engine.ColorUtil;
 import cz.shroomware.diorama.engine.Identifier;
+import cz.shroomware.diorama.engine.level.fx.BoxParticleEmitter;
 import cz.shroomware.diorama.engine.level.fx.FallingParticle;
 import cz.shroomware.diorama.engine.level.fx.Particle;
-import cz.shroomware.diorama.engine.level.fx.ParticleEmitter;
 import cz.shroomware.diorama.engine.level.prototype.TreePrototype;
 import cz.shroomware.diorama.engine.physics.BoxFactory;
 
 public class Tree extends GameObject {
-    ParticleEmitter particleEmitter;
+    BoxParticleEmitter particleEmitter;
 
     public Tree(Vector3 position, TreePrototype prototype, BoxFactory boxFactory, Identifier identifier) {
         super(position, prototype.getObjectRegion(), prototype, identifier);
         particleEmitter = createParticleEmitter(position, prototype);
         attachToBody(createBody(boxFactory));
         createShadowSprite(prototype);
+
+        decal.setBillboard(true);
     }
 
     protected Body createBody(BoxFactory boxFactory) {
@@ -26,9 +30,9 @@ public class Tree extends GameObject {
         return body;
     }
 
-    protected ParticleEmitter createParticleEmitter(Vector3 position, final TreePrototype prototype) {
+    protected BoxParticleEmitter createParticleEmitter(Vector3 position, final TreePrototype prototype) {
         float depth = 1f;
-        ParticleEmitter particleEmitter = new ParticleEmitter(position,
+        BoxParticleEmitter particleEmitter = new BoxParticleEmitter(position,
                 new Vector3(getWidth(), depth, getHeight() / 3f), 0.2f) {
             @Override
             protected Particle createParticle(Vector3 position) {
@@ -63,5 +67,11 @@ public class Tree extends GameObject {
         super.drawDecal(decalBatch);
 
         particleEmitter.draw(decalBatch);
+    }
+
+    @Override
+    public boolean intersectsWithOpaque(ColorUtil colorUtil, Ray ray, Vector3 boundsIntersection) {
+        findIntersectionRayDecalPlane(ray, decal, boundsIntersection);
+        return super.intersectsWithOpaque(colorUtil, ray, boundsIntersection);
     }
 }

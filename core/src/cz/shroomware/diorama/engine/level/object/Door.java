@@ -6,9 +6,11 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 
+import cz.shroomware.diorama.engine.ColorUtil;
+import cz.shroomware.diorama.engine.CustomDecal;
 import cz.shroomware.diorama.engine.Identifier;
-import cz.shroomware.diorama.engine.UpdatedDecal;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.DoorPrototype;
@@ -20,7 +22,7 @@ public class Door extends GameObject {
     private static final float ANIM_DURATION = 1;
     private static final float OPEN_RELATIVE_ANGLE = 84;
     protected boolean open = false;
-    protected UpdatedDecal movingPart;
+    protected CustomDecal movingPart;
     float targetRelativeAngle;
     float startRelativeAngle;
     float relativeAngle = 0;
@@ -35,7 +37,7 @@ public class Door extends GameObject {
                 Identifier identifier) {
         super(position, prototype.getDoorPostRegion(), prototype, identifier);
 
-        movingPart = UpdatedDecal.newDecal(prototype.getDoorRegion(), true);
+        movingPart = CustomDecal.newDecal(prototype.getDoorRegion(), true);
         movingPart.setPosition(position);
         movingPart.setRotation(decal.getRotation());
         movingPart.setWidth(prototype.getDoorRegion().getRegionWidth() / PIXELS_PER_METER);
@@ -71,8 +73,6 @@ public class Door extends GameObject {
             } else {
                 animateToRelativeAngle(OPEN_RELATIVE_ANGLE);
             }
-
-            body.getFixtureList().get(0).setSensor(true);
         }
     }
 
@@ -81,7 +81,6 @@ public class Door extends GameObject {
             open = false;
             animateToRelativeAngle(0);
             movingPart.setPosition(getPosition());
-            body.getFixtureList().get(0).setSensor(false);
         }
     }
 
@@ -130,6 +129,16 @@ public class Door extends GameObject {
             relativeAngle = Interpolation.bounceOut.apply(startRelativeAngle, targetRelativeAngle, alpha);
             setAngleRelative(relativeAngle);
         }
+
+        if (open) {
+            if (!body.getFixtureList().get(0).isSensor()) {
+                body.getFixtureList().get(0).setSensor(true);
+            }
+        } else {
+            if (body.getFixtureList().get(0).isSensor()) {
+                body.getFixtureList().get(0).setSensor(false);
+            }
+        }
     }
 
     @Override
@@ -143,5 +152,18 @@ public class Door extends GameObject {
     protected void updatePosition(float originX, float originY) {
         super.updatePosition(originX, originY);
         movingPart.setPosition(originX, originY, movingPart.getZ());
+    }
+
+    @Override
+    public boolean canWalk() {
+        return open;
+    }
+
+    @Override
+    public boolean intersectsWithOpaque(ColorUtil colorUtil, Ray ray, Vector3 boundsIntersection) {
+        if (!open) {
+            return true;
+        }
+        return super.intersectsWithOpaque(colorUtil, ray, boundsIntersection);
     }
 }

@@ -7,15 +7,15 @@ import com.badlogic.gdx.graphics.g3d.decals.MinimalisticDecalBatch;
 import com.badlogic.gdx.math.Vector3;
 
 import cz.shroomware.diorama.engine.Identifier;
+import cz.shroomware.diorama.engine.level.fx.BoxParticleEmitter;
 import cz.shroomware.diorama.engine.level.fx.LifespanParticle;
 import cz.shroomware.diorama.engine.level.fx.Particle;
-import cz.shroomware.diorama.engine.level.fx.ParticleEmitter;
 import cz.shroomware.diorama.engine.level.logic.Handler;
 import cz.shroomware.diorama.engine.level.logic.component.LogicComponent;
 import cz.shroomware.diorama.engine.level.prototype.FirePrototype;
 
 public class Fire extends GameObject {
-    protected ParticleEmitter particleEmitter;
+    protected BoxParticleEmitter particleEmitter;
     protected Animation<TextureRegion> startAnim;
     protected Animation<TextureRegion> endAnim;
     protected Animation<TextureRegion> fireAnim;
@@ -29,7 +29,7 @@ public class Fire extends GameObject {
         endAnim = prototype.getEndAnim();
         fireAnim = prototype.getFireAnim();
 
-        particleEmitter = new ParticleEmitter(position,
+        particleEmitter = new BoxParticleEmitter(position,
                 new Vector3(getWidth(), 0.1f, getHeight()),
                 10f) {
             @Override

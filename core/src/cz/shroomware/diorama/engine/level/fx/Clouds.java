@@ -19,7 +19,7 @@ public class Clouds {
 
         for (float y = 0; y < floor.getHeight(); y += 0.9f) {
             for (float x = 0; x < floor.getWidth(); x += 0.8f) {
-                for (float z = 7; z < 10; z++) {
+                for (float z = 8; z < 10; z++) {
                     double noiseVal = noise.eval(x / 5f, y / 5f, z / 5f);
                     if (noiseVal > 0.4f) {
 
