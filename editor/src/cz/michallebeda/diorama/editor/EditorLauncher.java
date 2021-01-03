@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.Locale;
 
 public class EditorLauncher {
-    private static final boolean release = false;
+    private static final boolean release = true;
     private static final boolean forceUpdate = false;
 
     public static void main(String[] arg) {
