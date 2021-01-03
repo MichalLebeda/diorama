@@ -1,6 +1,6 @@
-#Build & Run
-```./gradlew editor:run```
-#Controls
+# Build & Run  
+```./gradlew editor:run```  
+# Controls
 
 ```
 +----------------------------------------------------+
