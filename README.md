@@ -1,3 +1,7 @@
+#Build & Run
+```./gradlew editor:run```
+#Controls
+
 ```
 +----------------------------------------------------+
 |                   Level Editor                     |
