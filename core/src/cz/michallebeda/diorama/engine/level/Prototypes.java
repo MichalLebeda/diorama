@@ -6,24 +6,14 @@ import com.badlogic.gdx.utils.Array;
 
 import cz.michallebeda.diorama.engine.ObjectShadowPair;
 import cz.michallebeda.diorama.engine.RegionAnimation;
-import cz.michallebeda.diorama.engine.level.prototype.AnimatedPrototype;
-import cz.michallebeda.diorama.engine.level.prototype.AtlasRegionPrototype;
-import cz.michallebeda.diorama.engine.level.prototype.DoorPrototype;
-import cz.michallebeda.diorama.engine.level.prototype.EnemyPrototype;
-import cz.michallebeda.diorama.engine.level.prototype.FirePrototype;
-import cz.michallebeda.diorama.engine.level.prototype.LampPrototype;
-import cz.michallebeda.diorama.engine.level.prototype.PillarPrototype;
-import cz.michallebeda.diorama.engine.level.prototype.Prototype;
-import cz.michallebeda.diorama.engine.level.prototype.TreePrototype;
-import cz.michallebeda.diorama.engine.level.prototype.TriggerPrototype;
-import cz.michallebeda.diorama.engine.level.prototype.WallPrototype;
+import cz.michallebeda.diorama.engine.level.prototype.*;
 
 public class Prototypes {
     //TODO RENAME INSTANCES, THINK ABOUT THIS OBJECT
-    protected Array<cz.michallebeda.diorama.engine.level.prototype.Prototype> gameObjectPrototypes = new Array<>();
+    protected Array<Prototype> gameObjectPrototypes = new Array<>();
 
     public Prototypes(Resources resources) {
-        addGameObjectPrototype(new cz.michallebeda.diorama.engine.level.prototype.WallPrototype(resources, "house_wall"));
+        addGameObjectPrototype(new WallPrototype(resources, "house_wall"));
         addGameObjectPrototype(new WallPrototype(resources, "wall"));
         addGameObjectPrototype(new TriggerPrototype(resources));
         addGameObjectPrototype(new DoorPrototype(resources));

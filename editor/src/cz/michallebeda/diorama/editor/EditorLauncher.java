@@ -9,11 +9,11 @@ import java.io.File;
 import java.util.Locale;
 
 public class EditorLauncher {
-    private static final boolean release = true;
-    private static final boolean forceUpdate = false;
+    private static final boolean RELEASE = true;
+    private static final boolean FORCE_UPDATE = false;
 
     public static void main(String[] arg) {
-        if (!release) {
+        if (!RELEASE) {
             packAtlas();
             packShadowAtlas();
             packUiAtlas();
@@ -43,7 +43,7 @@ public class EditorLauncher {
         switch (ostype) {
             case Windows:
                 File atlasFile = new File("atlas\\shadows.atlas");
-                if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\raw_shadows\\").lastModified()) {
+                if (FORCE_UPDATE || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\raw_shadows\\").lastModified()) {
                     TexturePacker.process(settings, "..\\..\\raw_shadows\\", "atlas", "shadows");
                     System.out.println("Shadow atlas: packed");
                 } else {
@@ -52,7 +52,7 @@ public class EditorLauncher {
                 break;
             default: // workaround, not reporting Linux
                 atlasFile = new File("atlas/shadows.atlas");
-                if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("../../raw_shadows").lastModified()) {
+                if (FORCE_UPDATE || atlasFile.lastModified() < getLatestFileFromDir("../../raw_shadows").lastModified()) {
                     TexturePacker.process(settings, "../../raw_shadows", "atlas", "shadows");
                     System.out.println("Shadow atlas: packed");
                 } else {
@@ -75,7 +75,7 @@ public class EditorLauncher {
         switch (ostype) {
             case Windows:
                 File atlasFile = new File("atlas\\auto.atlas");
-                if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\raw_assets\\").lastModified()) {
+                if (FORCE_UPDATE || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\raw_assets\\").lastModified()) {
                     TexturePacker.process(settings, "..\\..\\raw_assets\\", "atlas", "auto");
                     System.out.println("Atlas: packed");
                 } else {
@@ -84,7 +84,7 @@ public class EditorLauncher {
                 break;
             default: // workaround, not reporting Linux
                 atlasFile = new File("atlas/auto.atlas");
-                if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("../../raw_assets").lastModified()) {
+                if (FORCE_UPDATE || atlasFile.lastModified() < getLatestFileFromDir("../../raw_assets").lastModified()) {
                     TexturePacker.process(settings, "../../raw_assets", "atlas", "auto");
                     System.out.println("Atlas: packed");
                 } else {
@@ -108,7 +108,7 @@ public class EditorLauncher {
         switch (ostype) {
             case Windows:
                 File atlasFile = new File("atlas\\ui.atlas");
-                if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\ui_raw_assets\\").lastModified()) {
+                if (FORCE_UPDATE || atlasFile.lastModified() < getLatestFileFromDir("..\\..\\ui_raw_assets\\").lastModified()) {
                     TexturePacker.process(settings, "..\\..\\ui_raw_assets\\", "atlas", "ui");
                     System.out.println("UI Atlas: packed");
                 } else {
@@ -117,7 +117,7 @@ public class EditorLauncher {
                 break;
             default: // workaround, not reporting Linux
                 atlasFile = new File("atlas/ui.atlas");
-                if (forceUpdate || atlasFile.lastModified() < getLatestFileFromDir("../../ui_raw_assets").lastModified()) {
+                if (FORCE_UPDATE || atlasFile.lastModified() < getLatestFileFromDir("../../ui_raw_assets").lastModified()) {
                     TexturePacker.process(settings, "../../ui_raw_assets", "atlas", "ui");
                     System.out.println("UI Atlas: packed");
                 } else {
