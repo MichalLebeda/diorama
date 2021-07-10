@@ -6,7 +6,17 @@ import com.badlogic.gdx.utils.Array;
 
 import cz.michallebeda.diorama.engine.ObjectShadowPair;
 import cz.michallebeda.diorama.engine.RegionAnimation;
-import cz.michallebeda.diorama.engine.level.prototype.*;
+import cz.michallebeda.diorama.engine.level.prototype.AnimatedPrototype;
+import cz.michallebeda.diorama.engine.level.prototype.AtlasRegionPrototype;
+import cz.michallebeda.diorama.engine.level.prototype.DoorPrototype;
+import cz.michallebeda.diorama.engine.level.prototype.EnemyPrototype;
+import cz.michallebeda.diorama.engine.level.prototype.FirePrototype;
+import cz.michallebeda.diorama.engine.level.prototype.LampPrototype;
+import cz.michallebeda.diorama.engine.level.prototype.PillarPrototype;
+import cz.michallebeda.diorama.engine.level.prototype.Prototype;
+import cz.michallebeda.diorama.engine.level.prototype.TreePrototype;
+import cz.michallebeda.diorama.engine.level.prototype.TriggerPrototype;
+import cz.michallebeda.diorama.engine.level.prototype.WallPrototype;
 
 public class Prototypes {
     //TODO RENAME INSTANCES, THINK ABOUT THIS OBJECT
