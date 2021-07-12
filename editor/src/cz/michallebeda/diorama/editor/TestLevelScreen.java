@@ -42,6 +42,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
     protected boolean gunAnimPlaying = false;
     protected ParticleEmitter particleEmitter;
     protected Array<TextureAtlas.AtlasRegion> enemyParticles;
+    protected float time = 0.f;
 
     public TestLevelScreen(EditorEngineGame game, Level level, float x, float y) {
         super(game.getResources(), level);
@@ -109,6 +110,8 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
 
     @Override
     public void drawWorld(float delta) {
+        time += delta;
+
         PerspectiveCamera camera = level.getCamera();
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -135,6 +138,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
 
         spriteBatch.begin();
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
+        spriteBatch.getShader().setUniformf("u_time", time);
         spriteBatch.getShader().setUniformf("u_background_color", Color.RED);
         level.draw(spriteBatch, decalBatch, delta);
 
@@ -148,7 +152,7 @@ public class TestLevelScreen extends BaseLevelScreen implements InputProcessor {
         particleEmitter.draw(decalBatch);
         spriteBatch.end();
 
-        decalBatch.render(camera, backgroundColor, 0);
+        decalBatch.render(camera, backgroundColor, time);
 
         spriteBatch.setShader(null);
         spriteBatch.setProjectionMatrix(screenCamera.combined);

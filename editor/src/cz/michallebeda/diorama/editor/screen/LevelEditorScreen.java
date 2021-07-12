@@ -119,6 +119,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
         }
 
         spriteBatch.getShader().setUniformf("u_camera_pos", camera.position);
+        spriteBatch.getShader().setUniformf("u_time", time);
         spriteBatch.getShader().setUniformf("u_background_color", backgroundColor);
 //        spriteBatch.getShader().setUniformf("time", time / 10f);
 
@@ -135,7 +136,7 @@ public class LevelEditorScreen extends BaseLevelScreen {
             cursor.draw(spriteBatch, decalBatch);
         }
         spriteBatch.end();
-        decalBatch.render(camera, backgroundColor, time / 10f);
+        decalBatch.render(camera, backgroundColor, time);
     }
 
     @Override

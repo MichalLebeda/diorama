@@ -16,6 +16,7 @@ public class LevelScreen extends BaseLevelScreen implements InputProcessor {
     protected static final float Y_CAMERA_DISTANCE = 6;
     protected cz.michallebeda.diorama.engine.EngineGame game;
     protected cz.michallebeda.diorama.engine.level.object.Player player;
+    float time = 0;
 
     public LevelScreen(EngineGame game, Level level, float x, float y) {
         super(game.getResources(), level);
@@ -41,6 +42,8 @@ public class LevelScreen extends BaseLevelScreen implements InputProcessor {
 
     @Override
     public void drawWorld(float delta) {
+        time += delta;
+
         player.setVelocity(0, 2);
         PerspectiveCamera camera = level.getCamera();
 
@@ -73,7 +76,7 @@ public class LevelScreen extends BaseLevelScreen implements InputProcessor {
         level.draw(spriteBatch, decalBatch, delta);
         spriteBatch.end();
 
-        decalBatch.render(camera, backgroundColor, 0);
+        decalBatch.render(camera, backgroundColor, time / 10f);
     }
 
     @Override

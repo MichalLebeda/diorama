@@ -58,7 +58,7 @@ public abstract class BaseLevelScreen implements Screen, InputProcessor {
         // Use dominant floor color as background
         Color color = resources.getColorUtil().getDominantColor(level.getFloor().getTileAtIndex(0, 0));
         backgroundColor = color;
-        backgroundColor = new Color(0x232223ff);
+        backgroundColor = new Color(0xffde91ff);
 //        backgroundColor.mul(0.9f);
     }
 

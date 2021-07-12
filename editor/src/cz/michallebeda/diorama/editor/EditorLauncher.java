@@ -9,8 +9,8 @@ import java.io.File;
 import java.util.Locale;
 
 public class EditorLauncher {
-    private static final boolean RELEASE = true;
-    private static final boolean FORCE_UPDATE = false;
+    private static final boolean RELEASE = false;
+    private static final boolean FORCE_UPDATE = true;
 
     public static void main(String[] arg) {
         if (!RELEASE) {
