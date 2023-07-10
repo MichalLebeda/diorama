@@ -1,7 +1,8 @@
 # Diorama - 2.5D Pixel Art Java Game Engine
 This project was completed as my semestral work for the PJV (Programming in Java) course at CTU FIT (Czech Technical University, Faculty of Information Technology).
 
-*NOTE: The project probably won't continue as there are so many good alternatives (Godot etc.) but it was fun!*
+*NOTE: The project probably won't continue as there are so many good alternatives (Godot etc.) but it was fun!*  
+*NOTE 2: Please ignore the mess, I'm sharing this because  it makes me sad to have it forgotten on my drive*
 
 ## Preview
 
