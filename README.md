@@ -1,6 +1,19 @@
-# Build & Run  
+# Diorama - 2.5D Pixel Art Java Game Engine
+This project was completed as my semestral work for the PJV (Programming in Java) course at CTU FIT (Czech Technical University, Faculty of Information Technology).
+
+*NOTE: The project probably won't continue as there are so many good alternatives (Godot etc.) but it was fun!*
+
+## Preview
+
+### Engine Features:  
+[![](https://img.youtube.com/vi/ON3kWcKV1_M/0.jpg)](https://www.youtube.com/watch?v=ON3kWcKV1_M)  
+### Particle system:  
+[![](https://img.youtube.com/vi/WNFoHu80Xuc/0.jpg)](https://www.youtube.com/watch?v=WNFoHu80Xuc)  
+
+
+## Build & Run  
 ```./gradlew editor:run```  
-# Controls
+## Controls
 
 ```
 +----------------------------------------------------+
